@@ -36,8 +36,7 @@ class StaggeredGridView extends GridView {
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
   })
-      : assert(gridDelegate != null),
-        assert(staggeredTiles != null),
+      : assert(staggeredTiles != null),
         assert(children != null),
         assert(staggeredTiles.length == children.length),
         super(
