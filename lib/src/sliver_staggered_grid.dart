@@ -216,7 +216,7 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
 
       var blockIndex = block.index;
       if (reverseCrossAxis) {
-        blockIndex = crossAxisCount - 1 - blockIndex;
+        blockIndex = crossAxisCount - staggeredTile.crossAxisCellCount - blockIndex;
       }
       var crossAxisOffset = blockIndex * _cellStride;
 
