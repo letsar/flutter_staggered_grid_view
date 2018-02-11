@@ -250,7 +250,7 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
       int crossAxisCellCount =
           staggeredTile.crossAxisCellCount.clamp(0, crossAxisCount);
       return new StaggeredTile.extent(
-          _getStaggeredTileMainAxisExtent(staggeredTile), crossAxisCellCount);
+          crossAxisCellCount, _getStaggeredTileMainAxisExtent(staggeredTile));
     }
   }
 

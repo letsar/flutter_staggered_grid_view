@@ -1,9 +1,62 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/src/sliver_staggered_grid.dart';
+import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
 
 /// A scrollable 2D array of widgets that can have variable sizes.
 class StaggeredGridView extends GridView {
+  /// Creates a scrollable, 2D array of widgets with different tile shapes
+  /// and sizes.
+  ///
+  /// The [children]  and [staggeredTiles] arguments must not be null.
+  ///
+  /// The [mainAxisSpacing] and [crossAxisSpacing] are the number of pixels
+  /// between your widgets. These arguments are 0.0 by default and must be
+  /// positives.
+  ///
+  /// The [addAutomaticKeepAlives] argument corresponds to the
+  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// [addRepaintBoundaries] argument corresponds to the
+  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// null.
+  StaggeredGridView({
+    Key key,
+    Axis scrollDirection: Axis.vertical,
+    bool reverse: false,
+    ScrollController controller,
+    bool primary,
+    ScrollPhysics physics,
+    bool shrinkWrap: false,
+    EdgeInsetsGeometry padding,
+    double mainAxisSpacing: 0.0,
+    double crossAxisSpacing: 0.0,
+    @required int crossAxisCount,
+    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
+    bool addAutomaticKeepAlives: true,
+    bool addRepaintBoundaries: true,
+    List<Widget> children: const <Widget>[],
+  })
+      : assert(gridDelegate != null),
+        assert(staggeredTiles != null),
+        assert(children != null),
+        assert(staggeredTiles.length == children.length),
+        super(
+            key: key,
+            scrollDirection: scrollDirection,
+            reverse: reverse,
+            controller: controller,
+            primary: primary,
+            physics: physics,
+            shrinkWrap: shrinkWrap,
+            padding: padding,
+            children: children,
+            gridDelegate: new SliverStaggeredGridDelegate(
+              crossAxisCount: crossAxisCount,
+              staggeredTileBuilder: (i) => staggeredTiles[i],
+              mainAxisSpacing: mainAxisSpacing,
+              crossAxisSpacing: crossAxisSpacing,
+            ));
+
   /// Creates a scrollable 2D array of widgets with variable sizes.
   ///
   /// The [crossAxisCount] is the number of spans in the cross axis.
