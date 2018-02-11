@@ -70,6 +70,7 @@ class SliverStaggeredGridDelegate extends SliverGridDelegate {
       cellExtent: cellExtent,
       mainAxisSpacing: mainAxisSpacing,
       crossAxisSpacing: crossAxisSpacing,
+      reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
     );
   }
 
@@ -96,13 +97,15 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
     @required this.cellExtent,
     @required this.mainAxisSpacing,
     @required this.crossAxisSpacing,
+    @required this.reverseCrossAxis,
   })
       : assert(crossAxisCount != null && crossAxisCount > 0),
         assert(staggeredTileBuilder != null),
         assert(cellExtent != null && cellExtent >= 0),
         assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
         assert(crossAxisSpacing != null && crossAxisSpacing >= 0),
-        _spanCrossAxisStride = cellExtent + crossAxisSpacing,
+        assert(reverseCrossAxis != null),
+        _cellStride = cellExtent + crossAxisSpacing,
         _staggeredTileGeometries = new Map(),
         _mainAxisOffsets = new List.generate(crossAxisCount, (i) => 0.0);
 
@@ -127,7 +130,18 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
 
   final List<double> _mainAxisOffsets;
 
-  final double _spanCrossAxisStride;
+  final double _cellStride;
+
+  /// Whether the children should be placed in the opposite order of increasing
+  /// coordinates in the cross axis.
+  ///
+  /// For example, if the cross axis is horizontal, the children are placed from
+  /// left to right when [reverseCrossAxis] is false and from right to left when
+  /// [reverseCrossAxis] is true.
+  ///
+  /// Typically set to the return value of [axisDirectionIsReversed] applied to
+  /// the [SliverConstraints.crossAxisDirection].
+  final bool reverseCrossAxis;
 
   @override
   double computeMaxScrollOffset(int childCount) {
@@ -199,15 +213,19 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
           staggeredTile.crossAxisCellCount);
 
       var scrollOffset = block.minOffset;
-      var crossAxisOffset = block.index * _spanCrossAxisStride;
+
+      var blockIndex = block.index;
+      if (reverseCrossAxis) {
+        blockIndex = crossAxisCount - 1 - blockIndex;
+      }
+      var crossAxisOffset = blockIndex * _cellStride;
 
       var geometry = new SliverGridGeometry(
           scrollOffset: scrollOffset,
           crossAxisOffset: crossAxisOffset,
           mainAxisExtent: staggeredTile.mainAxisExtent,
-          crossAxisExtent:
-              _spanCrossAxisStride * staggeredTile.crossAxisCellCount -
-                  crossAxisSpacing);
+          crossAxisExtent: _cellStride * staggeredTile.crossAxisCellCount -
+              crossAxisSpacing);
       tileGeometry =
           new _StaggeredTileGeometry(staggeredTile, geometry, block.index);
       _staggeredTileGeometries[index] = tileGeometry;
