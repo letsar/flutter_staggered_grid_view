@@ -1,7 +1,5 @@
 library flutter_staggered_grid_view;
 
-/// A Calculator.
-class Calculator {
-  /// Returns [value] plus 1.
-  int addOne(int value) => value + 1;
-}
+export 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
+export 'package:flutter_staggered_grid_view/src/sliver_staggered_grid.dart';
+export 'package:flutter_staggered_grid_view/src/staggered_grid_view.dart';
