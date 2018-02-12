@@ -3,6 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
+Size _getTileSize(StaggeredTile tile, double cellLength){
+  return new Size(tile.crossAxisCellCount * cellLength, tile.mainAxisExtent
+      ?? tile.mainAxisCellCount * cellLength);
+}
+
 void main() {
   testWidgets('StaggeredGridView - ', (WidgetTester tester) async {
     final List<int> log = <int>[];
@@ -59,14 +64,40 @@ void main() {
       )
     );
 
-    expect(tester.getTopLeft(find.text('1')), equals(const Offset(0.0, 0.0)));
-    expect(tester.getSize(find.text('1')), equals(const Size(400.0, 400.0)));
+    const double cellLength = 200.0;
+
+    expect(tester.getTopLeft(find.text('0')), equals(const Offset(0.0, 0.0)));
+    expect(tester.getTopLeft(find.text('1')), equals(const Offset(400.0, 0.0)));
+    expect(tester.getTopLeft(find.text('2')), equals(const Offset(600.0, 0.0)));
+    expect(tester.getTopLeft(find.text('3')), equals(const Offset(400.0, 200.0)));
+
+    expect(tester.getTopLeft(find.text('4')), equals(const Offset(0.0, 400.0)));
+    expect(tester.getTopLeft(find.text('5')), equals(const Offset(0.0, 600.0)));
+
+    for (var i = 0; i < 6; ++i) {
+      expect(tester.getSize(find.text('$i')), equals(_getTileSize(tiles[i],
+          cellLength)));
+    }
 
     expect(log, equals(<int>[
       0, 1, 2,
       3, 4, 5,
-      6, 7, 8,
     ]));
     log.clear();
+
+    final ScrollableState scrollableState = tester.state(find.byType(Scrollable));
+    final ScrollPosition scrollPosition = scrollableState.position;
+    scrollPosition.jumpTo(1000.0);
+
+    expect(log, isEmpty);
+    await tester.pump();
+
+    expect(log, equals(<int>[
+      6, 7, 8, 9,
+      10, 11, 12, 13,
+      14, 15, 16
+    ]));
+    log.clear();
+
   });
 }
