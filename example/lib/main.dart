@@ -1,3 +1,4 @@
+import 'package:example/staggered_grid_view_count.dart';
 import 'package:example/staggered_view_1.dart';
 import 'package:flutter/material.dart';
 
@@ -12,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new StaggeredView(),
+      home: new StaggeredGridViewCountPage(),
     );
   }
 }
