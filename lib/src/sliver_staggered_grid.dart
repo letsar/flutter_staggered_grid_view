@@ -8,11 +8,7 @@ import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
 /// Signature for a function that creates [StaggeredTile] for a given index.
 typedef StaggeredTile IndexedStaggeredTileBuilder(int index);
 
-/// Creates grid layouts with a fixed number of cells in the cross axis.
-///
-/// For example, if the grid is vertical, this delegate will create a layout
-/// with a fixed number of columns. If the grid is horizontal, this delegate
-/// will create a layout with a fixed number of rows.
+/// Creates staggered grid layouts.
 ///
 /// This delegate creates grids with variable sized but equally spaced tiles.
 ///
@@ -25,20 +21,18 @@ typedef StaggeredTile IndexedStaggeredTileBuilder(int index);
 ///    tiles.
 ///  * [RenderSliverGrid], which can use this delegate to control the layout of
 ///    its tiles.
-class SliverStaggeredGridDelegate extends SliverGridDelegate {
+abstract class SliverStaggeredGridDelegate extends SliverGridDelegate {
+  /// Creates a delegate that makes staggered grid layouts
+  ///
+  /// All of the arguments must not be null. The [mainAxisSpacing] and
+  /// [crossAxisSpacing] arguments must not be negative.
   const SliverStaggeredGridDelegate({
-    @required this.crossAxisCount,
     @required this.staggeredTileBuilder,
     this.mainAxisSpacing: 0.0,
     this.crossAxisSpacing: 0.0,
-  })
-      : assert(crossAxisCount != null && crossAxisCount > 0),
-        assert(staggeredTileBuilder != null),
+  })      :         assert(staggeredTileBuilder != null),
         assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
         assert(crossAxisSpacing != null && crossAxisSpacing >= 0);
-
-  /// The number of children in the cross axis.
-  final int crossAxisCount;
 
   /// The number of logical pixels between each child along the main axis.
   final double mainAxisSpacing;
@@ -51,11 +45,62 @@ class SliverStaggeredGridDelegate extends SliverGridDelegate {
   final IndexedStaggeredTileBuilder staggeredTileBuilder;
 
   bool _debugAssertIsValid() {
-    assert(crossAxisCount > 0);
     assert(staggeredTileBuilder != null);
     assert(mainAxisSpacing >= 0.0);
     assert(crossAxisSpacing >= 0.0);
     return true;
+  }
+
+  @override
+  bool shouldRelayout(SliverStaggeredGridDelegate oldDelegate) {
+    return   oldDelegate.mainAxisSpacing != mainAxisSpacing ||
+        oldDelegate.crossAxisSpacing != crossAxisSpacing ||
+        oldDelegate.staggeredTileBuilder != staggeredTileBuilder;
+  }
+}
+
+/// Creates staggered grid layouts with a fixed number of cells in the cross
+/// axis.
+///
+/// For example, if the grid is vertical, this delegate will create a layout
+/// with a fixed number of columns. If the grid is horizontal, this delegate
+/// will create a layout with a fixed number of rows.
+///
+/// This delegate creates grids with variable sized but equally spaced tiles.
+///
+/// See also:
+///
+///  * [SliverStaggeredGridDelegate], which creates staggered grid layouts.
+///  * [GridView], which can use this delegate to control the layout of its
+///    tiles.
+///  * [SliverGrid], which can use this delegate to control the layout of its
+///    tiles.
+///  * [RenderSliverGrid], which can use this delegate to control the layout of
+///    its tiles.
+class SliverStaggeredGridDelegateWithFixedCrossAxisCount extends SliverStaggeredGridDelegate {
+  /// Creates a delegate that makes staggered grid layouts with a fixed number
+  /// of tiles in the cross axis.
+  ///
+  /// All of the arguments must not be null. The [mainAxisSpacing] and
+  /// [crossAxisSpacing] arguments must not be negative. The [crossAxisCount]
+  /// argument must be greater than zero.
+  const SliverStaggeredGridDelegateWithFixedCrossAxisCount({
+    @required this.crossAxisCount,
+    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    double mainAxisSpacing: 0.0,
+    double crossAxisSpacing: 0.0,
+  })
+      : assert(crossAxisCount != null && crossAxisCount > 0),
+        super(staggeredTileBuilder : staggeredTileBuilder, mainAxisSpacing:
+      mainAxisSpacing, crossAxisSpacing: crossAxisSpacing);
+
+  /// The number of children in the cross axis.
+  final int crossAxisCount;
+
+  @override
+  bool _debugAssertIsValid() {
+    assert(crossAxisCount > 0);
+    return super._debugAssertIsValid();
   }
 
   @override
@@ -75,17 +120,118 @@ class SliverStaggeredGridDelegate extends SliverGridDelegate {
   }
 
   @override
-  bool shouldRelayout(SliverStaggeredGridDelegate oldDelegate) {
+  bool shouldRelayout(SliverStaggeredGridDelegateWithFixedCrossAxisCount oldDelegate) {
     return oldDelegate.crossAxisCount != crossAxisCount ||
-        oldDelegate.mainAxisSpacing != mainAxisSpacing ||
-        oldDelegate.crossAxisSpacing != crossAxisSpacing ||
-        oldDelegate.staggeredTileBuilder != staggeredTileBuilder;
+        super.shouldRelayout(oldDelegate);
+  }
+}
+
+/// Creates staggered grid layouts with tiles that each have a maximum
+/// cross-axis extent.
+///
+/// This delegate will select a cross-axis extent for the tiles that is as
+/// large as possible subject to the following conditions:
+///
+///  - The extent evenly divides the cross-axis extent of the grid.
+///  - The extent is at most [maxCrossAxisExtent].
+///
+/// For example, if the grid is vertical, the grid is 500.0 pixels wide, and
+/// [maxCrossAxisExtent] is 150.0, this delegate will create a grid with 4
+/// columns that are 125.0 pixels wide.
+///
+/// This delegate creates grids with variable sized but equally spaced tiles.
+///
+/// See also:
+///
+///  * [SliverStaggeredGridDelegate], which creates staggered grid layouts.
+///  * [GridView], which can use this delegate to control the layout of its
+///    tiles.
+///  * [SliverGrid], which can use this delegate to control the layout of its
+///    tiles.
+///  * [RenderSliverGrid], which can use this delegate to control the layout of
+///    its tiles.
+class SliverStaggeredGridDelegateWithMaxCrossAxisExtent extends SliverStaggeredGridDelegate {
+  /// Creates a delegate that makes staggered grid layouts with tiles that
+  /// have a maximum cross-axis extent.
+  ///
+  /// All of the arguments must not be null. The [maxCrossAxisExtent],
+  /// [mainAxisSpacing] and [crossAxisSpacing] arguments must not be negative.
+  const SliverStaggeredGridDelegateWithMaxCrossAxisExtent({
+    @required this.maxCrossAxisExtent,
+    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    double mainAxisSpacing: 0.0,
+    double crossAxisSpacing: 0.0,
+  })
+      : assert(maxCrossAxisExtent != null && maxCrossAxisExtent > 0),
+        super(staggeredTileBuilder : staggeredTileBuilder, mainAxisSpacing:
+      mainAxisSpacing, crossAxisSpacing: crossAxisSpacing);
+
+  /// The maximum extent of tiles in the cross axis.
+  ///
+  /// This delegate will select a cross-axis extent for the tiles that is as
+  /// large as possible subject to the following conditions:
+  ///
+  ///  - The extent evenly divides the cross-axis extent of the grid.
+  ///  - The extent is at most [maxCrossAxisExtent].
+  ///
+  /// For example, if the grid is vertical, the grid is 500.0 pixels wide, and
+  /// [maxCrossAxisExtent] is 150.0, this delegate will create a grid with 4
+  /// columns that are 125.0 pixels wide.
+  final double maxCrossAxisExtent;
+
+  @override
+  bool _debugAssertIsValid() {
+    assert(maxCrossAxisExtent >= 0);
+    return super._debugAssertIsValid();
+  }
+
+  @override
+  SliverGridLayout getLayout(SliverConstraints constraints) {
+    assert(_debugAssertIsValid());
+    final int crossAxisCount = ((constraints.crossAxisExtent +
+        crossAxisSpacing) / (maxCrossAxisExtent + crossAxisSpacing)).ceil();
+
+    final double usableCrossAxisExtent = constraints.crossAxisExtent -
+        crossAxisSpacing * (crossAxisCount - 1);
+
+    final double cellExtent = usableCrossAxisExtent / crossAxisCount;
+    return new SliverGridStaggeredTileLayout(
+      crossAxisCount: crossAxisCount,
+      staggeredTileBuilder: staggeredTileBuilder,
+      cellExtent: cellExtent,
+      mainAxisSpacing: mainAxisSpacing,
+      crossAxisSpacing: crossAxisSpacing,
+      reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
+    );
+  }
+
+  @override
+  bool shouldRelayout(SliverStaggeredGridDelegateWithMaxCrossAxisExtent oldDelegate) {
+    return oldDelegate.maxCrossAxisExtent != maxCrossAxisExtent ||
+        super.shouldRelayout(oldDelegate);
   }
 }
 
 /// A [SliverGridLayout] that uses variable sized but equally spaced tiles.
 ///
-/// This layout is used by [SliverStaggeredGridDelegate].
+/// Rather that providing a grid with a [SliverGridLayout] directly, you instead
+/// provide the grid a [SliverGridDelegate], which can compute a
+/// [SliverGridLayout] given the current [SliverConstraints].
+///
+/// This layout is used by [SliverStaggeredGridDelegateWithFixedCrossAxisCount] and
+/// [SliverStaggeredGridDelegateWithMaxCrossAxisExtent].
+///
+/// See also:
+///
+///  * [SliverStaggeredGridDelegateWithFixedCrossAxisCount], which uses this layout.
+///  * [SliverStaggeredGridDelegateWithMaxCrossAxisExtent], which uses this layout.
+///  * [SliverGridLayout], which represents an arbitrary tile layout.
+///  * [SliverGridGeometry], which represents the size and position of a single
+///    tile in a grid.
+///  * [SliverGridDelegate.getLayout], which returns this object to describe the
+///    delegate's layout.
+///  * [RenderSliverGrid], which uses this class during its
+///    [RenderSliverGrid.performLayout] method.
 class SliverGridStaggeredTileLayout extends SliverGridLayout {
   /// Creates a layout that uses variable sized but equally spaced tiles.
   ///

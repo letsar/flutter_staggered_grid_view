@@ -3,20 +3,84 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/src/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
 
-/// A scrollable 2D array of widgets that can have variable sizes.
-class StaggeredGridView extends GridView {
-  /// Creates a scrollable, 2D array of widgets with different tile shapes
-  /// and sizes.
+/// A scrollable, 2D array of widgets with variable sizes.
+///
+/// The main axis direction of a grid is the direction in which it scrolls (the
+/// [scrollDirection]).
+///
+/// The most commonly used grid layouts are [StaggeredGridView.count], which
+/// creates a layout with a fixed number of tiles in the cross axis, and
+/// [StaggeredGridView.extent], which creates a layout with tiles that have a maximum
+/// cross-axis extent. A custom [SliverStaggeredGridDelegate] can produce an
+/// arbitrary 2D
+/// arrangement of children, including arrangements that are unaligned or
+/// overlapping.
+///
+/// To create a grid with a large (or infinite) number of children, use the
+/// [StaggeredGridView.builder] constructor with either a
+/// [SliverStaggeredGridDelegateWithFixedCrossAxisCount] or a
+/// [SliverStaggeredGridDelegateWithMaxCrossAxisExtent] for the [gridDelegate].
+///
+/// To use a custom [SliverChildDelegate], use [StaggeredGridView.custom].
+///
+/// To create a linear array of children, use a [ListView].
+///
+/// To control the initial scroll offset of the scroll view, provide a
+/// [controller] with its [ScrollController.initialScrollOffset] property set.
+///
+/// ### Sample code
+///
+/// Here are two brief snippets showing a [StaggeredGridView]
+///
+/// ```dart
+/// new StaggeredGridView.count(
+///   primary: false,
+///   padding: const EdgeInsets.all(20.0),
+///   crossAxisSpacing: 10.0,
+///   crossAxisCount: 4,
+///   children: <Widget>[
+///     const Text('He\'d have you all unravel at the'),
+///     const Text('Heed not the rabble'),
+///     const Text('Sound of screams but the'),
+///     const Text('Who scream'),
+///     const Text('Revolution is coming...'),
+///     const Text('Revolution, they...'),
+///   ],
+///   staggeredTiles: const <StaggeredTile>[
+///     const StaggeredTile.count(2,2),
+///     const StaggeredTile.count(2,1),
+///     const StaggeredTile.count(1,1),
+///     const StaggeredTile.count(3,2),
+///     const StaggeredTile.count(2,2),
+///     const StaggeredTile.count(2,3),
+///     ],
+/// )
+/// ```
+///
+/// See also:
+///
+///  * [SingleChildScrollView], which is a scrollable widget that has a single
+///    child.
+///  * [ListView], which is scrollable, linear list of widgets.
+///  * [PageView], which is a scrolling list of child widgets that are each the
+///    size of the viewport.
+///  * [CustomScrollView], which is a scrollable widget that creates custom
+///    scroll effects using slivers.
+///  * [SliverStaggeredGridDelegateWithFixedCrossAxisCount], which creates a
+///    layout with a fixed number of tiles in the cross axis.
+///  * [SliverStaggeredGridDelegateWithMaxCrossAxisExtent], which creates a
+///    layout with tiles that have a maximum cross-axis extent.
+///  * [ScrollNotification] and [NotificationListener], which can be used to watch
+///    the scroll position without using a [ScrollController].
+class StaggeredGridView extends BoxScrollView {
+  /// Creates a scrollable, 2D array of widgets with a custom
+  /// [SliverStaggeredGridDelegate].
   ///
-  /// The [children]  and [staggeredTiles] arguments must not be null.
+  /// The [gridDelegate] argument must not be null.
   ///
-  /// The [mainAxisSpacing] and [crossAxisSpacing] are the number of pixels
-  /// between your widgets. These arguments are 0.0 by default and must be
-  /// positives.
-  ///
-  /// The [addAutomaticKeepAlives] argument corresponds to the
+  /// The `addAutomaticKeepAlives` argument corresponds to the
   /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
-  /// [addRepaintBoundaries] argument corresponds to the
+  /// `addRepaintBoundaries` argument corresponds to the
   /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
   /// null.
   StaggeredGridView({
@@ -28,98 +92,369 @@ class StaggeredGridView extends GridView {
     ScrollPhysics physics,
     bool shrinkWrap: false,
     EdgeInsetsGeometry padding,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-    @required int crossAxisCount,
-    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
+    @required this.gridDelegate,
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
+    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
   })
-      : assert(staggeredTiles != null),
-        assert(children != null),
-        assert(staggeredTiles.length == children.length),
+      : assert(gridDelegate != null),
+        childrenDelegate = new SliverChildListDelegate(
+          children,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+        ),
         super(
-            key: key,
-            scrollDirection: scrollDirection,
-            reverse: reverse,
-            controller: controller,
-            primary: primary,
-            physics: physics,
-            shrinkWrap: shrinkWrap,
-            padding: padding,
-            children: children,
-            gridDelegate: new SliverStaggeredGridDelegate(
-              crossAxisCount: crossAxisCount,
-              staggeredTileBuilder: (i) => staggeredTiles[i],
-              mainAxisSpacing: mainAxisSpacing,
-              crossAxisSpacing: crossAxisSpacing,
-            ));
+          key: key,
+          scrollDirection: scrollDirection,
+          reverse: reverse,
+          controller: controller,
+          primary: primary,
+          physics: physics,
+          shrinkWrap: shrinkWrap,
+          padding: padding,
+        );
 
-  /// Creates a scrollable 2D array of widgets with variable sizes.
+  /// Creates a scrollable, 2D array of widgets that are created on demand.
   ///
-  /// The [crossAxisCount] is the number of spans in the cross axis.
-  /// Typically for a vertical direction, this is the number of columns of
-  /// your grid view. Each widget can have a span from 1 to [crossAxisCount].
-  /// It must be strictly positive.
+  /// This constructor is appropriate for grid views with a large (or infinite)
+  /// number of children because the builder is called only for those children
+  /// that are actually visible.
   ///
-  /// The [staggeredTileBuilder] gives the tile layout for the widget at the
-  /// specified index.
+  /// Providing a non-null [itemCount] improves the ability of the
+  /// [SliverStaggeredGridDelegate] to estimate the maximum scroll extent.
   ///
-  /// The [itemBuilder] has the same meaning as in [new GridView.builder].
+  /// [itemBuilder] will be called only with indices greater than or equal to
+  /// zero and less than [itemCount].
   ///
-  /// The [mainAxisSpacing] and [crossAxisSpacing] are the number of pixels
-  /// between your widgets. These arguments are 0.0 by default and must be
-  /// positives.
+  /// The [gridDelegate] argument must not be null.
   ///
-  /// The [mainAxisRatio] is the ratio between the computed cross axis extent
-  /// for one span and the main axis extent of your widgets.
-  /// For example, by setting a [mainAxisRatio] to 1, the widget for a tile
-  /// size of (1, 1.0) will be a square.
-  /// If you do not set the [mainAxisRatio] or set it to null, the extent of
-  /// the tile size will be the main axis extent of your widget.
+  /// The `addAutomaticKeepAlives` argument corresponds to the
+  /// [SliverChildBuilderDelegate.addAutomaticKeepAlives] property. The
+  /// `addRepaintBoundaries` argument corresponds to the
+  /// [SliverChildBuilderDelegate.addRepaintBoundaries] property. Both must not
+  /// be null.
   StaggeredGridView.builder({
     Key key,
     Axis scrollDirection: Axis.vertical,
+    bool reverse: false,
     ScrollController controller,
     bool primary,
     ScrollPhysics physics,
     bool shrinkWrap: false,
     EdgeInsetsGeometry padding,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-    @required int crossAxisCount,
-    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    @required this.gridDelegate,
     @required IndexedWidgetBuilder itemBuilder,
-    double mainAxisRatio,
     int itemCount,
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
   })
-      : assert(crossAxisCount > 0),
-        assert(staggeredTileBuilder != null),
-        assert(itemBuilder != null),
-        assert(mainAxisSpacing != null && mainAxisSpacing >= 0.0),
-        assert(crossAxisSpacing != null && crossAxisSpacing >= 0.0),
-        super.custom(
-            key: key,
-            scrollDirection: scrollDirection,
-            reverse: false,
-            controller: controller,
-            primary: primary,
-            physics: physics,
-            shrinkWrap: shrinkWrap,
-            padding: padding,
-            gridDelegate: new SliverStaggeredGridDelegate(
-              crossAxisCount: crossAxisCount,
-              staggeredTileBuilder: staggeredTileBuilder,
-              mainAxisSpacing: mainAxisSpacing,
-              crossAxisSpacing: crossAxisSpacing,
-            ),
-            childrenDelegate: new SliverChildBuilderDelegate(
-              itemBuilder,
-              childCount: itemCount,
-              addAutomaticKeepAlives: addAutomaticKeepAlives,
-              addRepaintBoundaries: addRepaintBoundaries,
-            ));
+      : assert(gridDelegate != null),
+        childrenDelegate = new SliverChildBuilderDelegate(
+          itemBuilder,
+          childCount: itemCount,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+        ),
+        super(
+          key: key,
+          scrollDirection: scrollDirection,
+          reverse: reverse,
+          controller: controller,
+          primary: primary,
+          physics: physics,
+          shrinkWrap: shrinkWrap,
+          padding: padding,
+        );
+
+  /// Creates a scrollable, 2D array of widgets with both a custom
+  /// [SliverStaggeredGridDelegate] and a custom [SliverChildDelegate].
+  ///
+  /// To use an [IndexedWidgetBuilder] callback to build children, either use
+  /// a [SliverChildBuilderDelegate] or use the
+  /// [SliverStaggeredGridDelegate.builder] constructor.
+  ///
+  /// The [gridDelegate] and [childrenDelegate] arguments must not be null.
+  StaggeredGridView.custom({
+    Key key,
+    Axis scrollDirection: Axis.vertical,
+    bool reverse: false,
+    ScrollController controller,
+    bool primary,
+    ScrollPhysics physics,
+    bool shrinkWrap: false,
+    EdgeInsetsGeometry padding,
+    @required this.gridDelegate,
+    @required this.childrenDelegate,
+  })
+      : assert(gridDelegate != null),
+        assert(childrenDelegate != null),
+        super(
+          key: key,
+          scrollDirection: scrollDirection,
+          reverse: reverse,
+          controller: controller,
+          primary: primary,
+          physics: physics,
+          shrinkWrap: shrinkWrap,
+          padding: padding,
+        );
+
+  /// Creates a scrollable, 2D array of widgets of variable sizes with a fixed
+  /// number of tiles in the cross axis.
+  ///
+  /// Uses a [SliverStaggeredGridDelegateWithFixedCrossAxisCount] as the
+  /// [gridDelegate].
+  ///
+  /// The `addAutomaticKeepAlives` argument corresponds to the
+  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// `addRepaintBoundaries` argument corresponds to the
+  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// null.
+  ///
+  /// See also:
+  ///
+  ///  * [new SliverGrid.count], the equivalent constructor for [SliverGrid].
+  StaggeredGridView.count({
+    Key key,
+    Axis scrollDirection: Axis.vertical,
+    bool reverse: false,
+    ScrollController controller,
+    bool primary,
+    ScrollPhysics physics,
+    bool shrinkWrap: false,
+    EdgeInsetsGeometry padding,
+    @required int crossAxisCount,
+    double mainAxisSpacing: 0.0,
+    double crossAxisSpacing: 0.0,
+    bool addAutomaticKeepAlives: true,
+    bool addRepaintBoundaries: true,
+    List<Widget> children: const <Widget>[],
+    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
+  })
+      : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: mainAxisSpacing,
+          crossAxisSpacing: crossAxisSpacing,
+          staggeredTileBuilder: (i) => staggeredTiles[i],
+        ),
+        childrenDelegate = new SliverChildListDelegate(
+          children,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+        ),
+        super(
+          key: key,
+          scrollDirection: scrollDirection,
+          reverse: reverse,
+          controller: controller,
+          primary: primary,
+          physics: physics,
+          shrinkWrap: shrinkWrap,
+          padding: padding,
+        );
+
+  /// Creates a scrollable, 2D array of widgets of variable sizes with a fixed
+  /// number of tiles in the cross axis that are created on demand.
+  ///
+  /// This constructor is appropriate for grid views with a large (or infinite)
+  /// number of children because the builder is called only for those children
+  /// that are actually visible.
+  ///
+  /// Uses a [SliverStaggeredGridDelegateWithFixedCrossAxisCount] as the
+  /// [gridDelegate].
+  ///
+  ///  Providing a non-null [itemCount] improves the ability of the
+  /// [SliverStaggeredGridDelegate] to estimate the maximum scroll extent.
+  ///
+  /// [itemBuilder] and [staggeredTileBuilder] will be called only with
+  /// indices greater than or equal to
+  /// zero and less than [itemCount].
+  ///
+  /// The `addAutomaticKeepAlives` argument corresponds to the
+  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// `addRepaintBoundaries` argument corresponds to the
+  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// null.
+  StaggeredGridView.countBuilder({
+    Key key,
+    Axis scrollDirection: Axis.vertical,
+    bool reverse: false,
+    ScrollController controller,
+    bool primary,
+    ScrollPhysics physics,
+    bool shrinkWrap: false,
+    EdgeInsetsGeometry padding,
+    @required int crossAxisCount,
+    @required IndexedWidgetBuilder itemBuilder,
+    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    int itemCount,
+    double mainAxisSpacing: 0.0,
+    double crossAxisSpacing: 0.0,
+    bool addAutomaticKeepAlives: true,
+    bool addRepaintBoundaries: true,
+  })
+      : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: mainAxisSpacing,
+          crossAxisSpacing: crossAxisSpacing,
+          staggeredTileBuilder: staggeredTileBuilder,
+        ),
+        childrenDelegate = new SliverChildBuilderDelegate(
+          itemBuilder,
+          childCount: itemCount,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+        ),
+        super(
+          key: key,
+          scrollDirection: scrollDirection,
+          reverse: reverse,
+          controller: controller,
+          primary: primary,
+          physics: physics,
+          shrinkWrap: shrinkWrap,
+          padding: padding,
+        );
+
+  /// Creates a scrollable, 2D array of widgets of variable sizes with tiles
+  /// that  each have a maximum cross-axis extent.
+  ///
+  /// Uses a [SliverGridDelegateWithMaxCrossAxisExtent] as the [gridDelegate].
+  ///
+  ///  Providing a non-null [itemCount] improves the ability of the
+  /// [SliverStaggeredGridDelegate] to estimate the maximum scroll extent.
+  ///
+  /// [itemBuilder] and [staggeredTileBuilder] will be called only with
+  /// indices greater than or equal to
+  /// zero and less than [itemCount].
+  ///
+  /// The `addAutomaticKeepAlives` argument corresponds to the
+  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// `addRepaintBoundaries` argument corresponds to the
+  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// null.
+  ///
+  /// See also:
+  ///
+  ///  * [new SliverGrid.extent], the equivalent constructor for [SliverGrid].
+  StaggeredGridView.extent({
+    Key key,
+    Axis scrollDirection: Axis.vertical,
+    bool reverse: false,
+    ScrollController controller,
+    bool primary,
+    ScrollPhysics physics,
+    bool shrinkWrap: false,
+    EdgeInsetsGeometry padding,
+    @required double maxCrossAxisExtent,
+    double mainAxisSpacing: 0.0,
+    double crossAxisSpacing: 0.0,
+    bool addAutomaticKeepAlives: true,
+    bool addRepaintBoundaries: true,
+    List<Widget> children: const <Widget>[],
+    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
+  })
+      : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: maxCrossAxisExtent,
+          mainAxisSpacing: mainAxisSpacing,
+          crossAxisSpacing: crossAxisSpacing,
+          staggeredTileBuilder: (i) => staggeredTiles[i],
+        ),
+        childrenDelegate = new SliverChildListDelegate(
+          children,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+        ),
+        super(
+          key: key,
+          scrollDirection: scrollDirection,
+          reverse: reverse,
+          controller: controller,
+          primary: primary,
+          physics: physics,
+          shrinkWrap: shrinkWrap,
+          padding: padding,
+        );
+
+  /// Creates a scrollable, 2D array of widgets of variable sizes with tiles
+  /// that  each have a maximum cross-axis extent that are created on demand.
+  ///
+  /// This constructor is appropriate for grid views with a large (or infinite)
+  /// number of children because the builder is called only for those children
+  /// that are actually visible.
+  ///
+  /// Uses a [SliverGridDelegateWithMaxCrossAxisExtent] as the [gridDelegate].
+  ///
+  /// The `addAutomaticKeepAlives` argument corresponds to the
+  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// `addRepaintBoundaries` argument corresponds to the
+  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// null.
+  ///
+  /// See also:
+  ///
+  ///  * [new SliverGrid.extent], the equivalent constructor for [SliverGrid].
+  StaggeredGridView.extentBuilder({
+    Key key,
+    Axis scrollDirection: Axis.vertical,
+    bool reverse: false,
+    ScrollController controller,
+    bool primary,
+    ScrollPhysics physics,
+    bool shrinkWrap: false,
+    EdgeInsetsGeometry padding,
+    @required double maxCrossAxisExtent,
+    @required IndexedWidgetBuilder itemBuilder,
+    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    int itemCount,
+    double mainAxisSpacing: 0.0,
+    double crossAxisSpacing: 0.0,
+    bool addAutomaticKeepAlives: true,
+    bool addRepaintBoundaries: true,
+  })
+      : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: maxCrossAxisExtent,
+            mainAxisSpacing: mainAxisSpacing,
+            crossAxisSpacing: crossAxisSpacing,
+            staggeredTileBuilder: staggeredTileBuilder),
+        childrenDelegate = new SliverChildBuilderDelegate(
+          itemBuilder,
+          childCount: itemCount,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addRepaintBoundaries: addRepaintBoundaries,
+        ),
+        super(
+          key: key,
+          scrollDirection: scrollDirection,
+          reverse: reverse,
+          controller: controller,
+          primary: primary,
+          physics: physics,
+          shrinkWrap: shrinkWrap,
+          padding: padding,
+        );
+
+  /// A delegate that controls the layout of the children within the
+  /// [StaggeredGridView].
+  ///
+  /// The [StaggeredGridView] and [StaggeredGridView.custom] constructors let you specify this
+  /// delegate explicitly. The other constructors create a [gridDelegate]
+  /// implicitly.
+  final SliverStaggeredGridDelegate gridDelegate;
+
+  /// A delegate that provides the children for the [StaggeredGridView].
+  ///
+  /// The [StaggeredGridView.custom] constructor lets you specify this delegate
+  /// explicitly. The other constructors create a [childrenDelegate] that wraps
+  /// the given child list.
+  final SliverChildDelegate childrenDelegate;
+
+  @override
+  Widget buildChildLayout(BuildContext context) {
+    return new SliverGrid(
+      delegate: childrenDelegate,
+      gridDelegate: gridDelegate,
+    );
+  }
 }
