@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,6 +11,12 @@ Size _getTileSize(StaggeredTile tile, double cellLength){
 
 void main() {
   testWidgets('StaggeredGridView - ', (WidgetTester tester) async {
+    final MediaQueryData data = new MediaQueryData.fromWindow(ui.window);
+    final Size screenSize = data.size;
+    const int crossAxisCount = 4;
+    double cellLength = screenSize.width / crossAxisCount;
+
+
     final List<int> log = <int>[];
     final widgets = new List<Widget>.generate(20, (int i){
       return new Builder(
@@ -57,25 +64,46 @@ void main() {
         child: new StaggeredGridView(
             crossAxisSpacing: 0.0,
             mainAxisSpacing: 0.0,
-            crossAxisCount: 4,
+            crossAxisCount: crossAxisCount,
             staggeredTiles: tiles,
             children: widgets,
         ),
       )
     );
 
-    const double cellLength = 200.0;
+    List<Offset> expectedTopLeftNormalizedOffsets = const <Offset>[
+      const Offset(0.0, 0.0),
+      const Offset(2.0, 0.0),
+      const Offset(3.0, 0.0),
+      const Offset(2.0, 1.0),
 
-    expect(tester.getTopLeft(find.text('0')), equals(const Offset(0.0, 0.0)));
-    expect(tester.getTopLeft(find.text('1')), equals(const Offset(400.0, 0.0)));
-    expect(tester.getTopLeft(find.text('2')), equals(const Offset(600.0, 0.0)));
-    expect(tester.getTopLeft(find.text('3')), equals(const Offset(400.0, 200.0)));
+      const Offset(0.0, 2.0),
 
-    expect(tester.getTopLeft(find.text('4')), equals(const Offset(0.0, 400.0)));
-    expect(tester.getTopLeft(find.text('5')), equals(const Offset(0.0, 600.0)));
+      const Offset(0.0, 3.0),
 
-    for (var i = 0; i < 6; ++i) {
-      expect(tester.getSize(find.text('$i')), equals(_getTileSize(tiles[i],
+      const Offset(0.0, 4.0),
+      const Offset(1.0, 4.0),
+      const Offset(2.0, 4.0),
+      const Offset(3.0, 4.0),
+
+      const Offset(0.0, 5.0),
+      const Offset(1.0, 5.0),
+      const Offset(2.0, 5.0),
+      const Offset(3.0, 5.0),
+
+      const Offset(3.0, 6.0),
+      const Offset(2.0, 7.0),
+      const Offset(3.0, 7.0),
+      const Offset(1.0, 8.0),
+      const Offset(2.0, 8.0),
+      const Offset(3.0, 8.0),
+    ];
+
+    for (var item in log) {
+      expect(tester.getTopLeft(find.text('$item')), equals
+        (expectedTopLeftNormalizedOffsets[item] * cellLength));
+      expect(tester.getSize(find.text('$item')), equals(_getTileSize
+        (tiles[item],
           cellLength)));
     }
 
@@ -87,10 +115,19 @@ void main() {
 
     final ScrollableState scrollableState = tester.state(find.byType(Scrollable));
     final ScrollPosition scrollPosition = scrollableState.position;
-    scrollPosition.jumpTo(1000.0);
+    scrollPosition.jumpTo(800.0);
 
     expect(log, isEmpty);
     await tester.pump();
+
+    for (var item in log) {
+      expect(tester.getTopLeft(find.text('$item')), equals
+        (expectedTopLeftNormalizedOffsets[item] * cellLength  - const Offset
+        (0.0, 800.0)));
+      expect(tester.getSize(find.text('$item')), equals(_getTileSize
+        (tiles[item],
+          cellLength)));
+    }
 
     expect(log, equals(<int>[
       6, 7, 8, 9,
