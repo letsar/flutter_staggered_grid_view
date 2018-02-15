@@ -9,7 +9,7 @@ class StaggeredTile {
   /// [mainAxisCellCount].
   ///
   /// The main axis extent of this tile will be the length of
-  /// [mainAxisCellCount] cells (spacings included)
+  /// [mainAxisCellCount] cells (inner spacings included).
   const StaggeredTile.count(this.crossAxisCellCount, this.mainAxisCellCount)
       : mainAxisExtent = null,
         assert(crossAxisCellCount != null && crossAxisCellCount >= 0),

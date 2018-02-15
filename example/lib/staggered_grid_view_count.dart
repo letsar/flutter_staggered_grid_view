@@ -18,13 +18,13 @@ class StaggeredGridViewCountPage extends StatelessWidget {
   }
 
   StaggeredTile _getTile(int index){
-    return new StaggeredTile.count(1, index.isEven ? 2 : 1);
+    return new StaggeredTile.count(1, (index == 1)  ? 3 : 2);
   }
 
-  Widget _getChild(BuildContext context, int index){
+  TileWidget _getChild(BuildContext context, int index){
     return new TileWidget(
         key: new ObjectKey(index),
         index: index,
-        backgroundColor: index.isEven ? Colors.green : Colors.blue);
+        backgroundColor: Colors.green);
   }
 }

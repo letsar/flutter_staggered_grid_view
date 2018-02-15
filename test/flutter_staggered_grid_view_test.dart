@@ -11,11 +11,10 @@ Size _getTileSize(StaggeredTile tile, double cellLength){
 
 void main() {
   testWidgets('StaggeredGridView - ', (WidgetTester tester) async {
-    final MediaQueryData data = new MediaQueryData.fromWindow(ui.window);
-    final Size screenSize = data.size;
+    /// Screen size: 800x600 by default.
+    const Size screenSize = const Size(800.0, 600.0);
     const int crossAxisCount = 4;
     double cellLength = screenSize.width / crossAxisCount;
-
 
     final List<int> log = <int>[];
     final widgets = new List<Widget>.generate(20, (int i){
@@ -81,22 +80,22 @@ void main() {
 
       const Offset(0.0, 3.0),
 
-      const Offset(0.0, 4.0),
-      const Offset(1.0, 4.0),
-      const Offset(2.0, 4.0),
-      const Offset(3.0, 4.0),
-
       const Offset(0.0, 5.0),
       const Offset(1.0, 5.0),
       const Offset(2.0, 5.0),
       const Offset(3.0, 5.0),
 
+      const Offset(0.0, 6.0),
+      const Offset(1.0, 6.0),
+      const Offset(2.0, 6.0),
       const Offset(3.0, 6.0),
-      const Offset(2.0, 7.0),
+
       const Offset(3.0, 7.0),
-      const Offset(1.0, 8.0),
       const Offset(2.0, 8.0),
       const Offset(3.0, 8.0),
+      const Offset(1.0, 9.0),
+      const Offset(2.0, 9.0),
+      const Offset(3.0, 9.0),
     ];
 
     for (var item in log) {
@@ -115,7 +114,7 @@ void main() {
 
     final ScrollableState scrollableState = tester.state(find.byType(Scrollable));
     final ScrollPosition scrollPosition = scrollableState.position;
-    scrollPosition.jumpTo(800.0);
+    scrollPosition.jumpTo(1000.0);
 
     expect(log, isEmpty);
     await tester.pump();
@@ -123,7 +122,7 @@ void main() {
     for (var item in log) {
       expect(tester.getTopLeft(find.text('$item')), equals
         (expectedTopLeftNormalizedOffsets[item] * cellLength  - const Offset
-        (0.0, 800.0)));
+        (0.0, 1000.0)));
       expect(tester.getSize(find.text('$item')), equals(_getTileSize
         (tiles[item],
           cellLength)));

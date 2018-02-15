@@ -9,11 +9,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       
-      title: 'Flutter Demo',
+      title: 'StaggeredGridView Demo',
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new StaggeredGridViewCountPage(),
+      home: new StaggeredView(), // new StaggeredGridViewCountPage(),
     );
   }
 }

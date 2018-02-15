@@ -96,7 +96,6 @@ class StaggeredGridView extends BoxScrollView {
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
-    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
   })
       : assert(gridDelegate != null),
         childrenDelegate = new SliverChildListDelegate(
@@ -236,7 +235,8 @@ class StaggeredGridView extends BoxScrollView {
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
-          staggeredTileBuilder: (i) => staggeredTiles[i],
+          staggeredTileBuilder: (i) => _getIndexedStaggeredTile(i,
+              staggeredTiles),
         ),
         childrenDelegate = new SliverChildListDelegate(
           children,
@@ -359,7 +359,8 @@ class StaggeredGridView extends BoxScrollView {
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
-          staggeredTileBuilder: (i) => staggeredTiles[i],
+          staggeredTileBuilder: (i) => _getIndexedStaggeredTile(i,
+              staggeredTiles),
         ),
         childrenDelegate = new SliverChildListDelegate(
           children,
@@ -457,4 +458,11 @@ class StaggeredGridView extends BoxScrollView {
       gridDelegate: gridDelegate,
     );
   }
+}
+
+StaggeredTile _getIndexedStaggeredTile(int index, List<StaggeredTile> tiles){
+  if (index < 0 || index >= tiles.length)
+    return null;
+  else
+    return tiles[index];
 }
