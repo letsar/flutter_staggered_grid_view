@@ -283,6 +283,7 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
   /// [SliverGridStaggeredTileLayout].
   final IndexedStaggeredTileBuilder staggeredTileBuilder;
 
+  /// A map containing the tiles already computed
   final Map<int, _StaggeredTileGeometry> _staggeredTileGeometries;
 
   final List<double> _mainAxisOffsets;
@@ -302,18 +303,14 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
 
   @override
   double computeMaxScrollOffset(int childCount) {
-    if (childCount == null) {
-      return null;
-    } else {
-      _getStaggeredTileGeometry(childCount - 1);
-      var maxScrollOffset = _mainAxisOffsets.reduce(math.max);
-      return maxScrollOffset;
-    }
+    _getStaggeredTileGeometry(childCount - 1);
+    var maxScrollOffset = _mainAxisOffsets.reduce(math.max);
+    return maxScrollOffset;
   }
 
   @override
   SliverGridGeometry getGeometryForChildIndex(int index) {
-    return _getStaggeredTileGeometry(index).geometry;
+    return _getStaggeredTileGeometry(index)?.geometry;
   }
 
   @override
@@ -321,27 +318,38 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
     int index = 0;
     List<double> offsets = new List.generate(crossAxisCount, (i) => 0.0);
 
-    while (true) {
-      var tileGeometry = _getStaggeredTileGeometry(index);
-      if (tileGeometry == null) return index - 1;
-      for (var i = 0; i < tileGeometry.tile.crossAxisCellCount; i++) {
-        offsets[i + tileGeometry.startIndex] =
-            tileGeometry.geometry.trailingScrollOffset;
+    // We iterate through staggered tile geometries until we find one
+    // that is not visible for the given scrollOffset or we reached the end
+    // of the tiles.
+    _StaggeredTileGeometry tileGeometry;
+    do {
+      tileGeometry = _getStaggeredTileGeometry(index);
+      if(tileGeometry != null) {
+        for (var i = 0; i < tileGeometry.tile.crossAxisCellCount; i++) {
+          offsets[i + tileGeometry.startIndex] =
+              tileGeometry.geometry.trailingScrollOffset;
+        }
       }
-      if (!offsets.any((i) => i <= scrollOffset)) return index;
-      ++index;
-    }
+      index++;
+    } while (tileGeometry != null && offsets.any((i) => i <= scrollOffset));
+
+    return index - 1;
   }
 
   @override
   int getMinChildIndexForScrollOffset(double scrollOffset) {
     int index = 0;
-    while (true) {
-      var geometry = _getStaggeredTileGeometry(index)?.geometry;
-      if (geometry == null) return index - 1;
-      if (geometry.trailingScrollOffset >= scrollOffset) return index;
-      ++index;
-    }
+    SliverGridGeometry geometry;
+
+    /// We iterate through staggered tile geometries until we find one that
+    /// is visible for the given scrollOffset or we reached the end of the
+    /// tiles.
+    do {
+      geometry = _getStaggeredTileGeometry(index)?.geometry;
+      index++;
+    } while (geometry != null && geometry.trailingScrollOffset < scrollOffset);
+
+    return index - 1;
   }
 
   /// Finds the first available block with at least the specified [crossAxisCount].
@@ -350,6 +358,7 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
         crossAxisCount, new List.from(_mainAxisOffsets));
   }
 
+  /// Gets the Staggered tile geometry at the given child index.
   _StaggeredTileGeometry _getStaggeredTileGeometry(int index) {
     _StaggeredTileGeometry tileGeometry = _staggeredTileGeometries[index];
 
@@ -370,7 +379,6 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
           staggeredTile.crossAxisCellCount);
 
       var scrollOffset = block.minOffset;
-
       var blockIndex = block.index;
       if (reverseCrossAxis) {
         blockIndex =
@@ -395,12 +403,14 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
     return tileGeometry;
   }
 
+  /// Computes the main axis extent of any staggered tile.
   double _getStaggeredTileMainAxisExtent(StaggeredTile tile) {
     return tile.mainAxisExtent ??
         (tile.mainAxisCellCount * cellExtent) +
             (tile.mainAxisCellCount - 1) * mainAxisSpacing;
   }
 
+  /// Creates a staggered tile with the computed extent from the given tile.
   StaggeredTile _normalizeStaggeredTile(StaggeredTile staggeredTile) {
     if (staggeredTile == null) {
       return null;
@@ -439,18 +449,17 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
 
     for (var i = index; i < offsets.length; ++i) {
       double offset = offsets[i];
-      if (offset < minBlockOffset &&
-          !areEqual(offset, minBlockOffset)) {
+      if (offset < minBlockOffset && !nearEqual(offset, minBlockOffset)) {
         index = i;
         maxBlockOffset = minBlockOffset;
         minBlockOffset = offset;
         crossAxisCount = 1;
         contiguous = true;
-      } else if (areEqual(offset, minBlockOffset) && contiguous) {
+      } else if (nearEqual(offset, minBlockOffset) && contiguous) {
         crossAxisCount++;
       } else if (offset < maxBlockOffset &&
           offset > minBlockOffset &&
-          !areEqual(offset, minBlockOffset)) {
+          !nearEqual(offset, minBlockOffset)) {
         contiguous = false;
         maxBlockOffset = offset;
       } else {
@@ -480,6 +489,6 @@ class _StaggeredTileGeometry {
 }
 
 const double epsilon = 0.0001;
-bool areEqual(double d1, double d2) {
+bool nearEqual(double d1, double d2) {
   return (d1 - d2).abs() < epsilon;
 }
