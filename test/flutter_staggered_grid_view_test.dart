@@ -29,39 +29,39 @@ void main() {
       );
     });
     final tiles = const <StaggeredTile>[
-      const StaggeredTile.cellCount(2,2),
-      const StaggeredTile.cellCount(1,1),
-      const StaggeredTile.cellCount(1,2),
-      const StaggeredTile.cellCount(1,1),
+      const StaggeredTile.count(2,2),
+      const StaggeredTile.count(1,1),
+      const StaggeredTile.count(1,2),
+      const StaggeredTile.count(1,1),
 
-      const StaggeredTile.cellCount(4,1),
+      const StaggeredTile.count(4,1),
 
-      const StaggeredTile.cellCount(4,2),
+      const StaggeredTile.count(4,2),
 
-      const StaggeredTile.cellCount(1,1),
-      const StaggeredTile.cellCount(1,1),
-      const StaggeredTile.cellCount(1,1),
-      const StaggeredTile.cellCount(1,1),
+      const StaggeredTile.count(1,1),
+      const StaggeredTile.count(1,1),
+      const StaggeredTile.count(1,1),
+      const StaggeredTile.count(1,1),
 
-      const StaggeredTile.cellCount(1,4),
-      const StaggeredTile.cellCount(1,3),
-      const StaggeredTile.cellCount(1,2),
-      const StaggeredTile.cellCount(1,1),
+      const StaggeredTile.count(1,4),
+      const StaggeredTile.count(1,3),
+      const StaggeredTile.count(1,2),
+      const StaggeredTile.count(1,1),
 
-      const StaggeredTile.cellCount(1,1),
+      const StaggeredTile.count(1,1),
 
-      const StaggeredTile.cellCount(1,1),
-      const StaggeredTile.cellCount(1,1),
+      const StaggeredTile.count(1,1),
+      const StaggeredTile.count(1,1),
 
-      const StaggeredTile.cellCount(1,1),
-      const StaggeredTile.cellCount(1,1),
-      const StaggeredTile.cellCount(1,1),
+      const StaggeredTile.count(1,1),
+      const StaggeredTile.count(1,1),
+      const StaggeredTile.count(1,1),
     ];
 
     await tester.pumpWidget(
       new Directionality(
         textDirection : TextDirection.ltr,
-        child: new StaggeredGridView(
+        child: new StaggeredGridView.count(
             crossAxisSpacing: 0.0,
             mainAxisSpacing: 0.0,
             crossAxisCount: crossAxisCount,
