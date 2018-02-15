@@ -6,7 +6,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 Size _getTileSize(StaggeredTile tile, double cellLength){
   return new Size(tile.crossAxisCellCount * cellLength, tile.mainAxisExtent
-      ?? tile.mainAxisCellCount * cellLength);
+      ?? tile.aspectRatio * cellLength);
 }
 
 void main() {
@@ -28,33 +28,33 @@ void main() {
       );
     });
     final tiles = const <StaggeredTile>[
-      const StaggeredTile.count(2,2),
-      const StaggeredTile.count(1,1),
-      const StaggeredTile.count(1,2),
-      const StaggeredTile.count(1,1),
+      const StaggeredTile.ratio(2,2),
+      const StaggeredTile.ratio(1,1),
+      const StaggeredTile.ratio(1,2),
+      const StaggeredTile.ratio(1,1),
 
-      const StaggeredTile.count(4,1),
+      const StaggeredTile.ratio(4,1),
 
-      const StaggeredTile.count(4,2),
+      const StaggeredTile.ratio(4,2),
 
-      const StaggeredTile.count(1,1),
-      const StaggeredTile.count(1,1),
-      const StaggeredTile.count(1,1),
-      const StaggeredTile.count(1,1),
+      const StaggeredTile.ratio(1,1),
+      const StaggeredTile.ratio(1,1),
+      const StaggeredTile.ratio(1,1),
+      const StaggeredTile.ratio(1,1),
 
-      const StaggeredTile.count(1,4),
-      const StaggeredTile.count(1,3),
-      const StaggeredTile.count(1,2),
-      const StaggeredTile.count(1,1),
+      const StaggeredTile.ratio(1,4),
+      const StaggeredTile.ratio(1,3),
+      const StaggeredTile.ratio(1,2),
+      const StaggeredTile.ratio(1,1),
 
-      const StaggeredTile.count(1,1),
+      const StaggeredTile.ratio(1,1),
 
-      const StaggeredTile.count(1,1),
-      const StaggeredTile.count(1,1),
+      const StaggeredTile.ratio(1,1),
+      const StaggeredTile.ratio(1,1),
 
-      const StaggeredTile.count(1,1),
-      const StaggeredTile.count(1,1),
-      const StaggeredTile.count(1,1),
+      const StaggeredTile.ratio(1,1),
+      const StaggeredTile.ratio(1,1),
+      const StaggeredTile.ratio(1,1),
     ];
 
     await tester.pumpWidget(

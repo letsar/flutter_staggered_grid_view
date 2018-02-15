@@ -18,7 +18,7 @@ class StaggeredGridViewCountPage extends StatelessWidget {
   }
 
   StaggeredTile _getTile(int index){
-    return new StaggeredTile.count(1, (index == 1)  ? 3 : 2);
+    return new StaggeredTile.ratio(1, (index == 1)  ? 3 : 2);
   }
 
   TileWidget _getChild(BuildContext context, int index){

@@ -324,13 +324,13 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
     _StaggeredTileGeometry tileGeometry;
     do {
       tileGeometry = _getStaggeredTileGeometry(index);
-      if(tileGeometry != null) {
+      if (tileGeometry != null) {
         for (var i = 0; i < tileGeometry.tile.crossAxisCellCount; i++) {
           offsets[i + tileGeometry.startIndex] =
               tileGeometry.geometry.trailingScrollOffset;
         }
+        index++;
       }
-      index++;
     } while (tileGeometry != null && offsets.any((i) => i <= scrollOffset));
 
     return index - 1;
@@ -346,7 +346,9 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
     /// tiles.
     do {
       geometry = _getStaggeredTileGeometry(index)?.geometry;
-      index++;
+      if (geometry != null) {
+        index++;
+      }
     } while (geometry != null && geometry.trailingScrollOffset < scrollOffset);
 
     return index - 1;
@@ -406,8 +408,8 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
   /// Computes the main axis extent of any staggered tile.
   double _getStaggeredTileMainAxisExtent(StaggeredTile tile) {
     return tile.mainAxisExtent ??
-        (tile.mainAxisCellCount * cellExtent) +
-            (tile.mainAxisCellCount - 1) * mainAxisSpacing;
+        (tile.aspectRatio * cellExtent) +
+            (tile.aspectRatio - 1) * mainAxisSpacing;
   }
 
   /// Creates a staggered tile with the computed extent from the given tile.
