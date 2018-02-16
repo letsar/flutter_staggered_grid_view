@@ -10,7 +10,8 @@ Size _getTileSize(StaggeredTile tile, double cellLength){
 }
 
 void main() {
-  testWidgets('StaggeredGridView - ', (WidgetTester tester) async {
+  testWidgets('StaggeredGridView - tile layout and scroll', (WidgetTester
+  tester) async {
     /// Screen size: 800x600 by default.
     const Size screenSize = const Size(800.0, 600.0);
     const int crossAxisCount = 4;
