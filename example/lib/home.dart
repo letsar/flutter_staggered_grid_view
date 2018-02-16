@@ -7,20 +7,19 @@ const List<StaggeredTile> _tiles = const <StaggeredTile>[
   const StaggeredTile.ratio(2, 0.5),
   const StaggeredTile.ratio(1, 1),
   const StaggeredTile.ratio(1, 1),
-
   const StaggeredTile.ratio(2, 0.5),
   const StaggeredTile.ratio(1, 1),
   const StaggeredTile.ratio(1, 1),
 ];
 
 List<Widget> _children = <Widget>[
-  new HomeTile('Staggered layouts', Colors.green),
-  const HomeTile('count', Colors.green, staggeredGridViewCountRoute),
-  const HomeTile('extent', Colors.green, staggeredGridViewCountRoute),
+  const HomeHeaderTile('Staggered layouts', Colors.indigo),
+  const HomeTile('count', Colors.indigo, staggeredGridViewCountRoute),
+  const HomeTile('extent', Colors.indigo, staggeredGridViewCountRoute),
 
-  new HomeTile('Spannable layouts', Colors.red),
-  const HomeTile('count', Colors.red, staggeredGridViewCountRoute),
-  const HomeTile('extent', Colors.red, staggeredGridViewCountRoute),
+  const HomeHeaderTile('Spannable layouts', Colors.purple),
+  const HomeTile('count', Colors.purple, staggeredGridViewCountRoute),
+  const HomeTile('extent', Colors.purple, staggeredGridViewCountRoute),
 ];
 
 class Home extends StatelessWidget {
@@ -43,8 +42,41 @@ class Home extends StatelessWidget {
   }
 }
 
+class HomeHeaderTile extends StatelessWidget {
+  const HomeHeaderTile(this.title, this.backgroundColor);
+
+  final String title;
+  final Color backgroundColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return new Container(
+      decoration: new BoxDecoration(
+          border: new Border(
+              bottom: new BorderSide(
+        color: backgroundColor,
+      ))),
+      child: new Align(
+        alignment: Alignment.bottomCenter,
+        child: new Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: new Text(
+            title,
+            textAlign: TextAlign.center,
+            style: Theme
+                .of(context)
+                .primaryTextTheme
+                .title
+                .copyWith(color: backgroundColor),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class HomeTile extends StatelessWidget {
-  const HomeTile(this.title, this.backgroundColor, [this.route]);
+  const HomeTile(this.title, this.backgroundColor, this.route);
 
   final String title;
   final String route;
