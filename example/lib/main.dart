@@ -1,5 +1,4 @@
 import 'package:example/routes.dart';
-import 'package:example/stateful_staggered_grid_view.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(new MyApp());
@@ -12,7 +11,6 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-//      home: new StatefulStaggeredGridView(),
       routes: routes,
     );
   }
