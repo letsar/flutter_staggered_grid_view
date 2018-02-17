@@ -12,14 +12,14 @@ import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
 /// creates a layout with a fixed number of tiles in the cross axis, and
 /// [StaggeredGridView.extent], which creates a layout with tiles that have a maximum
 /// cross-axis extent. A custom [SliverStaggeredGridDelegate] can produce an
-/// arbitrary 2D
-/// arrangement of children, including arrangements that are unaligned or
-/// overlapping.
+/// arbitrary 2D arrangement of children.
 ///
 /// To create a grid with a large (or infinite) number of children, use the
 /// [StaggeredGridView.builder] constructor with either a
 /// [SliverStaggeredGridDelegateWithFixedCrossAxisCount] or a
 /// [SliverStaggeredGridDelegateWithMaxCrossAxisExtent] for the [gridDelegate].
+/// You can also use the [StaggeredGridView.countBuilder] or
+/// [StaggeredGridView.extentBuilder] constructors.
 ///
 /// To use a custom [SliverChildDelegate], use [StaggeredGridView.custom].
 ///

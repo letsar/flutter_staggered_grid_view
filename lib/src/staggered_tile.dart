@@ -1,7 +1,7 @@
-/// Holds the dimensions of a tile in an [StaggeredGridView].
+/// Holds the dimensions of a [StaggeredGridView]'s tile.
 ///
 /// A [StaggeredTile] always overlaps an exact number of cells in the cross
-/// axis of an [StaggeredGridView].
+/// axis of a [StaggeredGridView].
 /// The main axis extent can either be a number of pixels or a number of
 /// cells to overlap.
 class StaggeredTile {

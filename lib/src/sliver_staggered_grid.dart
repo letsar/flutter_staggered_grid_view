@@ -451,17 +451,17 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
 
     for (var i = index; i < offsets.length; ++i) {
       double offset = offsets[i];
-      if (offset < minBlockOffset && !nearEqual(offset, minBlockOffset)) {
+      if (offset < minBlockOffset && !_nearEqual(offset, minBlockOffset)) {
         index = i;
         maxBlockOffset = minBlockOffset;
         minBlockOffset = offset;
         crossAxisCount = 1;
         contiguous = true;
-      } else if (nearEqual(offset, minBlockOffset) && contiguous) {
+      } else if (_nearEqual(offset, minBlockOffset) && contiguous) {
         crossAxisCount++;
       } else if (offset < maxBlockOffset &&
           offset > minBlockOffset &&
-          !nearEqual(offset, minBlockOffset)) {
+          !_nearEqual(offset, minBlockOffset)) {
         contiguous = false;
         maxBlockOffset = offset;
       } else {
@@ -490,7 +490,7 @@ class _StaggeredTileGeometry {
   final int startIndex;
 }
 
-const double epsilon = 0.0001;
-bool nearEqual(double d1, double d2) {
-  return (d1 - d2).abs() < epsilon;
+const double _epsilon = 0.0001;
+bool _nearEqual(double d1, double d2) {
+  return (d1 - d2).abs() < _epsilon;
 }
