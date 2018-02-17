@@ -33,27 +33,24 @@ import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
 /// Here are two brief snippets showing a [StaggeredGridView]
 ///
 /// ```dart
-/// new StaggeredGridView.count(
-///   primary: false,
-///   padding: const EdgeInsets.all(20.0),
-///   crossAxisSpacing: 10.0,
-///   crossAxisCount: 4,
-///   children: <Widget>[
-///     const Text('He\'d have you all unravel at the'),
-///     const Text('Heed not the rabble'),
-///     const Text('Sound of screams but the'),
-///     const Text('Who scream'),
-///     const Text('Revolution is coming...'),
-///     const Text('Revolution, they...'),
-///   ],
-///   staggeredTiles: const <StaggeredTile>[
-///     const StaggeredTile.count(2,2),
-///     const StaggeredTile.count(2,1),
-///     const StaggeredTile.count(1,1),
-///     const StaggeredTile.count(3,2),
-///     const StaggeredTile.count(2,2),
-///     const StaggeredTile.count(2,3),
-///     ],
+/// new StaggeredGridView.countBuilder(
+///     crossAxisCount: 4,
+///     itemCount: 8,
+///     itemBuilder: (BuildContext context, int index) => index >= 8
+///         ? null
+///         : new Container(
+///             color: Colors.green,
+///             child: new Center(
+///             child: new CircleAvatar(
+///                 backgroundColor: Colors.white,
+///                 child: new Text('$index'),
+///             ),
+///             )),
+///     staggeredTileBuilder: (int index) => index >= 8
+///         ? null
+///         : new StaggeredTile.count(2, index.isEven ? 2 : 1),
+///     mainAxisSpacing: 4.0,
+///     crossAxisSpacing: 4.0,
 /// )
 /// ```
 ///
