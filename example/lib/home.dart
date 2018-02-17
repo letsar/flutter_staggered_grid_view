@@ -3,37 +3,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 const List<StaggeredTile> _tiles = const <StaggeredTile>[
-  const StaggeredTile.ratio(2, 0.5),
-  const StaggeredTile.ratio(1, 1),
-  const StaggeredTile.ratio(1, 1),
-  const StaggeredTile.ratio(1, 1),
-  const StaggeredTile.ratio(1, 1),
-  const StaggeredTile.ratio(2, 0.5),
-  const StaggeredTile.ratio(1, 1),
-  const StaggeredTile.ratio(1, 1),
-  const StaggeredTile.ratio(1, 1),
-  const StaggeredTile.ratio(1, 1),
+  const StaggeredTile.count(2, 0.5),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(2, 0.5),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(2, 0.5),
+  const StaggeredTile.count(2, 1),
 ];
 
 List<Widget> _children = <Widget>[
   const HomeHeaderTile('Staggered layouts', Colors.indigo),
   const HomeTile(
-      'count constructor\nratio tile', Colors.indigo, staggeredCountRatioRoute),
-  const HomeTile('extent constructor\nratio tile', Colors.indigo,
-      staggeredExtentRatioRoute),
+      'count constructor\ncount tile', Colors.indigo, staggeredCountCountRoute),
+  const HomeTile('extent constructor\ncount tile', Colors.indigo,
+      staggeredExtentCountRoute),
   const HomeTile('count constructor\nextent tile', Colors.indigo,
       staggeredCountExtentRoute),
   const HomeTile('extent constructor\nextent tile', Colors.indigo,
       staggeredExtentExtentRoute),
   const HomeHeaderTile('Spannable layouts', Colors.purple),
   const HomeTile(
-      'count constructor\nratio tile', Colors.purple, spannableCountRatioRoute),
-  const HomeTile('extent constructor\nratio tile', Colors.purple,
-      spannableExtentRatioRoute),
+      'count constructor\ncount tile', Colors.purple, spannableCountCountRoute),
+  const HomeTile('extent constructor\ncount tile', Colors.purple,
+      spannableExtentCountRoute),
   const HomeTile('count constructor\nextent tile', Colors.purple,
       spannableCountExtentRoute),
   const HomeTile('extent constructor\nextent tile', Colors.purple,
       spannableExtentExtentRoute),
+  const HomeHeaderTile('More Examples', Colors.pink),
+  const HomeTile('Example 01', Colors.pink, example01),
 ];
 
 class Home extends StatelessWidget {

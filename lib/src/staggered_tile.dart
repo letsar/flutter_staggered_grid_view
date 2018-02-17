@@ -6,13 +6,13 @@
 /// cells to overlap.
 class StaggeredTile {
   /// Creates a [StaggeredTile] with the given [crossAxisCellCount] and
-  /// [aspectRatio].
+  /// [mainAxisCellCount].
   ///
   /// The main axis extent of this tile will be the length of
-  /// [aspectRatio] cells (inner spacings included).
-  const StaggeredTile.ratio(this.crossAxisCellCount, this.aspectRatio)
+  /// [mainAxisCellCount] cells (inner spacings included).
+  const StaggeredTile.count(this.crossAxisCellCount, this.mainAxisCellCount)
       : assert(crossAxisCellCount != null && crossAxisCellCount >= 0),
-        assert(aspectRatio != null && aspectRatio >= 0),
+        assert(mainAxisCellCount != null && mainAxisCellCount >= 0),
         mainAxisExtent = null;
 
   /// Creates a [StaggeredTile] with the given [crossAxisCellCount] and
@@ -22,13 +22,13 @@ class StaggeredTile {
   const StaggeredTile.extent(this.crossAxisCellCount, this.mainAxisExtent)
       : assert(crossAxisCellCount != null && crossAxisCellCount >= 0),
         assert(mainAxisExtent != null && mainAxisExtent >= 0),
-        aspectRatio = null;
+        mainAxisCellCount = null;
 
   /// The number of cells occupied in the cross axis.
   final int crossAxisCellCount;
 
-  /// The ratio of the cross-axis to the main-axis extent.
-  final num aspectRatio;
+  /// The number of cells occupied in the main axis.
+  final num mainAxisCellCount;
 
   /// The number of pixels occupied in the main axis.
   final double mainAxisExtent;
