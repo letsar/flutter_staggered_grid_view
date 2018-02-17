@@ -5,9 +5,9 @@ A Flutter staggered grid view which supports multiple columns with rows of varyi
 
 ## Features
 
-    * Configurable cross-axis count or max cross-axis extent like the [`GridView`](https://docs.flutter.io/flutter/widgets/GridView-class.html)
-    * Tiles can have a fixed main-axis extent, or a multiple of the cell's length.
-    * Configurable main-axis and cross-axis margins between tiles.
+* Configurable cross-axis count or max cross-axis extent like the [GridView](https://docs.flutter.io/flutter/widgets/GridView-class.html)
+* Tiles can have a fixed main-axis extent, or a multiple of the cell's length.
+* Configurable main-axis and cross-axis margins between tiles.
 
 ## Getting started
 
@@ -23,7 +23,7 @@ For help getting started with Flutter, view the online [documentation](https://f
 
 ## Example
 
-![Screenshot](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/example_02.PNG)
+![Screenshot_Example](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/example_02.PNG)
 
 ```dart
 new StaggeredGridView.countBuilder(
@@ -46,3 +46,21 @@ new StaggeredGridView.countBuilder(
     crossAxisSpacing: 4.0,
 )
 ```
+
+You can find more examples in the [Example](https://github.com/letsar/flutter_staggered_grid_view/tree/master/example) project.
+
+## Constructors
+
+The `StaggeredGridView` follow the same constructors convention than the [GridView](https://docs.flutter.io/flutter/widgets/GridView-class.html).
+There are two more constructors: `countBuilder` and `extentBuilder`. These constructors allow you to define a builder for the layout and a builder for the children.
+
+## Changelog
+
+Please see the [Changelog](https://github.com/letsar/flutter_staggered_grid_view/blob/master/CHANGELOG.md) page to know what's recently changed.
+
+## Contributions
+
+Feel free to contribute to this project.
+
+If you find a bug or want a feature, but don't know how to fix/implement it, please fill an [issue](https://github.com/letsar/flutter_staggered_grid_view/issues).  
+If you fixed a bug or implemented a new feature, please send a [pull request](https://github.com/letsar/flutter_staggered_grid_view/pulls).
