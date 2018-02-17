@@ -1,7 +1,11 @@
+import 'dart:math';
+
 import 'package:example/tile_widget.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+enum StaggeredTileMode { count, extent, mixed }
 
 class StatefulStaggeredGridView extends StatefulWidget {
   @override
@@ -17,7 +21,13 @@ class _StatefulStaggeredGridViewState extends State<StatefulStaggeredGridView> {
         _crossAxisCount = 4,
         _mainAxisExtent = 50.0,
         _itemCount = 20,
-        _isConfigurationPanelExpanded = true;
+        _maxTileCrossAxisCount = 10,
+        _maxTileRatio = 4,
+        _maxTileMainAxisExtent = 100,
+        _staggeredTileMode = StaggeredTileMode.count,
+        _isConfigurationPanelExpanded = true{
+    _tiles = _computeRandomTiles();
+  }
 
   final Color _tileColor;
   double _mainAxisSpacing;
@@ -26,6 +36,11 @@ class _StatefulStaggeredGridViewState extends State<StatefulStaggeredGridView> {
   int _crossAxisCount;
   int _itemCount;
   bool _isConfigurationPanelExpanded;
+  int _maxTileCrossAxisCount;
+  int _maxTileRatio;
+  int _maxTileMainAxisExtent;
+  StaggeredTileMode _staggeredTileMode;
+  List<StaggeredTile> _tiles;
 
   @override
   Widget build(BuildContext context) {
@@ -67,36 +82,37 @@ class _StatefulStaggeredGridViewState extends State<StatefulStaggeredGridView> {
   }
 
   Widget _buildMainAxisSpacingConfigurationPanel(BuildContext context) {
-    return  new Column(
-        children: <Widget>[
-          new Slider(
-              value: _mainAxisSpacing,
-              label: '${_mainAxisSpacing.round()}',
-              min: 0.0,
-              max: 30.0,
-              thumbOpenAtMin: false,
-              onChanged: (double value) => setState(() {
-                    _mainAxisSpacing = value;
-                  })),
-          new Text('Main axis spacing'),
-        ],
-      );
+    return new Column(
+      children: <Widget>[
+        new Slider(
+            value: _mainAxisSpacing,
+            label: '${_mainAxisSpacing.round()}',
+            min: 0.0,
+            max: 30.0,
+            thumbOpenAtMin: false,
+            onChanged: (double value) => setState(() {
+                  _mainAxisSpacing = value;
+                })),
+        new Text('Main axis spacing'),
+      ],
+    );
   }
+
   Widget _buildCrossAxisSpacingConfigurationPanel(BuildContext context) {
     return new Column(
-        children: <Widget>[
-          new Slider(
-              value: _crossAxisSpacing,
-              label: '${_crossAxisSpacing.round()}',
-              min: 0.0,
-              max: 30.0,
-              thumbOpenAtMin: false,
-              onChanged: (double value) => setState(() {
-                _crossAxisSpacing = value;
-              })),
-          new Text('Cross axis spacing'),
-        ],
-      );
+      children: <Widget>[
+        new Slider(
+            value: _crossAxisSpacing,
+            label: '${_crossAxisSpacing.round()}',
+            min: 0.0,
+            max: 30.0,
+            thumbOpenAtMin: false,
+            onChanged: (double value) => setState(() {
+                  _crossAxisSpacing = value;
+                })),
+        new Text('Cross axis spacing'),
+      ],
+    );
   }
 
   Widget _buildItemCountConfigurationPanel(BuildContext context) {
@@ -110,8 +126,9 @@ class _StatefulStaggeredGridViewState extends State<StatefulStaggeredGridView> {
             divisions: 29,
             thumbOpenAtMin: false,
             onChanged: (double value) => setState(() {
-              _itemCount = value.toInt();
-            })),
+                  _itemCount = value.toInt();
+                  _tiles = _computeRandomTiles();
+                })),
         new Text('Item count'),
       ],
     );
@@ -128,8 +145,8 @@ class _StatefulStaggeredGridViewState extends State<StatefulStaggeredGridView> {
             divisions: 7,
             thumbOpenAtMin: false,
             onChanged: (double value) => setState(() {
-              _crossAxisCount = value.toInt();
-            })),
+                  _crossAxisCount = value.toInt();
+                })),
         new Text('Cross axis count'),
       ],
     );
@@ -140,18 +157,17 @@ class _StatefulStaggeredGridViewState extends State<StatefulStaggeredGridView> {
       children: <Widget>[
         new Slider(
             value: _mainAxisExtent,
-            label: '$_mainAxisExtent',
+            label: '${_mainAxisExtent.round()}',
             min: 50.0,
             max: 100.0,
             thumbOpenAtMin: false,
             onChanged: (double value) => setState(() {
-              _mainAxisExtent = value;
-            })),
+                  _mainAxisExtent = value;
+                })),
         new Text('Main axis extent'),
       ],
     );
   }
-
 
   Widget _buildStaggeredGridView(BuildContext context) {
     return new StaggeredGridView.countBuilder(
@@ -170,8 +186,32 @@ class _StatefulStaggeredGridViewState extends State<StatefulStaggeredGridView> {
   }
 
   StaggeredTile _getTile(int index) {
-    return const StaggeredTile.ratio(1, 1);
+    return index >= _itemCount ? null : _tiles[index];
   }
 
-  void _onMainAxisSpacingChanged(double value) {}
+  List<StaggeredTile> _computeRandomTiles(){
+    return new List.generate(_itemCount, _computeRandomTile);
+  }
+
+  StaggeredTile _computeRandomTile(int index){
+    Random rnd = new Random();
+    int crossAxisCount = rnd.nextInt(_maxTileCrossAxisCount) + 1;
+    int ratio = rnd.nextInt(_maxTileRatio) + 1;
+    int mainAxisExtent = rnd.nextInt(_maxTileMainAxisExtent - 50) + 51;
+
+    switch (_staggeredTileMode) {
+      case StaggeredTileMode.count:
+        return new StaggeredTile.ratio(crossAxisCount, ratio);
+      case StaggeredTileMode.extent:
+        return new StaggeredTile.extent(
+            crossAxisCount, mainAxisExtent.toDouble());
+      default:
+        if (rnd.nextBool()) {
+          return new StaggeredTile.ratio(crossAxisCount, ratio);
+        } else {
+          return new StaggeredTile.extent(
+              crossAxisCount, mainAxisExtent.toDouble());
+        }
+    }
+  }
 }
