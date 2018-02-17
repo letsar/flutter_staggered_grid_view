@@ -8,6 +8,10 @@ A Flutter staggered grid view which supports multiple columns with rows of varyi
 * Configurable cross-axis count or max cross-axis extent like the [GridView](https://docs.flutter.io/flutter/widgets/GridView-class.html)
 * Tiles can have a fixed main-axis extent, or a multiple of the cell's length.
 * Configurable main-axis and cross-axis margins between tiles.
+* Staggered and Spannable grid layouts
+
+![Screenshot](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/staggered_1.gif)
+![Screenshot](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/spannable_1.gif)
 
 ## Getting started
 
@@ -17,6 +21,12 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 dependencies:
   ...
   flutter_staggered_grid_view: "^0.1.0"
+```
+
+In your library add the following import:
+
+```dart
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 ```
 
 For help getting started with Flutter, view the online [documentation](https://flutter.io/).
@@ -51,7 +61,7 @@ You can find more examples in the [Example](https://github.com/letsar/flutter_st
 
 ## Constructors
 
-The `StaggeredGridView` follow the same constructors convention than the [GridView](https://docs.flutter.io/flutter/widgets/GridView-class.html).
+The `StaggeredGridView` follow the same constructors convention than the [GridView](https://docs.flutter.io/flutter/widgets/GridView-class.html).  
 There are two more constructors: `countBuilder` and `extentBuilder`. These constructors allow you to define a builder for the layout and a builder for the children.
 
 ## Changelog
