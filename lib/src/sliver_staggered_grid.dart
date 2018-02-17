@@ -408,8 +408,8 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
   /// Computes the main axis extent of any staggered tile.
   double _getStaggeredTileMainAxisExtent(StaggeredTile tile) {
     return tile.mainAxisExtent ??
-        (tile.aspectRatio * cellExtent) +
-            (tile.aspectRatio - 1) * mainAxisSpacing;
+        (tile.mainAxisCellCount * cellExtent) +
+            (tile.mainAxisCellCount - 1) * mainAxisSpacing;
   }
 
   /// Creates a staggered tile with the computed extent from the given tile.
