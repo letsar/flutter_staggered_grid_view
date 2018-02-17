@@ -15,6 +15,7 @@ const List<StaggeredTile> _tiles = const <StaggeredTile>[
   const StaggeredTile.count(1, 1),
   const StaggeredTile.count(2, 0.5),
   const StaggeredTile.count(2, 1),
+  const StaggeredTile.count(2, 1),
 ];
 
 List<Widget> _children = <Widget>[
@@ -38,6 +39,7 @@ List<Widget> _children = <Widget>[
       spannableExtentExtentRoute),
   const HomeHeaderTile('More Examples', Colors.pink),
   const HomeTile('Example 01', Colors.pink, example01),
+  const HomeTile('Example 02', Colors.pink, example02),
 ];
 
 class Home extends StatelessWidget {

@@ -1,4 +1,5 @@
 import 'package:example/example_1.dart';
+import 'package:example/example_2.dart';
 import 'package:example/home.dart';
 import 'package:example/spannable_count_extent_page.dart';
 import 'package:example/spannable_count_count_page.dart';
@@ -23,6 +24,7 @@ const String spannableCountExtentRoute = '/spannable_count_extent';
 const String spannableExtentExtentRoute = '/spannable_extent_extent';
 
 const String example01 = '/example_01';
+const String example02 = '/example_02';
 
 Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   homeRoute: (BuildContext context) => new Home(),
@@ -43,4 +45,5 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   spannableExtentExtentRoute: (BuildContext context) =>
       new SpannableExtentExtentPage(),
   example01: (BuildContext context) => new Example01(),
+  example02: (BuildContext context) => new Example02(),
 };
