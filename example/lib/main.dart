@@ -12,9 +12,8 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: new StatefulStaggeredGridView(),
+//      home: new StatefulStaggeredGridView(),
+      routes: routes,
     );
   }
 }
-
-
