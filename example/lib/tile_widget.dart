@@ -1,6 +1,7 @@
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:meta/meta.dart';
 
 class TileWidget extends StatelessWidget {
   const TileWidget(
@@ -16,7 +17,7 @@ class TileWidget extends StatelessWidget {
       color: this.backgroundColor,
       child: new Center(
           child: new CircleAvatar(
-            backgroundColor: Colors.white,
+        backgroundColor: Colors.white,
         child: new Text('$index'),
       )),
     );
