@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/src/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
+import 'package:flutter_staggered_grid_view/src/util.dart';
 
 /// A scrollable, 2D array of widgets with variable sizes.
 ///
@@ -30,27 +31,68 @@ import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
 ///
 /// ### Sample code
 ///
-/// Here are two brief snippets showing a [StaggeredGridView]
+/// Here are two brief snippets showing a [StaggeredGridView] and its equivalent using
+/// [CustomScrollView]:
 ///
 /// ```dart
-/// new StaggeredGridView.countBuilder(
-///     crossAxisCount: 4,
-///     itemCount: 8,
-///     itemBuilder: (BuildContext context, int index) => index >= 8
-///         ? null
-///         : new Container(
-///             color: Colors.green,
-///             child: new Center(
-///             child: new CircleAvatar(
-///                 backgroundColor: Colors.white,
-///                 child: new Text('$index'),
-///             ),
-///             )),
-///     staggeredTileBuilder: (int index) => index >= 8
-///         ? null
-///         : new StaggeredTile.count(2, index.isEven ? 2 : 1),
-///     mainAxisSpacing: 4.0,
-///     crossAxisSpacing: 4.0,
+/// new StaggeredGridView.count(
+///   primary: false,
+///   crossAxisCount: 4,
+///   mainAxisSpacing: 4.0,
+///   crossAxisSpacing: 4.0,
+///   children: const <Widget>[
+///     const Text('1'),
+///     const Text('2'),
+///     const Text('3'),
+///     const Text('4'),
+///     const Text('5'),
+///     const Text('6'),
+///     const Text('7'),
+///     const Text('8'),
+///   ],
+///   staggeredTiles: const <StaggeredTile>[
+///     const StaggeredTile.count(2, 2),
+///     const StaggeredTile.count(2, 1),
+///     const StaggeredTile.count(2, 2),
+///     const StaggeredTile.count(2, 1),
+///     const StaggeredTile.count(2, 2),
+///     const StaggeredTile.count(2, 1),
+///     const StaggeredTile.count(2, 2),
+///     const StaggeredTile.count(2, 1),
+///   ],
+/// )
+/// ```
+///
+/// ```dart
+/// new CustomScrollView(
+///   primary: false,
+///   slivers: <Widget>[
+///     new SliverStaggeredGrid.count(
+///       crossAxisCount: 4,
+///       mainAxisSpacing: 4.0,
+///       crossAxisSpacing: 4.0,
+///       children: const <Widget>[
+///         const Text('1'),
+///         const Text('2'),
+///         const Text('3'),
+///         const Text('4'),
+///         const Text('5'),
+///         const Text('6'),
+///         const Text('7'),
+///         const Text('8'),
+///       ],
+///       staggeredTiles: const <StaggeredTile>[
+///         const StaggeredTile.count(2, 2),
+///         const StaggeredTile.count(2, 1),
+///         const StaggeredTile.count(2, 2),
+///         const StaggeredTile.count(2, 1),
+///         const StaggeredTile.count(2, 2),
+///         const StaggeredTile.count(2, 1),
+///         const StaggeredTile.count(2, 2),
+///         const StaggeredTile.count(2, 1),
+///       ],
+///     )
+///   ],
 /// )
 /// ```
 ///
@@ -232,7 +274,7 @@ class StaggeredGridView extends BoxScrollView {
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
-          staggeredTileBuilder: (i) => _getIndexedStaggeredTile(i,
+          staggeredTileBuilder: (i) => getIndexedStaggeredTile(i,
               staggeredTiles),
         ),
         childrenDelegate = new SliverChildListDelegate(
@@ -356,7 +398,7 @@ class StaggeredGridView extends BoxScrollView {
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
-          staggeredTileBuilder: (i) => _getIndexedStaggeredTile(i,
+          staggeredTileBuilder: (i) => getIndexedStaggeredTile(i,
               staggeredTiles),
         ),
         childrenDelegate = new SliverChildListDelegate(
@@ -455,11 +497,4 @@ class StaggeredGridView extends BoxScrollView {
       gridDelegate: gridDelegate,
     );
   }
-}
-
-StaggeredTile _getIndexedStaggeredTile(int index, List<StaggeredTile> tiles){
-  if (index < 0 || index >= tiles.length)
-    return null;
-  else
-    return tiles[index];
 }
