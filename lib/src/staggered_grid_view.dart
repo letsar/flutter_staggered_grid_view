@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/src/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
-import 'package:flutter_staggered_grid_view/src/util.dart';
 
 /// A scrollable, 2D array of widgets with variable sizes.
 ///
@@ -274,8 +273,8 @@ class StaggeredGridView extends BoxScrollView {
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
-          staggeredTileBuilder: (i) => getIndexedStaggeredTile(i,
-              staggeredTiles),
+          staggeredTileBuilder: (i) => staggeredTiles[i],
+          staggeredTileCount: staggeredTiles?.length,
         ),
         childrenDelegate = new SliverChildListDelegate(
           children,
@@ -338,6 +337,7 @@ class StaggeredGridView extends BoxScrollView {
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
           staggeredTileBuilder: staggeredTileBuilder,
+          staggeredTileCount: itemCount,
         ),
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
@@ -398,8 +398,8 @@ class StaggeredGridView extends BoxScrollView {
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
-          staggeredTileBuilder: (i) => getIndexedStaggeredTile(i,
-              staggeredTiles),
+          staggeredTileBuilder: (i) => staggeredTiles[i],
+          staggeredTileCount: staggeredTiles?.length,
         ),
         childrenDelegate = new SliverChildListDelegate(
           children,
@@ -454,10 +454,12 @@ class StaggeredGridView extends BoxScrollView {
     bool addRepaintBoundaries: true,
   })
       : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
-            maxCrossAxisExtent: maxCrossAxisExtent,
-            mainAxisSpacing: mainAxisSpacing,
-            crossAxisSpacing: crossAxisSpacing,
-            staggeredTileBuilder: staggeredTileBuilder),
+          maxCrossAxisExtent: maxCrossAxisExtent,
+          mainAxisSpacing: mainAxisSpacing,
+          crossAxisSpacing: crossAxisSpacing,
+          staggeredTileBuilder: staggeredTileBuilder,
+          staggeredTileCount: itemCount,
+        ),
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
