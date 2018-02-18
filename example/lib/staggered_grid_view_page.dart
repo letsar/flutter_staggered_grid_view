@@ -1,8 +1,8 @@
-import 'package:example/tile_widget.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:meta/meta.dart';
+import 'tile_widget.dart';
 
 class StaggeredGridViewPage extends StatelessWidget {
   const StaggeredGridViewPage.count({

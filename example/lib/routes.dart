@@ -1,18 +1,19 @@
-import 'package:example/example_1.dart';
-import 'package:example/example_2.dart';
-import 'package:example/example_3.dart';
-import 'package:example/example_4.dart';
-import 'package:example/example_5.dart';
-import 'package:example/home.dart';
-import 'package:example/spannable_count_extent_page.dart';
-import 'package:example/spannable_count_count_page.dart';
-import 'package:example/spannable_extent_extent_page.dart';
-import 'package:example/spannable_extent_count_page.dart';
-import 'package:example/staggered_count_extent_page.dart';
-import 'package:example/staggered_count_count_page.dart';
-import 'package:example/staggered_extent_extent_page.dart';
-import 'package:example/staggered_extent_count_page.dart';
 import 'package:flutter/material.dart';
+
+import 'example_1.dart';
+import 'example_2.dart';
+import 'example_3.dart';
+import 'example_4.dart';
+import 'example_5.dart';
+import 'home.dart';
+import 'spannable_count_extent_page.dart';
+import 'spannable_count_count_page.dart';
+import 'spannable_extent_extent_page.dart';
+import 'spannable_extent_count_page.dart';
+import 'staggered_count_extent_page.dart';
+import 'staggered_count_count_page.dart';
+import 'staggered_extent_extent_page.dart';
+import 'staggered_extent_count_page.dart';
 
 const String homeRoute = '/';
 
