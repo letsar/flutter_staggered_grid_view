@@ -372,7 +372,7 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
       if (geometry != null) {
         index++;
       }
-    } while (geometry != null && geometry.trailingScrollOffset < scrollOffset);
+    } while (geometry != null && geometry.trailingScrollOffset + mainAxisSpacing < scrollOffset);
 
     return index - 1;
   }
