@@ -2,6 +2,7 @@ import 'package:example/example_1.dart';
 import 'package:example/example_2.dart';
 import 'package:example/example_3.dart';
 import 'package:example/example_4.dart';
+import 'package:example/example_5.dart';
 import 'package:example/home.dart';
 import 'package:example/spannable_count_extent_page.dart';
 import 'package:example/spannable_count_count_page.dart';
@@ -29,6 +30,7 @@ const String example01 = '/example_01';
 const String example02 = '/example_02';
 const String example03 = '/example_03';
 const String example04 = '/example_04';
+const String example05 = '/example_05';
 
 Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   homeRoute: (BuildContext context) => new Home(),
@@ -52,4 +54,5 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   example02: (BuildContext context) => new Example02(),
   example03: (BuildContext context) => new Example03(),
   example04: (BuildContext context) => new Example04(),
+  example05: (BuildContext context) => new Example05(),
 };
