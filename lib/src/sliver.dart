@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import 'package:flutter_staggered_grid_view/src/sliver_staggered_grid.dart';
+import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
 
 /// A sliver that places multiple box children in a two dimensional arrangement.
 ///

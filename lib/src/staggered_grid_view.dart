@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+
+import 'package:flutter_staggered_grid_view/src/sliver.dart';
 import 'package:flutter_staggered_grid_view/src/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/staggered_tile.dart';
 
@@ -494,7 +496,7 @@ class StaggeredGridView extends BoxScrollView {
 
   @override
   Widget buildChildLayout(BuildContext context) {
-    return new SliverGrid(
+    return new SliverStaggeredGrid(
       delegate: childrenDelegate,
       gridDelegate: gridDelegate,
     );

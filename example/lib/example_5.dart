@@ -22,7 +22,7 @@ List<StaggeredTile> _generateRandomTiles(int count) {
 class Example05 extends StatelessWidget {
   Example05()
       : _random = new Random(),
-        _tiles = _generateRandomTiles(_kItemCount);
+        _tiles = _generateRandomTiles(_kItemCount).toList();
 
   static const int _kItemCount = 1000;
   final Random _random;

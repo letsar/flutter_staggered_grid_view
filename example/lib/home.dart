@@ -40,7 +40,7 @@ List<Widget> _children = <Widget>[
       spannableCountExtentRoute),
   const HomeTile('extent constructor\nextent tile', Colors.purple,
       spannableExtentExtentRoute),
-  const HomeHeaderTile('More Examples', Colors.pink),
+  const HomeHeaderTile('More examples', Colors.pink),
   const HomeTile('Example 01', Colors.pink, example01),
   const HomeTile('Example 02', Colors.pink, example02),
   const HomeTile('Example 03', Colors.pink, example03),
