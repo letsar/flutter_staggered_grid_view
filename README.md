@@ -8,7 +8,8 @@ A Flutter staggered grid view which supports multiple columns with rows of varyi
 * Configurable cross-axis count or max cross-axis extent like the [GridView](https://docs.flutter.io/flutter/widgets/GridView-class.html)
 * Tiles can have a fixed main-axis extent, or a multiple of the cell's length.
 * Configurable main-axis and cross-axis margins between tiles.
-* Staggered and Spannable grid layouts
+* SliverStaggeredGrid for using in a [CustomScrollView](https://docs.flutter.io/flutter/widgets/CustomScrollView-class.html).
+* Staggered and Spannable grid layouts.
 
 ![Screenshot](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/staggered_1.gif)
 ![Screenshot](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/spannable_1.gif)
@@ -37,23 +38,20 @@ For help getting started with Flutter, view the online [documentation](https://f
 
 ```dart
 new StaggeredGridView.countBuilder(
-    crossAxisCount: 4,
-    itemCount: 8,
-    itemBuilder: (BuildContext context, int index) => index >= 8
-        ? null
-        : new Container(
-            color: Colors.green,
-            child: new Center(
-            child: new CircleAvatar(
-                backgroundColor: Colors.white,
-                child: new Text('$index'),
-            ),
-            )),
-    staggeredTileBuilder: (int index) => index >= 8
-        ? null
-        : new StaggeredTile.count(2, index.isEven ? 2 : 1),
-    mainAxisSpacing: 4.0,
-    crossAxisSpacing: 4.0,
+  crossAxisCount: 4,
+  itemCount: 8,
+  itemBuilder: (BuildContext context, int index) => new Container(
+      color: Colors.green,
+      child: new Center(
+        child: new CircleAvatar(
+          backgroundColor: Colors.white,
+          child: new Text('$index'),
+        ),
+      )),
+  staggeredTileBuilder: (int index) =>
+      new StaggeredTile.count(2, index.isEven ? 2 : 1),
+  mainAxisSpacing: 4.0,
+  crossAxisSpacing: 4.0,
 )
 ```
 
