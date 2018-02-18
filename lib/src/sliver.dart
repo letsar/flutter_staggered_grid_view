@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:flutter_staggered_grid_view/src/util.dart';
 
 /// A sliver that places multiple box children in a two dimensional arrangement.
 ///
@@ -85,8 +84,8 @@ class SliverStaggeredGrid extends SliverMultiBoxAdaptorWidget {
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
-          staggeredTileBuilder: (i) =>
-              getIndexedStaggeredTile(i, staggeredTiles),
+          staggeredTileBuilder: (i) => staggeredTiles[i],
+          staggeredTileCount: staggeredTiles?.length,
         ),
         super(key: key, delegate: new SliverChildListDelegate(children));
 
@@ -111,8 +110,8 @@ class SliverStaggeredGrid extends SliverMultiBoxAdaptorWidget {
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
-          staggeredTileBuilder: (i) =>
-              getIndexedStaggeredTile(i, staggeredTiles),
+          staggeredTileBuilder: (i) => staggeredTiles[i],
+          staggeredTileCount: staggeredTiles?.length,
         ),
         super(key: key, delegate: new SliverChildListDelegate(children));
 
@@ -122,7 +121,8 @@ class SliverStaggeredGrid extends SliverMultiBoxAdaptorWidget {
   @override
   RenderSliverGrid createRenderObject(BuildContext context) {
     final SliverMultiBoxAdaptorElement element = context;
-    return new RenderSliverGrid(childManager: element, gridDelegate: gridDelegate);
+    return new RenderSliverGrid(
+        childManager: element, gridDelegate: gridDelegate);
   }
 
   @override
@@ -132,18 +132,21 @@ class SliverStaggeredGrid extends SliverMultiBoxAdaptorWidget {
 
   @override
   double estimateMaxScrollOffset(
-      SliverConstraints constraints,
-      int firstIndex,
-      int lastIndex,
-      double leadingScrollOffset,
-      double trailingScrollOffset,
-      ) {
+    SliverConstraints constraints,
+    int firstIndex,
+    int lastIndex,
+    double leadingScrollOffset,
+    double trailingScrollOffset,
+  ) {
     return super.estimateMaxScrollOffset(
-      constraints,
-      firstIndex,
-      lastIndex,
-      leadingScrollOffset,
-      trailingScrollOffset,
-    ) ?? gridDelegate.getLayout(constraints).computeMaxScrollOffset(delegate.estimatedChildCount);
+          constraints,
+          firstIndex,
+          lastIndex,
+          leadingScrollOffset,
+          trailingScrollOffset,
+        ) ??
+        gridDelegate
+            .getLayout(constraints)
+            .computeMaxScrollOffset(delegate.estimatedChildCount);
   }
 }

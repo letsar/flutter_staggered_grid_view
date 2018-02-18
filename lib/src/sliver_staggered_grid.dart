@@ -30,6 +30,7 @@ abstract class SliverStaggeredGridDelegate extends SliverGridDelegate {
     @required this.staggeredTileBuilder,
     this.mainAxisSpacing: 0.0,
     this.crossAxisSpacing: 0.0,
+    this.staggeredTileCount,
   })
       : assert(staggeredTileBuilder != null),
         assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
@@ -45,6 +46,12 @@ abstract class SliverStaggeredGridDelegate extends SliverGridDelegate {
   /// [SliverGridStaggeredTileLayout].
   final IndexedStaggeredTileBuilder staggeredTileBuilder;
 
+  /// The total number of tiles this delegate can provide.
+  ///
+  /// If null, the number of tiles is determined by the least index for which
+  /// [builder] returns null.
+  final int staggeredTileCount;
+
   bool _debugAssertIsValid() {
     assert(staggeredTileBuilder != null);
     assert(mainAxisSpacing >= 0.0);
@@ -56,6 +63,7 @@ abstract class SliverStaggeredGridDelegate extends SliverGridDelegate {
   bool shouldRelayout(SliverStaggeredGridDelegate oldDelegate) {
     return oldDelegate.mainAxisSpacing != mainAxisSpacing ||
         oldDelegate.crossAxisSpacing != crossAxisSpacing ||
+        oldDelegate.staggeredTileCount != staggeredTileCount ||
         oldDelegate.staggeredTileBuilder != staggeredTileBuilder;
   }
 }
@@ -91,12 +99,15 @@ class SliverStaggeredGridDelegateWithFixedCrossAxisCount
     @required IndexedStaggeredTileBuilder staggeredTileBuilder,
     double mainAxisSpacing: 0.0,
     double crossAxisSpacing: 0.0,
+    int staggeredTileCount,
   })
       : assert(crossAxisCount != null && crossAxisCount > 0),
         super(
-            staggeredTileBuilder: staggeredTileBuilder,
-            mainAxisSpacing: mainAxisSpacing,
-            crossAxisSpacing: crossAxisSpacing);
+          staggeredTileBuilder: staggeredTileBuilder,
+          mainAxisSpacing: mainAxisSpacing,
+          crossAxisSpacing: crossAxisSpacing,
+          staggeredTileCount: staggeredTileCount,
+        );
 
   /// The number of children in the cross axis.
   final int crossAxisCount;
@@ -116,6 +127,7 @@ class SliverStaggeredGridDelegateWithFixedCrossAxisCount
     return new SliverGridStaggeredTileLayout(
       crossAxisCount: crossAxisCount,
       staggeredTileBuilder: staggeredTileBuilder,
+      staggeredTileCount: staggeredTileCount,
       cellExtent: cellExtent,
       mainAxisSpacing: mainAxisSpacing,
       crossAxisSpacing: crossAxisSpacing,
@@ -167,12 +179,15 @@ class SliverStaggeredGridDelegateWithMaxCrossAxisExtent
     @required IndexedStaggeredTileBuilder staggeredTileBuilder,
     double mainAxisSpacing: 0.0,
     double crossAxisSpacing: 0.0,
+    int staggeredTileCount,
   })
       : assert(maxCrossAxisExtent != null && maxCrossAxisExtent > 0),
         super(
-            staggeredTileBuilder: staggeredTileBuilder,
-            mainAxisSpacing: mainAxisSpacing,
-            crossAxisSpacing: crossAxisSpacing);
+          staggeredTileBuilder: staggeredTileBuilder,
+          mainAxisSpacing: mainAxisSpacing,
+          crossAxisSpacing: crossAxisSpacing,
+          staggeredTileCount: staggeredTileCount,
+        );
 
   /// The maximum extent of tiles in the cross axis.
   ///
@@ -208,6 +223,7 @@ class SliverStaggeredGridDelegateWithMaxCrossAxisExtent
     return new SliverGridStaggeredTileLayout(
       crossAxisCount: crossAxisCount,
       staggeredTileBuilder: staggeredTileBuilder,
+      staggeredTileCount: staggeredTileCount,
       cellExtent: cellExtent,
       mainAxisSpacing: mainAxisSpacing,
       crossAxisSpacing: crossAxisSpacing,
@@ -255,6 +271,7 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
     @required this.mainAxisSpacing,
     @required this.crossAxisSpacing,
     @required this.reverseCrossAxis,
+    @required this.staggeredTileCount,
   })
       : assert(crossAxisCount != null && crossAxisCount > 0),
         assert(staggeredTileBuilder != null),
@@ -282,6 +299,12 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
   /// Called to get the tile at the specified index for the
   /// [SliverGridStaggeredTileLayout].
   final IndexedStaggeredTileBuilder staggeredTileBuilder;
+
+  /// The total number of tiles this delegate can provide.
+  ///
+  /// If null, the number of tiles is determined by the least index for which
+  /// [builder] returns null.
+  final int staggeredTileCount;
 
   /// A map containing the tiles already computed
   final Map<int, _StaggeredTileGeometry> _staggeredTileGeometries;
@@ -372,7 +395,10 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
         if (x == null) return null;
       }
 
-      var staggeredTile = _normalizeStaggeredTile(staggeredTileBuilder(index));
+      StaggeredTile staggeredTile;
+      if (staggeredTileCount == null || index < staggeredTileCount) {
+        staggeredTile = _normalizeStaggeredTile(staggeredTileBuilder(index));
+      }
       if (staggeredTile == null) {
         return null;
       }
@@ -448,6 +474,9 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
     double maxBlockOffset = double.INFINITY;
     int crossAxisCount = 1;
     bool contiguous = false;
+
+    // We have to use the _nearEqual function because of floating-point arithmetic.
+    // Ex: 0.1 + 0.2 = 0.30000000000000004 and not 0.3.
 
     for (var i = index; i < offsets.length; ++i) {
       double offset = offsets[i];
