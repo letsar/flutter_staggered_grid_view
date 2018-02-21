@@ -1,6 +1,9 @@
 # flutter_staggered_grid_view
 
 A Flutter staggered grid view which supports multiple columns with rows of varying sizes.
+
+[![Pub](https://img.shields.io/pub/v/flutter_staggered_grid_view.svg)](https://pub.dartlang.org/packages/flutter_staggered_grid_view)
+
 ![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/example_01.PNG)
 
 ## Features
