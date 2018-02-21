@@ -1,7 +1,7 @@
 # flutter_staggered_grid_view
 
 A Flutter staggered grid view which supports multiple columns with rows of varying sizes.
-![Screenshot](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/example_01.PNG)
+![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/example_01.PNG)
 
 ## Features
 
@@ -11,8 +11,8 @@ A Flutter staggered grid view which supports multiple columns with rows of varyi
 * SliverStaggeredGrid for using in a [CustomScrollView](https://docs.flutter.io/flutter/widgets/CustomScrollView-class.html).
 * Staggered and Spannable grid layouts.
 
-![Screenshot](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/staggered_1.gif)
-![Screenshot](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/spannable_1.gif)
+![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/staggered_1.gif)
+![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/spannable_1.gif)
 
 ## Getting started
 
@@ -34,7 +34,7 @@ For help getting started with Flutter, view the online [documentation](https://f
 
 ## Example
 
-![Screenshot_Example](https://github.com/letsar/flutter_staggered_grid_view/blob/master/doc/images/example_02.PNG)
+![Screenshot_Example](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/example_02.PNG)
 
 ```dart
 new StaggeredGridView.countBuilder(
