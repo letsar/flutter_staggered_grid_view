@@ -1,3 +1,6 @@
+## 0.1.4
+* Add `countBuilder` and `extendBuilder` constructors to `SliverStaggeredGrid`
+
 ## 0.1.3
 * Remove Flutter SDK constraint
 
