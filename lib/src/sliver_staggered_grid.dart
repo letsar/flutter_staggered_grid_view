@@ -470,8 +470,8 @@ class SliverGridStaggeredTileLayout extends SliverGridLayout {
   /// Finds the first available block for the specified [offsets] list.
   static _Block _findFirstAvailableBlock(List<double> offsets) {
     int index = 0;
-    double minBlockOffset = double.INFINITY;
-    double maxBlockOffset = double.INFINITY;
+    double minBlockOffset = double.infinity;
+    double maxBlockOffset = double.infinity;
     int crossAxisCount = 1;
     bool contiguous = false;
 
