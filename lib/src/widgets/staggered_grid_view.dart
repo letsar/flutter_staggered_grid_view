@@ -133,13 +133,13 @@ class StaggeredGridView extends BoxScrollView {
     bool shrinkWrap: false,
     EdgeInsetsGeometry padding,
     @required this.gridDelegate,
-    bool addAutomaticKeepAlives: true,
+    bool addAutomaticKeepAlives: false,
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
   })  : assert(gridDelegate != null),
         childrenDelegate = new SliverChildListDelegate(
           children,
-          addAutomaticKeepAlives: false,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -184,13 +184,13 @@ class StaggeredGridView extends BoxScrollView {
     @required this.gridDelegate,
     @required IndexedWidgetBuilder itemBuilder,
     int itemCount,
-    bool addAutomaticKeepAlives: true,
+    bool addAutomaticKeepAlives: false,
     bool addRepaintBoundaries: true,
   })  : assert(gridDelegate != null),
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
-          addAutomaticKeepAlives: false,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -263,7 +263,7 @@ class StaggeredGridView extends BoxScrollView {
     @required int crossAxisCount,
     double mainAxisSpacing: 0.0,
     double crossAxisSpacing: 0.0,
-    bool addAutomaticKeepAlives: true,
+    bool addAutomaticKeepAlives: false,
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
     List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
@@ -276,7 +276,7 @@ class StaggeredGridView extends BoxScrollView {
         ),
         childrenDelegate = new SliverChildListDelegate(
           children,
-          addAutomaticKeepAlives: false,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -327,7 +327,7 @@ class StaggeredGridView extends BoxScrollView {
     int itemCount,
     double mainAxisSpacing: 0.0,
     double crossAxisSpacing: 0.0,
-    bool addAutomaticKeepAlives: true,
+    bool addAutomaticKeepAlives: false,
     bool addRepaintBoundaries: true,
   })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
@@ -339,7 +339,7 @@ class StaggeredGridView extends BoxScrollView {
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
-          addAutomaticKeepAlives: false,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -386,7 +386,7 @@ class StaggeredGridView extends BoxScrollView {
     @required double maxCrossAxisExtent,
     double mainAxisSpacing: 0.0,
     double crossAxisSpacing: 0.0,
-    bool addAutomaticKeepAlives: true,
+    bool addAutomaticKeepAlives: false,
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
     List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
@@ -399,7 +399,7 @@ class StaggeredGridView extends BoxScrollView {
         ),
         childrenDelegate = new SliverChildListDelegate(
           children,
-          addAutomaticKeepAlives: false,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -446,7 +446,7 @@ class StaggeredGridView extends BoxScrollView {
     int itemCount,
     double mainAxisSpacing: 0.0,
     double crossAxisSpacing: 0.0,
-    bool addAutomaticKeepAlives: true,
+    bool addAutomaticKeepAlives: false,
     bool addRepaintBoundaries: true,
   })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
@@ -458,7 +458,7 @@ class StaggeredGridView extends BoxScrollView {
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
-          addAutomaticKeepAlives: false,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(

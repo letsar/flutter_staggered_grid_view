@@ -427,7 +427,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           staggeredTileBuilder: (i) => staggeredTiles[i],
           staggeredTileCount: staggeredTiles?.length,
         ),
-        super(key: key, delegate: new SliverChildListDelegate(children));
+        super(key: key, delegate: new SliverChildListDelegate(children, addAutomaticKeepAlives: false));
 
   /// Creates a sliver that builds multiple box children in a two dimensional
   /// arrangement with a fixed number of tiles in the cross axis.
@@ -463,7 +463,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
-            addAutomaticKeepAlives: true,
+            addAutomaticKeepAlives: false,
             addRepaintBoundaries: true,
           ),
         );
@@ -491,7 +491,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           staggeredTileBuilder: (i) => staggeredTiles[i],
           staggeredTileCount: staggeredTiles?.length,
         ),
-        super(key: key, delegate: new SliverChildListDelegate(children));
+        super(key: key, delegate: new SliverChildListDelegate(children, addAutomaticKeepAlives: false));
 
   /// Creates a sliver that builds multiple box children in a two dimensional
   /// arrangement with tiles that each have a maximum cross-axis extent.
@@ -527,7 +527,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
-            addAutomaticKeepAlives: true,
+            addAutomaticKeepAlives: false,
             addRepaintBoundaries: true,
           ),
         );

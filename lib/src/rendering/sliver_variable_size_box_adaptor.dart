@@ -4,16 +4,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/tile_container_render_object_mixin.dart';
 
-/// A delegate used by [RenderSliverMultiBoxAdaptor] to manage its children.
+/// A delegate used by [RenderSliverVariableSizeBoxAdaptor] to manage its children.
 ///
-/// [RenderSliverMultiBoxAdaptor] objects reify their children lazily to avoid
+/// [RenderSliverVariableSizeBoxAdaptor] objects reify their children lazily to avoid
 /// spending resources on children that are not visible in the viewport. This
 /// delegate lets these objects create and remove children as well as estimate
 /// the total scroll offset extent occupied by the full child list.
 abstract class RenderSliverVariableSizeBoxChildManager {
   /// Called during layout when a new child is needed. The child should be
-  /// inserted into the child list in the appropriate position, after the
-  /// `after` child (at the start of the list if `after` is null). Its index and
+  /// inserted into the child list in the appropriate position. Its index and
   /// scroll offsets will automatically be set appropriately.
   ///
   /// The `index` argument gives the index of the child to show. It is possible
@@ -25,7 +24,7 @@ abstract class RenderSliverVariableSizeBoxChildManager {
   /// If no child corresponds to `index`, then do nothing.
   ///
   /// Which child is indicated by index zero depends on the [GrowthDirection]
-  /// specified in the [RenderSliverMultiBoxAdaptor.constraints]. For example
+  /// specified in the [RenderSliverVariableSizeBoxAdaptor.constraints]. For example
   /// if the children are the alphabet, then if
   /// [SliverConstraints.growthDirection] is [GrowthDirection.forward] then
   /// index zero is A, and index 25 is Z. On the other hand if
@@ -33,7 +32,7 @@ abstract class RenderSliverVariableSizeBoxChildManager {
   /// then index zero is Z, and index 25 is A.
   ///
   /// During a call to [createChild] it is valid to remove other children from
-  /// the [RenderSliverMultiBoxAdaptor] object if they were not created during
+  /// the [RenderSliverVariableSizeBoxAdaptor] object if they were not created during
   /// this frame and have not yet been updated during this frame. It is not
   /// valid to add any other children to this render object.
   ///
@@ -44,12 +43,12 @@ abstract class RenderSliverVariableSizeBoxChildManager {
 
   /// Remove the given child from the child list.
   ///
-  /// Called by [RenderSliverMultiBoxAdaptor.collectGarbage], which itself is
-  /// called from [RenderSliverMultiBoxAdaptor.performLayout].
+  /// Called by [RenderSliverVariableSizeBoxAdaptor.collectGarbage], which itself is
+  /// called from [RenderSliverVariableSizeBoxAdaptor.performLayout].
   ///
   /// The index of the given child can be obtained using the
-  /// [RenderSliverMultiBoxAdaptor.indexOf] method, which reads it from the
-  /// [SliverMultiBoxAdaptorParentData.index] field of the child's
+  /// [RenderSliverVariableSizeBoxAdaptor.indexOf] method, which reads it from the
+  /// [SliverVariableSizeBoxAdaptorParentData.index] field of the child's
   /// [RenderObject.parentData].
   void removeChild(RenderBox child);
 
@@ -78,24 +77,24 @@ abstract class RenderSliverVariableSizeBoxChildManager {
   /// list).
   int get childCount;
 
-  /// Called during [RenderSliverMultiBoxAdaptor.adoptChild].
+  /// Called during [RenderSliverVariableSizeBoxAdaptor.adoptChild].
   ///
-  /// Subclasses must ensure that the [SliverMultiBoxAdaptorParentData.index]
+  /// Subclasses must ensure that the [SliverVariableSizeBoxAdaptorParentData.index]
   /// field of the child's [RenderObject.parentData] accurately reflects the
   /// child's index in the child list after this function returns.
   void didAdoptChild(RenderBox child);
 
   /// Called during layout to indicate whether this object provided insufficient
-  /// children for the [RenderSliverMultiBoxAdaptor] to fill the
+  /// children for the [RenderSliverVariableSizeBoxAdaptor] to fill the
   /// [SliverConstraints.remainingPaintExtent].
   ///
   /// Typically called unconditionally at the start of layout with false and
-  /// then later called with true when the [RenderSliverMultiBoxAdaptor]
+  /// then later called with true when the [RenderSliverVariableSizeBoxAdaptor]
   /// fails to create a child required to fill the
   /// [SliverConstraints.remainingPaintExtent].
   ///
   /// Useful for subclasses to determine whether newly added children could
-  /// affect the visible contents of the [RenderSliverMultiBoxAdaptor].
+  /// affect the visible contents of the [RenderSliverVariableSizeBoxAdaptor].
   void setDidUnderflow(bool value);
 
   /// Called at the beginning of layout to indicate that layout is about to
@@ -106,12 +105,12 @@ abstract class RenderSliverVariableSizeBoxChildManager {
   void didFinishLayout() {}
 
   /// In debug mode, asserts that this manager is not expecting any
-  /// modifications to the [RenderSliverMultiBoxAdaptor]'s child list.
+  /// modifications to the [RenderSliverVariableSizeBoxAdaptor]'s child list.
   ///
   /// This function always returns true.
   ///
   /// The manager is not required to track whether it is expecting modifications
-  /// to the [RenderSliverMultiBoxAdaptor]'s child list and can simply return
+  /// to the [RenderSliverVariableSizeBoxAdaptor]'s child list and can simply return
   /// true without making any assertions.
   bool debugAssertChildListLocked() => true;
 }
@@ -182,7 +181,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   /// The delegate that manages the children of this object.
   ///
   /// Rather than having a concrete list of children, a
-  /// [RenderSliverMultiBoxAdaptor] uses a [RenderSliverVariableSizeBoxChildManager] to
+  /// [RenderSliverVariableSizeBoxAdaptor] uses a [RenderSliverVariableSizeBoxChildManager] to
   /// create children during layout in order to fill the
   /// [SliverConstraints.remainingPaintExtent].
   @protected

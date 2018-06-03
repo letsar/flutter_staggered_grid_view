@@ -240,7 +240,6 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     final double remainingExtent = constraints.remainingCacheExtent;
     assert(remainingExtent >= 0.0);
     final double targetEndScrollOffset = scrollOffset + remainingExtent;
-    final BoxConstraints childConstraints = constraints.asBoxConstraints();
 
     bool reachedEnd = false;
     double trailingScrollOffset = 0.0;
@@ -356,8 +355,6 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       hasVisualOverflow: trailingScrollOffset > targetEndScrollOffset ||
           constraints.scrollOffset > 0.0,
     );
-
-    debugPrint('currently live children: ${indices.join(',')}');
 
     // We may have started the layout while scrolled to the end, which would not
     // expose a new child.
