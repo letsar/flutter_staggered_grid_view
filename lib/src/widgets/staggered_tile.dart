@@ -13,8 +13,7 @@ class StaggeredTile {
   const StaggeredTile.count(this.crossAxisCellCount, this.mainAxisCellCount)
       : assert(crossAxisCellCount != null && crossAxisCellCount >= 0),
         assert(mainAxisCellCount != null && mainAxisCellCount >= 0),
-        mainAxisExtent = null,
-        fit = null;
+        mainAxisExtent = null;
 
   /// Creates a [StaggeredTile] with the given [crossAxisCellCount] and
   /// [mainAxisExtent].
@@ -23,18 +22,16 @@ class StaggeredTile {
   const StaggeredTile.extent(this.crossAxisCellCount, this.mainAxisExtent)
       : assert(crossAxisCellCount != null && crossAxisCellCount >= 0),
         assert(mainAxisExtent != null && mainAxisExtent >= 0),
-        mainAxisCellCount = null,
-        fit = null;
+        mainAxisCellCount = null;
 
   /// Creates a [StaggeredTile] with the given [crossAxisCellCount] that
   /// fit its main axis extent to its content.
   ///
   /// This tile will have a fixed main axis extent.
-  const StaggeredTile.fitContent(this.crossAxisCellCount)
+  const StaggeredTile.fit(this.crossAxisCellCount)
       : assert(crossAxisCellCount != null && crossAxisCellCount >= 0),
         mainAxisExtent = null,
-        mainAxisCellCount = null,
-        fit = true;
+        mainAxisCellCount = null;
 
   /// The number of cells occupied in the cross axis.
   final int crossAxisCellCount;
@@ -45,6 +42,5 @@ class StaggeredTile {
   /// The number of pixels occupied in the main axis.
   final double mainAxisExtent;
 
-  /// Whether this tile fits its main axis extent to its content. 
-  final bool fit;
+  bool get fitContent => mainAxisCellCount == null && mainAxisExtent == null;
 }

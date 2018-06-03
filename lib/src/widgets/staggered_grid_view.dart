@@ -136,11 +136,10 @@ class StaggeredGridView extends BoxScrollView {
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
-  })
-      : assert(gridDelegate != null),
+  })  : assert(gridDelegate != null),
         childrenDelegate = new SliverChildListDelegate(
           children,
-          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addAutomaticKeepAlives: false,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -187,12 +186,11 @@ class StaggeredGridView extends BoxScrollView {
     int itemCount,
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
-  })
-      : assert(gridDelegate != null),
+  })  : assert(gridDelegate != null),
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
-          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addAutomaticKeepAlives: false,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -225,8 +223,7 @@ class StaggeredGridView extends BoxScrollView {
     EdgeInsetsGeometry padding,
     @required this.gridDelegate,
     @required this.childrenDelegate,
-  })
-      : assert(gridDelegate != null),
+  })  : assert(gridDelegate != null),
         assert(childrenDelegate != null),
         super(
           key: key,
@@ -270,8 +267,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
     List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
-  })
-      : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+  })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -280,7 +276,7 @@ class StaggeredGridView extends BoxScrollView {
         ),
         childrenDelegate = new SliverChildListDelegate(
           children,
-          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addAutomaticKeepAlives: false,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -333,8 +329,7 @@ class StaggeredGridView extends BoxScrollView {
     double crossAxisSpacing: 0.0,
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
-  })
-      : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+  })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -344,7 +339,7 @@ class StaggeredGridView extends BoxScrollView {
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
-          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addAutomaticKeepAlives: false,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -395,8 +390,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
     List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
-  })
-      : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
+  })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -405,7 +399,7 @@ class StaggeredGridView extends BoxScrollView {
         ),
         childrenDelegate = new SliverChildListDelegate(
           children,
-          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addAutomaticKeepAlives: false,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
@@ -454,8 +448,7 @@ class StaggeredGridView extends BoxScrollView {
     double crossAxisSpacing: 0.0,
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
-  })
-      : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
+  })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -465,7 +458,7 @@ class StaggeredGridView extends BoxScrollView {
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
-          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          addAutomaticKeepAlives: false,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
