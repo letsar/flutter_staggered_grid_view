@@ -278,7 +278,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       }
 
       if (!visible &&
-          scrollOffset >= geometry.scrollOffset &&
+          targetEndScrollOffset >= geometry.scrollOffset &&
           scrollOffset <= geometry.trailingScrollOffset) {
         visible = true;
         leadingScrollOffset = geometry.scrollOffset;
@@ -286,22 +286,26 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       }
 
       if (visible && hasTrailingScrollOffset) {
-        child = addAndLayoutChild(index, geometry.getBoxConstraints(constraints));
+        child =
+            addAndLayoutChild(index, geometry.getBoxConstraints(constraints));
       }
 
-      if(child != null) {
-        SliverVariableSizeBoxAdaptorParentData childParentData = child.parentData;
+      if (child != null) {
+        SliverVariableSizeBoxAdaptorParentData childParentData =
+            child.parentData;
         childParentData.layoutOffset = geometry.scrollOffset;
         childParentData.crossAxisOffset = geometry.crossAxisOffset;
         assert(childParentData.index == index);
       }
 
-      if (!visible && !hasTrailingScrollOffset) {
+      if (!visible && indices.contains(index)) {
         garbageIndices.add(index);
       }
 
+      final double endOffset =
+          geometry.trailingScrollOffset + configuration.mainAxisSpacing;
       for (var i = 0; i < geometry.crossAxisCellCount; i++) {
-        mainAxisOffsets[i + geometry.blockIndex] = geometry.trailingScrollOffset;
+        mainAxisOffsets[i + geometry.blockIndex] = endOffset;
       }
 
       trailingScrollOffset = mainAxisOffsets.reduce(math.max);
@@ -351,6 +355,8 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       hasVisualOverflow: trailingScrollOffset > targetEndScrollOffset ||
           constraints.scrollOffset > 0.0,
     );
+
+    debugPrint('currently live children: ${indices.join(',')}');
 
     // We may have started the layout while scrolled to the end, which would not
     // expose a new child.
