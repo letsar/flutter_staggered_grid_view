@@ -21,6 +21,7 @@ const List<StaggeredTile> _tiles = const <StaggeredTile>[
   const StaggeredTile.count(1, 1),
   const StaggeredTile.count(1, 1),
   const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
 ];
 
 List<Widget> _children = <Widget>[
@@ -49,6 +50,7 @@ List<Widget> _children = <Widget>[
   const HomeTile('Example 04', Colors.pink, example04),
   const HomeTile('Random tiles', Colors.pink, example05),
   const HomeTile('Dynamic resizing', Colors.pink, example06),
+  const HomeTile('Dynamic sizes', Colors.pink, example07),
 ];
 
 class Home extends StatelessWidget {
