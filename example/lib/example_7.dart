@@ -11,8 +11,8 @@ class Example07 extends StatelessWidget {
       body: new StaggeredGridView.count(
         primary: false,
         crossAxisCount: 4,
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
+        mainAxisSpacing: 0.0,
+        crossAxisSpacing: 0.0,
         children: <Widget>[
           new _Tile('https://cdn.pixabay.com/photo/2013/04/07/21/30/croissant-101636_960_720.jpg',1),
           new _Tile('https://cdn.pixabay.com/photo/2016/01/22/16/42/eiffel-tower-1156146_960_720.jpg',2),
