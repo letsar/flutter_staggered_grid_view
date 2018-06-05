@@ -214,8 +214,13 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
 
   @override
   void setupParentData(RenderObject child) {
-    if (child.parentData is! SliverVariableSizeBoxAdaptorParentData)
-      child.parentData = new SliverVariableSizeBoxAdaptorParentData();
+    if (child.parentData is! SliverVariableSizeBoxAdaptorParentData) {
+      var data = new SliverVariableSizeBoxAdaptorParentData();
+
+      // By default we will keep it true.
+      data.keepAlive = true;
+      child.parentData = data;
+    }
   }
 
   /// The delegate that controls the configuration of the staggered grid.
@@ -253,7 +258,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
 
     // A staggered grid always have to layout the child from the zero-index based one to the last visible.
     var mainAxisOffsets = configuration.generateMainAxisOffsets();
-    HashSet<int> garbageIndices = new HashSet<int>();
+    HashSet<int> visibleIndices = new HashSet<int>();
 
     // Iterate through all children while they can be visible.
     for (var index = 0;
@@ -298,8 +303,8 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
         assert(childParentData.index == index);
       }
 
-      if (!visible && indices.contains(index)) {
-        garbageIndices.add(index);
+      if (visible && indices.contains(index)) {
+        visibleIndices.add(index);
       }
 
       final double endOffset =
@@ -312,7 +317,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       lastIndex = index;
     }
 
-    collectGarbage(garbageIndices);
+    collectGarbage(visibleIndices);
 
     if (!visible) {
       geometry = SliverGeometry.zero;

@@ -174,8 +174,10 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
 
   @override
   void setupParentData(RenderObject child) {
-    if (child.parentData is! SliverVariableSizeBoxAdaptorParentData)
+    if (child.parentData is! SliverVariableSizeBoxAdaptorParentData) {
       child.parentData = new SliverVariableSizeBoxAdaptorParentData();
+
+    }
   }
 
   /// The delegate that manages the children of this object.
@@ -322,11 +324,12 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   /// are now no longer necessary. As such, it should be called every time
   /// [performLayout] is run, even if the arguments are both zero.
   @protected
-  void collectGarbage(Iterable<int> garbageIndices) {
+  void collectGarbage(Set<int> visibleIndices) {
     assert(_debugAssertChildListLocked());
-    assert(childCount >= garbageIndices.length);
+    assert(childCount >= visibleIndices.length);
     invokeLayoutCallback<SliverConstraints>((SliverConstraints constraints) {
-      garbageIndices.forEach(_destroyOrCacheChild);
+      // We destroy only those which are not visible.
+      indices.toSet().difference(visibleIndices).forEach(_destroyOrCacheChild);
 
       // Ask the child manager to remove the children that are no longer being
       // kept alive. (This should cause _keepAliveBucket to change, so we have
