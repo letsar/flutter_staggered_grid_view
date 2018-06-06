@@ -6,11 +6,218 @@ import 'package:flutter/widgets.dart';
 
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_variable_size_box_adaptor.dart';
+import 'package:flutter_staggered_grid_view/src/widgets/automatic_keep_alive_variable_size_box.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
+
+/// A delegate that supplies variable size children for slivers.
+///
+/// Many slivers lazily construct their box children to avoid creating more
+/// children than are visible through the [Viewport]. Rather than receiving
+/// their children as an explicit [List], they receive their children using a
+/// [SliverVariableSizeChildDelegate].
+///
+/// It's uncommon to subclass [SliverVariableSizeChildDelegate]. Instead, consider using one
+/// of the existing subclasses that provide adaptors to builder callbacks or
+/// explicit child lists.
+///
+/// See also:
+///
+///  * [SliverVariableSizeChildBuilderDelegate], which is a delegate that uses a builder
+///    callback to construct the children.
+///  * [SliverVariableSizeChildListDelegate], which is a delegate that has an explicit list
+///    of children.
+abstract class SliverVariableSizeChildDelegate extends SliverChildDelegate {
+  const SliverVariableSizeChildDelegate();
+}
+
+/// A delegate that supplies variable size children for slivers using a builder callback.
+///
+/// Many slivers lazily construct their box children to avoid creating more
+/// children than are visible through the [Viewport]. This delegate provides
+/// children using an [IndexedWidgetBuilder] callback, so that the children do
+/// not even have to be built until they are displayed.
+///
+/// The widgets returned from the builder callback are automatically wrapped in
+/// [AutomaticKeepAliveVariableSizeBox] widgets if [addAutomaticKeepAlives] is true (the
+/// default) and in [RepaintBoundary] widgets if [addRepaintBoundaries] is true
+/// (also the default).
+///
+/// See also:
+///
+///  * [SliverVariableSizeChildListDelegate], which is a delegate that has an explicit list
+///    of children.
+class SliverVariableSizeChildBuilderDelegate extends SliverVariableSizeChildDelegate {
+  /// Creates a delegate that supplies children for slivers using the given
+  /// builder callback.
+  ///
+  /// The [builder], [addAutomaticKeepAlives], and [addRepaintBoundaries]
+  /// arguments must not be null.
+  const SliverVariableSizeChildBuilderDelegate(
+    this.builder, {
+    this.childCount,
+    this.addAutomaticKeepAlives: true,
+    this.addRepaintBoundaries: true,
+  })  : assert(builder != null),
+        assert(addAutomaticKeepAlives != null),
+        assert(addRepaintBoundaries != null);
+
+  /// Called to build children for the sliver.
+  ///
+  /// Will be called only for indices greater than or equal to zero and less
+  /// than [childCount] (if [childCount] is non-null).
+  ///
+  /// Should return null if asked to build a widget with a greater index than
+  /// exists.
+  ///
+  /// The delegate wraps the children returned by this builder in
+  /// [RepaintBoundary] widgets.
+  final IndexedWidgetBuilder builder;
+
+  /// The total number of children this delegate can provide.
+  ///
+  /// If null, the number of children is determined by the least index for which
+  /// [builder] returns null.
+  final int childCount;
+
+  /// Whether to wrap each child in an [AutomaticKeepAliveVariableSizeBox].
+  ///
+  /// Typically, children in lazy list are wrapped in [AutomaticKeepAliveVariableSizeBox]
+  /// widgets so that children can use [KeepAliveNotification]s to preserve
+  /// their state when they would otherwise be garbage collected off-screen.
+  ///
+  /// This feature (and [addRepaintBoundaries]) must be disabled if the children
+  /// are going to manually maintain their [KeepAliveVariableSizeBox] state. It may also be
+  /// more efficient to disable this feature if it is known ahead of time that
+  /// none of the children will ever try to keep themselves alive.
+  ///
+  /// Defaults to true.
+  final bool addAutomaticKeepAlives;
+
+  /// Whether to wrap each child in a [RepaintBoundary].
+  ///
+  /// Typically, children in a scrolling container are wrapped in repaint
+  /// boundaries so that they do not need to be repainted as the list scrolls.
+  /// If the children are easy to repaint (e.g., solid color blocks or a short
+  /// snippet of text), it might be more efficient to not add a repaint boundary
+  /// and simply repaint the children during scrolling.
+  ///
+  /// Defaults to true.
+  final bool addRepaintBoundaries;
+
+  @override
+  Widget build(BuildContext context, int index) {
+    assert(builder != null);
+    if (index < 0 || (childCount != null && index >= childCount)) return null;
+    Widget child = builder(context, index);
+    if (child == null) return null;
+    if (addRepaintBoundaries) child = new RepaintBoundary.wrap(child, index);
+    if (addAutomaticKeepAlives)
+      child = new AutomaticKeepAliveVariableSizeBox(child: child);
+    return child;
+  }
+
+  @override
+  int get estimatedChildCount => childCount;
+
+  @override
+  bool shouldRebuild(covariant SliverVariableSizeChildBuilderDelegate oldDelegate) => true;
+}
+
+/// A delegate that supplies variable size children for slivers using an explicit list.
+///
+/// Many slivers lazily construct their box children to avoid creating more
+/// children than are visible through the [Viewport]. This delegate provides
+/// children using an explicit list, which is convenient but reduces the benefit
+/// of building children lazily.
+///
+/// In general building all the widgets in advance is not efficient. It is
+/// better to create a delegate that builds them on demand using
+/// [SliverVariableSizeChildBuilderDelegate] or by subclassing [SliverVariableSizeChildDelegate]
+/// directly.
+///
+/// This class is provided for the cases where either the list of children is
+/// known well in advance (ideally the children are themselves compile-time
+/// constants, for example), and therefore will not be built each time the
+/// delegate itself is created, or the list is small, such that it's likely
+/// always visible (and thus there is nothing to be gained by building it on
+/// demand). For example, the body of a dialog box might fit both of these
+/// conditions.
+///
+/// The widgets in the given [children] list are automatically wrapped in
+/// [AutomaticKeepAliveVariableSizeBox] widgets if [addAutomaticKeepAlives] is true (the
+/// default) and in [RepaintBoundary] widgets if [addRepaintBoundaries] is true
+/// (also the default).
+///
+/// See also:
+///
+///  * [SliverVariableSizeChildBuilderDelegate], which is a delegate that uses a builder
+///    callback to construct the children.
+class SliverVariableSizeChildListDelegate extends SliverVariableSizeChildDelegate {
+  /// Creates a delegate that supplies children for slivers using the given
+  /// list.
+  ///
+  /// The [children], [addAutomaticKeepAlives], and [addRepaintBoundaries]
+  /// arguments must not be null.
+  const SliverVariableSizeChildListDelegate(
+    this.children, {
+    this.addAutomaticKeepAlives: true,
+    this.addRepaintBoundaries: true,
+  })  : assert(children != null),
+        assert(addAutomaticKeepAlives != null),
+        assert(addRepaintBoundaries != null);
+
+  /// Whether to wrap each child in an [AutomaticKeepAliveVariableSizeBox].
+  ///
+  /// Typically, children in lazy list are wrapped in [AutomaticKeepAliveVariableSizeBox]
+  /// widgets so that children can use [KeepAliveNotification]s to preserve
+  /// their state when they would otherwise be garbage collected off-screen.
+  ///
+  /// This feature (and [addRepaintBoundaries]) must be disabled if the children
+  /// are going to manually maintain their [KeepAliveVariableSizeBox] state. It may also be
+  /// more efficient to disable this feature if it is known ahead of time that
+  /// none of the children will ever try to keep themselves alive.
+  ///
+  /// Defaults to true.
+  final bool addAutomaticKeepAlives;
+
+  /// Whether to wrap each child in a [RepaintBoundary].
+  ///
+  /// Typically, children in a scrolling container are wrapped in repaint
+  /// boundaries so that they do not need to be repainted as the list scrolls.
+  /// If the children are easy to repaint (e.g., solid color blocks or a short
+  /// snippet of text), it might be more efficient to not add a repaint boundary
+  /// and simply repaint the children during scrolling.
+  ///
+  /// Defaults to true.
+  final bool addRepaintBoundaries;
+
+  /// The widgets to display.
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context, int index) {
+    assert(children != null);
+    if (index < 0 || index >= children.length) return null;
+    Widget child = children[index];
+    assert(child != null);
+    if (addRepaintBoundaries) child = new RepaintBoundary.wrap(child, index);
+    if (addAutomaticKeepAlives)
+      child = new AutomaticKeepAliveVariableSizeBox(child: child);
+    return child;
+  }
+
+  @override
+  int get estimatedChildCount => children.length;
+
+  @override
+  bool shouldRebuild(covariant SliverVariableSizeChildListDelegate oldDelegate) {
+    return children != oldDelegate.children;
+  }
+}
 
 /// A base class for sliver that have multiple variable size box children.
 ///
-/// Helps subclasses build their children lazily using a [SliverChildDelegate].
+/// Helps subclasses build their children lazily using a [SliverVariableSizeChildDelegate].
 abstract class SliverVariableSizeBoxAdaptorWidget extends RenderObjectWidget {
   /// Initializes fields for subclasses.
   const SliverVariableSizeBoxAdaptorWidget({
@@ -26,10 +233,10 @@ abstract class SliverVariableSizeBoxAdaptorWidget extends RenderObjectWidget {
   ///
   /// See also:
   ///
-  ///  * [SliverChildBuilderDelegate] and [SliverChildListDelegate], which are
-  ///    commonly used subclasses of [SliverChildDelegate] that use a builder
+  ///  * [SliverVariableSizeChildBuilderDelegate] and [SliverVariableSizeChildListDelegate], which are
+  ///    commonly used subclasses of [SliverVariableSizeChildDelegate] that use a builder
   ///    callback and an explicit child list, respectively.
-  final SliverChildDelegate delegate;
+  final SliverVariableSizeChildDelegate delegate;
 
   @override
   SliverVariableSizeBoxAdaptorElement createElement() =>
@@ -47,7 +254,7 @@ abstract class SliverVariableSizeBoxAdaptorWidget extends RenderObjectWidget {
   /// [RenderSliverBoxChildManager] API.
   ///
   /// The default implementation defers to [delegate] via its
-  /// [SliverChildDelegate.estimateMaxScrollOffset] method.
+  /// [SliverVariableSizeChildDelegate.estimateMaxScrollOffset] method.
   double estimateMaxScrollOffset(
     SliverConstraints constraints,
     int firstIndex,
@@ -68,7 +275,7 @@ abstract class SliverVariableSizeBoxAdaptorWidget extends RenderObjectWidget {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-        new DiagnosticsProperty<SliverChildDelegate>('delegate', delegate));
+        new DiagnosticsProperty<SliverVariableSizeChildDelegate>('delegate', delegate));
   }
 }
 
@@ -92,8 +299,8 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   void update(covariant SliverVariableSizeBoxAdaptorWidget newWidget) {
     final SliverVariableSizeBoxAdaptorWidget oldWidget = widget;
     super.update(newWidget);
-    final SliverChildDelegate newDelegate = newWidget.delegate;
-    final SliverChildDelegate oldDelegate = oldWidget.delegate;
+    final SliverVariableSizeChildDelegate newDelegate = newWidget.delegate;
+    final SliverVariableSizeChildDelegate oldDelegate = oldWidget.delegate;
     if (newDelegate != oldDelegate &&
         (newDelegate.runtimeType != oldDelegate.runtimeType ||
             newDelegate.shouldRebuild(oldDelegate))) performRebuild();
@@ -400,7 +607,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   /// arrangement.
   const SliverStaggeredGrid({
     Key key,
-    @required SliverChildDelegate delegate,
+    @required SliverVariableSizeChildDelegate delegate,
     @required this.gridDelegate,
   }) : super(key: key, delegate: delegate);
 
@@ -408,7 +615,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   /// arrangement with a fixed number of tiles in the cross axis.
   ///
   /// Uses a [SliverStaggeredGridDelegateWithFixedCrossAxisCount] as the [gridDelegate],
-  /// and a [SliverChildListDelegate] as the [delegate].
+  /// and a [SliverVariableSizeChildListDelegate] as the [delegate].
   ///
   /// See also:
   ///
@@ -427,7 +634,10 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           staggeredTileBuilder: (i) => staggeredTiles[i],
           staggeredTileCount: staggeredTiles?.length,
         ),
-        super(key: key, delegate: new SliverChildListDelegate(children, addAutomaticKeepAlives: false));
+        super(
+            key: key,
+            delegate: new SliverVariableSizeChildListDelegate(children,
+                addAutomaticKeepAlives: true));
 
   /// Creates a sliver that builds multiple box children in a two dimensional
   /// arrangement with a fixed number of tiles in the cross axis.
@@ -437,7 +647,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   /// that are actually visible.
   ///
   /// Uses a [SliverStaggeredGridDelegateWithFixedCrossAxisCount] as the
-  /// [gridDelegate], and a [SliverChildBuilderDelegate] as the [delegate].
+  /// [gridDelegate], and a [SliverVariableSizeChildBuilderDelegate] as the [delegate].
   ///
   /// See also:
   ///
@@ -460,10 +670,10 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
         ),
         super(
           key: key,
-          delegate: SliverChildBuilderDelegate(
+          delegate: SliverVariableSizeChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
-            addAutomaticKeepAlives: false,
+            addAutomaticKeepAlives: true,
             addRepaintBoundaries: true,
           ),
         );
@@ -472,7 +682,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   /// arrangement with tiles that each have a maximum cross-axis extent.
   ///
   /// Uses a [SliverStaggeredGridDelegateWithMaxCrossAxisExtent] as the [gridDelegate],
-  /// and a [SliverChildListDelegate] as the [delegate].
+  /// and a [SliverVariableSizeChildListDelegate] as the [delegate].
   ///
   /// See also:
   ///
@@ -491,7 +701,10 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           staggeredTileBuilder: (i) => staggeredTiles[i],
           staggeredTileCount: staggeredTiles?.length,
         ),
-        super(key: key, delegate: new SliverChildListDelegate(children, addAutomaticKeepAlives: false));
+        super(
+            key: key,
+            delegate: new SliverVariableSizeChildListDelegate(children,
+                addAutomaticKeepAlives: true));
 
   /// Creates a sliver that builds multiple box children in a two dimensional
   /// arrangement with tiles that each have a maximum cross-axis extent.
@@ -501,7 +714,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   /// that are actually visible.
   ///
   /// Uses a [SliverStaggeredGridDelegateWithMaxCrossAxisExtent] as the
-  /// [gridDelegate], and a [SliverChildBuilderDelegate] as the [delegate].
+  /// [gridDelegate], and a [SliverVariableSizeChildBuilderDelegate] as the [delegate].
   ///
   /// See also:
   ///
@@ -524,10 +737,10 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
         ),
         super(
           key: key,
-          delegate: SliverChildBuilderDelegate(
+          delegate: SliverVariableSizeChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
-            addAutomaticKeepAlives: false,
+            addAutomaticKeepAlives: true,
             addRepaintBoundaries: true,
           ),
         );
@@ -563,5 +776,56 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
       leadingScrollOffset,
       trailingScrollOffset,
     );
+  }
+}
+
+/// Mark a child as needing to stay alive even when it's in a lazy list that
+/// would otherwise remove it.
+///
+/// This widget is for use in [SliverVariableSizeBoxAdaptorWidget]s, such as
+/// [SliverStaggeredGrid].
+class KeepAliveVariableSizeBox
+    extends ParentDataWidget<SliverVariableSizeBoxAdaptorWidget> {
+  /// Marks a child as needing to remain alive.
+  ///
+  /// The [child] and [keepAlive] arguments must not be null.
+  const KeepAliveVariableSizeBox({
+    Key key,
+    @required this.keepAlive,
+    @required Widget child,
+  })  : assert(child != null),
+        assert(keepAlive != null),
+        super(key: key, child: child);
+
+  /// Whether to keep the child alive.
+  ///
+  /// If this is false, it is as if this widget was omitted.
+  final bool keepAlive;
+
+  @override
+  void applyParentData(RenderObject renderObject) {
+    assert(renderObject.parentData is SliverVariableSizeBoxAdaptorParentData);
+    final SliverVariableSizeBoxAdaptorParentData parentData =
+        renderObject.parentData;
+    if (parentData.keepAlive != keepAlive) {
+      parentData.keepAlive = keepAlive;
+      final AbstractNode targetParent = renderObject.parent;
+      if (targetParent is RenderObject && !keepAlive)
+        targetParent
+            .markNeedsLayout(); // No need to redo layout if it became true.
+    }
+  }
+
+  // We only return true if [keepAlive] is true, because turning _off_ keep
+  // alive requires a layout to do the garbage collection (but turning it on
+  // requires nothing, since by definition the widget is already alive and won't
+  // go away _unless_ we do a layout).
+  @override
+  bool debugCanApplyOutOfTurn() => keepAlive;
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(new DiagnosticsProperty<bool>('keepAlive', keepAlive));
   }
 }

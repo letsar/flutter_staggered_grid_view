@@ -218,7 +218,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       var data = new SliverVariableSizeBoxAdaptorParentData();
 
       // By default we will keep it true.
-      data.keepAlive = true;
+      //data.keepAlive = true;
       child.parentData = data;
     }
   }
@@ -276,9 +276,9 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       RenderBox child;
       if (!hasTrailingScrollOffset) {
         // Layout the child to compute its tailingScrollOffset.
-        BoxConstraints constraints = new BoxConstraints.tightFor(width : geometry.crossAxisExtent);
-        child =
-            addAndLayoutChild(index, constraints, parentUsesSize: true);
+        BoxConstraints constraints =
+            new BoxConstraints.tightFor(width: geometry.crossAxisExtent);
+        child = addAndLayoutChild(index, constraints, parentUsesSize: true);
         geometry = geometry.copyWith(mainAxisExtent: paintExtentOf(child));
       }
 

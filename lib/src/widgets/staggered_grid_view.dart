@@ -23,7 +23,7 @@ import 'package:flutter_staggered_grid_view/src/rendering/sliver_staggered_grid.
 /// You can also use the [StaggeredGridView.countBuilder] or
 /// [StaggeredGridView.extentBuilder] constructors.
 ///
-/// To use a custom [SliverChildDelegate], use [StaggeredGridView.custom].
+/// To use a custom [SliverVariableSizeChildDelegate], use [StaggeredGridView.custom].
 ///
 /// To create a linear array of children, use a [ListView].
 ///
@@ -119,9 +119,9 @@ class StaggeredGridView extends BoxScrollView {
   /// The [gridDelegate] argument must not be null.
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
-  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// [SliverVariableSizeChildListDelegate.addAutomaticKeepAlives] property. The
   /// `addRepaintBoundaries` argument corresponds to the
-  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// [SliverVariableSizeChildListDelegate.addRepaintBoundaries] property. Both must not be
   /// null.
   StaggeredGridView({
     Key key,
@@ -137,7 +137,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
   })  : assert(gridDelegate != null),
-        childrenDelegate = new SliverChildListDelegate(
+        childrenDelegate = new SliverVariableSizeChildListDelegate(
           children,
           addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
@@ -168,9 +168,9 @@ class StaggeredGridView extends BoxScrollView {
   /// The [gridDelegate] argument must not be null.
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
-  /// [SliverChildBuilderDelegate.addAutomaticKeepAlives] property. The
+  /// [SliverVariableSizeChildBuilderDelegate.addAutomaticKeepAlives] property. The
   /// `addRepaintBoundaries` argument corresponds to the
-  /// [SliverChildBuilderDelegate.addRepaintBoundaries] property. Both must not
+  /// [SliverVariableSizeChildBuilderDelegate.addRepaintBoundaries] property. Both must not
   /// be null.
   StaggeredGridView.builder({
     Key key,
@@ -187,7 +187,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addAutomaticKeepAlives: false,
     bool addRepaintBoundaries: true,
   })  : assert(gridDelegate != null),
-        childrenDelegate = new SliverChildBuilderDelegate(
+        childrenDelegate = new SliverVariableSizeChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
           addAutomaticKeepAlives: addAutomaticKeepAlives,
@@ -205,10 +205,10 @@ class StaggeredGridView extends BoxScrollView {
         );
 
   /// Creates a scrollable, 2D array of widgets with both a custom
-  /// [SliverStaggeredGridDelegate] and a custom [SliverChildDelegate].
+  /// [SliverStaggeredGridDelegate] and a custom [SliverVariableSizeChildDelegate].
   ///
   /// To use an [IndexedWidgetBuilder] callback to build children, either use
-  /// a [SliverChildBuilderDelegate] or use the
+  /// a [SliverVariableSizeChildBuilderDelegate] or use the
   /// [SliverStaggeredGridDelegate.builder] constructor.
   ///
   /// The [gridDelegate] and [childrenDelegate] arguments must not be null.
@@ -243,9 +243,9 @@ class StaggeredGridView extends BoxScrollView {
   /// [gridDelegate].
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
-  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// [SliverVariableSizeChildListDelegate.addAutomaticKeepAlives] property. The
   /// `addRepaintBoundaries` argument corresponds to the
-  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// [SliverVariableSizeChildListDelegate.addRepaintBoundaries] property. Both must not be
   /// null.
   ///
   /// See also:
@@ -274,7 +274,7 @@ class StaggeredGridView extends BoxScrollView {
           staggeredTileBuilder: (i) => staggeredTiles[i],
           staggeredTileCount: staggeredTiles?.length,
         ),
-        childrenDelegate = new SliverChildListDelegate(
+        childrenDelegate = new SliverVariableSizeChildListDelegate(
           children,
           addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
@@ -308,9 +308,9 @@ class StaggeredGridView extends BoxScrollView {
   /// zero and less than [itemCount].
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
-  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// [SliverVariableSizeChildListDelegate.addAutomaticKeepAlives] property. The
   /// `addRepaintBoundaries` argument corresponds to the
-  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// [SliverVariableSizeChildListDelegate.addRepaintBoundaries] property. Both must not be
   /// null.
   StaggeredGridView.countBuilder({
     Key key,
@@ -336,7 +336,7 @@ class StaggeredGridView extends BoxScrollView {
           staggeredTileBuilder: staggeredTileBuilder,
           staggeredTileCount: itemCount,
         ),
-        childrenDelegate = new SliverChildBuilderDelegate(
+        childrenDelegate = new SliverVariableSizeChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
           addAutomaticKeepAlives: addAutomaticKeepAlives,
@@ -366,9 +366,9 @@ class StaggeredGridView extends BoxScrollView {
   /// zero and less than [itemCount].
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
-  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// [SliverVariableSizeChildListDelegate.addAutomaticKeepAlives] property. The
   /// `addRepaintBoundaries` argument corresponds to the
-  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// [SliverVariableSizeChildListDelegate.addRepaintBoundaries] property. Both must not be
   /// null.
   ///
   /// See also:
@@ -397,7 +397,7 @@ class StaggeredGridView extends BoxScrollView {
           staggeredTileBuilder: (i) => staggeredTiles[i],
           staggeredTileCount: staggeredTiles?.length,
         ),
-        childrenDelegate = new SliverChildListDelegate(
+        childrenDelegate = new SliverVariableSizeChildListDelegate(
           children,
           addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
@@ -423,9 +423,9 @@ class StaggeredGridView extends BoxScrollView {
   /// Uses a [SliverGridDelegateWithMaxCrossAxisExtent] as the [gridDelegate].
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
-  /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
+  /// [SliverVariableSizeChildListDelegate.addAutomaticKeepAlives] property. The
   /// `addRepaintBoundaries` argument corresponds to the
-  /// [SliverChildListDelegate.addRepaintBoundaries] property. Both must not be
+  /// [SliverVariableSizeChildListDelegate.addRepaintBoundaries] property. Both must not be
   /// null.
   ///
   /// See also:
@@ -455,7 +455,7 @@ class StaggeredGridView extends BoxScrollView {
           staggeredTileBuilder: staggeredTileBuilder,
           staggeredTileCount: itemCount,
         ),
-        childrenDelegate = new SliverChildBuilderDelegate(
+        childrenDelegate = new SliverVariableSizeChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
           addAutomaticKeepAlives: addAutomaticKeepAlives,
@@ -485,7 +485,7 @@ class StaggeredGridView extends BoxScrollView {
   /// The [StaggeredGridView.custom] constructor lets you specify this delegate
   /// explicitly. The other constructors create a [childrenDelegate] that wraps
   /// the given child list.
-  final SliverChildDelegate childrenDelegate;
+  final SliverVariableSizeChildDelegate childrenDelegate;
 
   @override
   Widget buildChildLayout(BuildContext context) {

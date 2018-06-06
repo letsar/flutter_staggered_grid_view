@@ -176,7 +176,6 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   void setupParentData(RenderObject child) {
     if (child.parentData is! SliverVariableSizeBoxAdaptorParentData) {
       child.parentData = new SliverVariableSizeBoxAdaptorParentData();
-
     }
   }
 
@@ -449,6 +448,8 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
     }
     assert(mainAxisUnit != null);
     assert(addExtent != null);
+
+    debugPrint('${children.length} children will be paint');
 
     for (var child in children) {
       final double mainAxisDelta = childMainAxisPosition(child);
