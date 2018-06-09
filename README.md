@@ -14,9 +14,11 @@ A Flutter staggered grid view which supports multiple columns with rows of varyi
 * Configurable main-axis and cross-axis margins between tiles.
 * SliverStaggeredGrid for using in a [CustomScrollView](https://docs.flutter.io/flutter/widgets/CustomScrollView-class.html).
 * Staggered and Spannable grid layouts.
+
 ![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/staggered_1.gif)
 ![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/spannable_1.gif)
 * Tiles can fit the content in the main axis.
+
 ![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/dynamic_tile_sizes.gif)
 
 ## Getting started
