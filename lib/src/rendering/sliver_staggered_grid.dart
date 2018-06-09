@@ -23,11 +23,13 @@ class StaggeredGridConfiguration {
     @required this.crossAxisSpacing,
     @required this.reverseCrossAxis,
     @required this.staggeredTileCount,
+    this.mainAxisOffsetsCacheSize = 3,
   })  : assert(crossAxisCount != null && crossAxisCount > 0),
         assert(staggeredTileBuilder != null),
         assert(cellExtent != null && cellExtent >= 0),
         assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
         assert(crossAxisSpacing != null && crossAxisSpacing >= 0),
+        assert(mainAxisOffsetsCacheSize != null && mainAxisOffsetsCacheSize > 0),
         cellStride = cellExtent + crossAxisSpacing;
 
   /// The maximum number of children in the cross axis.
@@ -65,6 +67,9 @@ class StaggeredGridConfiguration {
   final bool reverseCrossAxis;
 
   final double cellStride;
+
+  /// The number of pages necessary to cache a mainAxisOffsets value.
+  final int mainAxisOffsetsCacheSize;
 
   List<double> generateMainAxisOffsets() =>
       new List.generate(crossAxisCount, (i) => 0.0);
@@ -210,6 +215,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     @required SliverStaggeredGridDelegate gridDelegate,
   })  : assert(gridDelegate != null),
         _gridDelegate = gridDelegate,
+        _viewportOffsets = new List<_ViewportOffsets>(),
         super(childManager: childManager);
 
   @override
@@ -234,6 +240,8 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     _gridDelegate = value;
   }
 
+  List<_ViewportOffsets> _viewportOffsets;
+
   @override
   void performLayout() {
     childManager.didStartLayout();
@@ -246,22 +254,46 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     assert(remainingExtent >= 0.0);
     final double targetEndScrollOffset = scrollOffset + remainingExtent;
 
+    //debugPrint('constraints[scrollOffset=${constraints.scrollOffset}, remainingCacheExtent=${constraints.remainingCacheExtent}, cacheOrigin=${constraints.cacheOrigin}]');
+    debugPrint('scrollOffset=$scrollOffset, targetEndScrollOffset=$targetEndScrollOffset');
+
     bool reachedEnd = false;
     double trailingScrollOffset = 0.0;
     double leadingScrollOffset = double.infinity;
     bool visible = false;
     int firstIndex = 0;
     int lastIndex = 0;
+    int firstIndexNextBlock;
 
     StaggeredGridConfiguration configuration =
         _gridDelegate.getConfiguration(constraints);
 
+    double pageSize = configuration.mainAxisOffsetsCacheSize * constraints.viewportMainAxisExtent;
+    int pageIndex = scrollOffset ~/ pageSize;
+    double trailingPageOffset = (pageIndex + 1 ) * pageSize;
+
+    debugPrint('pageSize=$pageSize, pageIndex=$pageIndex, trailingPageOffset=$trailingPageOffset');
+
+    _ViewportOffsets _viewportOffset;
+    if(_viewportOffsets.isEmpty){
+      _viewportOffset= new _ViewportOffsets(
+          0.0,
+          0,
+          configuration.generateMainAxisOffsets());
+      _viewportOffsets.add(_viewportOffset);
+    }else{
+      _viewportOffset = _viewportOffsets[pageIndex];
+    }
+
+    debugPrint('viewport offsets length: ${_viewportOffsets.length}');
+    debugPrint('viewport offset $_viewportOffset');
+
     // A staggered grid always have to layout the child from the zero-index based one to the last visible.
-    var mainAxisOffsets = configuration.generateMainAxisOffsets();
+    var mainAxisOffsets = _viewportOffset.mainAxisOffsets.toList();
     HashSet<int> visibleIndices = new HashSet<int>();
 
     // Iterate through all children while they can be visible.
-    for (var index = 0;
+    for (var index = _viewportOffset.firstIndex;
         mainAxisOffsets.any((o) => o <= targetEndScrollOffset);
         index++) {
       SliverStaggeredGridGeometry geometry =
@@ -307,6 +339,22 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
         visibleIndices.add(index);
       }
 
+      if(firstIndexNextBlock == null &&
+         geometry.trailingScrollOffset >= trailingPageOffset){
+        firstIndexNextBlock = index;
+        debugPrint('firstIndexNextBlock=$firstIndexNextBlock');
+        int nextPageIndex = pageIndex + 1;
+        var nextViewportOffset = new _ViewportOffsets(
+            trailingPageOffset, firstIndexNextBlock, mainAxisOffsets);
+        if(_viewportOffsets.length <= nextPageIndex) {
+          debugPrint('Add next viewport offset: $nextPageIndex - $nextViewportOffset');
+          _viewportOffsets.add(nextViewportOffset);
+        }else{
+          debugPrint('Set next viewport offset: $nextPageIndex - $nextViewportOffset');
+          _viewportOffsets[nextPageIndex] = nextViewportOffset;
+        }
+      }
+
       final double endOffset =
           geometry.trailingScrollOffset + configuration.mainAxisSpacing;
       for (var i = 0; i < geometry.crossAxisCellCount; i++) {
@@ -316,6 +364,8 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       trailingScrollOffset = mainAxisOffsets.reduce(math.max);
       lastIndex = index;
     }
+
+    //debugPrint('Iterated from $firstIndex to $lastIndex');
 
     collectGarbage(visibleIndices);
 
@@ -452,6 +502,25 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
 
     return new _Block(index, crossAxisCount, minBlockOffset, maxBlockOffset);
   }
+}
+
+class _ViewportOffsets {
+  _ViewportOffsets(
+      this.scrollOffset,
+    this.firstIndex,
+    List<double> mainAxisOffsets,
+  ) : this.mainAxisOffsets = new List.from(mainAxisOffsets);
+
+  final double scrollOffset;
+
+  //final double trailingScrollOffset;
+
+  final int firstIndex;
+
+  List<double> mainAxisOffsets;
+
+  @override
+  String toString() => '[$scrollOffset-$firstIndex] [$mainAxisOffsets]';
 }
 
 /// Creates staggered grid layouts.
