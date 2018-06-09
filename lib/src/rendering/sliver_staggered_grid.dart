@@ -29,7 +29,8 @@ class StaggeredGridConfiguration {
         assert(cellExtent != null && cellExtent >= 0),
         assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
         assert(crossAxisSpacing != null && crossAxisSpacing >= 0),
-        assert(mainAxisOffsetsCacheSize != null && mainAxisOffsetsCacheSize > 0),
+        assert(
+            mainAxisOffsetsCacheSize != null && mainAxisOffsetsCacheSize > 0),
         cellStride = cellExtent + crossAxisSpacing;
 
   /// The maximum number of children in the cross axis.
@@ -215,7 +216,8 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     @required SliverStaggeredGridDelegate gridDelegate,
   })  : assert(gridDelegate != null),
         _gridDelegate = gridDelegate,
-        _pageSizeToViewportOffsets = new HashMap<double, SplayTreeMap<int, _ViewportOffsets>>(),
+        _pageSizeToViewportOffsets =
+            new HashMap<double, SplayTreeMap<int, _ViewportOffsets>>(),
         super(childManager: childManager);
 
   @override
@@ -240,7 +242,8 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     _gridDelegate = value;
   }
 
-  HashMap<double, SplayTreeMap<int, _ViewportOffsets>> _pageSizeToViewportOffsets;
+  HashMap<double, SplayTreeMap<int, _ViewportOffsets>>
+      _pageSizeToViewportOffsets;
 
   @override
   void performLayout() {
@@ -264,9 +267,9 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     StaggeredGridConfiguration configuration =
         _gridDelegate.getConfiguration(constraints);
 
-
-    double pageSize = configuration.mainAxisOffsetsCacheSize * constraints.viewportMainAxisExtent;
-    if(pageSize == 0.0){
+    double pageSize = configuration.mainAxisOffsetsCacheSize *
+        constraints.viewportMainAxisExtent;
+    if (pageSize == 0.0) {
       geometry = SliverGeometry.zero;
       childManager.didFinishLayout();
       return;
@@ -275,13 +278,16 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     assert(pageIndex >= 0);
 
     // If the viewport is resized, we keep the in memory the old offsets caches. (Useful if only the orientation changes multiple times).
-    SplayTreeMap<int, _ViewportOffsets> viewportOffsets = _pageSizeToViewportOffsets.putIfAbsent(pageSize, () => new SplayTreeMap<int, _ViewportOffsets>());
+    SplayTreeMap<int, _ViewportOffsets> viewportOffsets =
+        _pageSizeToViewportOffsets.putIfAbsent(
+            pageSize, () => new SplayTreeMap<int, _ViewportOffsets>());
 
     _ViewportOffsets viewportOffset;
-    if(viewportOffsets.isEmpty){
-      viewportOffset= new _ViewportOffsets(configuration.generateMainAxisOffsets(), pageSize);
+    if (viewportOffsets.isEmpty) {
+      viewportOffset = new _ViewportOffsets(
+          configuration.generateMainAxisOffsets(), pageSize);
       viewportOffsets[0] = viewportOffset;
-    }else{
+    } else {
       int smallestKey = viewportOffsets.lastKeyBefore(pageIndex + 1);
       viewportOffset = viewportOffsets[smallestKey];
     }
@@ -337,11 +343,13 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
         visibleIndices.add(index);
       }
 
-      if(geometry.trailingScrollOffset >= viewportOffset.trailingScrollOffset){
+      if (geometry.trailingScrollOffset >=
+          viewportOffset.trailingScrollOffset) {
         int nextPageIndex = viewportOffset.pageIndex + 1;
-        var nextViewportOffset = new _ViewportOffsets(mainAxisOffsets, (nextPageIndex + 1) * pageSize, nextPageIndex, index);
-          viewportOffsets[nextPageIndex] = nextViewportOffset;
-          viewportOffset = nextViewportOffset;
+        var nextViewportOffset = new _ViewportOffsets(mainAxisOffsets,
+            (nextPageIndex + 1) * pageSize, nextPageIndex, index);
+        viewportOffsets[nextPageIndex] = nextViewportOffset;
+        viewportOffset = nextViewportOffset;
       }
 
       final double endOffset =
@@ -357,14 +365,14 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     collectGarbage(visibleIndices);
 
     if (!visible) {
-      if(scrollOffset > viewportOffset.trailingScrollOffset){
+      if (scrollOffset > viewportOffset.trailingScrollOffset) {
         // We are outside the bounds, we have to correct the scroll.
         double viewportOffsetScrollOffset = pageSize * viewportOffset.pageIndex;
         double correction = viewportOffsetScrollOffset - scrollOffset;
         geometry = new SliverGeometry(
           scrollOffsetCorrection: correction,
         );
-      }else {
+      } else {
         geometry = SliverGeometry.zero;
         childManager.didFinishLayout();
       }
@@ -502,13 +510,11 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
 
 class _ViewportOffsets {
   _ViewportOffsets(
-  List<double> mainAxisOffsets,
-      this.trailingScrollOffset,
-      [
-      this.pageIndex = 0,
-      this.firstChildIndex = 0,
-    ]
-  ) : this.mainAxisOffsets = new List.from(mainAxisOffsets);
+    List<double> mainAxisOffsets,
+    this.trailingScrollOffset, [
+    this.pageIndex = 0,
+    this.firstChildIndex = 0,
+  ]) : this.mainAxisOffsets = new List.from(mainAxisOffsets);
 
   final int pageIndex;
 
@@ -519,7 +525,8 @@ class _ViewportOffsets {
   final List<double> mainAxisOffsets;
 
   @override
-  String toString() => '[$pageIndex-$trailingScrollOffset] ($firstChildIndex, $mainAxisOffsets)';
+  String toString() =>
+      '[$pageIndex-$trailingScrollOffset] ($firstChildIndex, $mainAxisOffsets)';
 }
 
 /// Creates staggered grid layouts.
