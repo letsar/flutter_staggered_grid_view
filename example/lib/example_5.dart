@@ -32,7 +32,7 @@ class Example05 extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Random tiles'),
+          title: new Text('random tiles'),
         ),
         body: new StaggeredGridView.countBuilder(
           primary: false,

@@ -6,7 +6,7 @@ class Example04 extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('CustomScrollView'),
+          title: new Text('customScrollView'),
         ),
         body: new CustomScrollView(
           primary: false,

@@ -21,6 +21,8 @@ const List<StaggeredTile> _tiles = const <StaggeredTile>[
   const StaggeredTile.count(1, 1),
   const StaggeredTile.count(1, 1),
   const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
+  const StaggeredTile.count(1, 1),
 ];
 
 List<Widget> _children = <Widget>[
@@ -43,12 +45,14 @@ List<Widget> _children = <Widget>[
   const HomeTile('extent constructor\nextent tile', Colors.purple,
       spannableExtentExtentRoute),
   const HomeHeaderTile('More examples', Colors.pink),
-  const HomeTile('Example 01', Colors.pink, example01),
-  const HomeTile('Example 02', Colors.pink, example02),
-  const HomeTile('Example 03', Colors.pink, example03),
-  const HomeTile('Example 04', Colors.pink, example04),
-  const HomeTile('Random tiles', Colors.pink, example05),
-  const HomeTile('Dynamic resizing', Colors.pink, example06),
+  const HomeTile('example 01', Colors.pink, example01),
+  const HomeTile('example 02', Colors.pink, example02),
+  const HomeTile('example 03', Colors.pink, example03),
+  const HomeTile('example 04', Colors.pink, example04),
+  const HomeTile('random tiles', Colors.pink, example05),
+  const HomeTile('dynamic resizing', Colors.pink, example06),
+  const HomeTile('dynamic tile sizes', Colors.pink, example07),
+  const HomeTile('random dynamic tile sizes', Colors.pink, example08),
 ];
 
 class Home extends StatelessWidget {
