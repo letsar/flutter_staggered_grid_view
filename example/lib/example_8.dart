@@ -73,7 +73,7 @@ final Uint8List kTransparentImage = new Uint8List.fromList(<int>[
 
 List<IntSize> _createSizes(int count) {
   Random rnd = new Random();
-  return new List.generate(count, (i) => new IntSize((rnd.nextInt(500) + 100), rnd.nextInt(800) + 200));
+  return new List.generate(count, (i) => new IntSize((rnd.nextInt(500) + 200), rnd.nextInt(800) + 200));
 }
 
 class Example08 extends StatelessWidget {
@@ -86,7 +86,7 @@ class Example08 extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Dynamic tile sizes'),
+        title: new Text('random dynamic tile sizes'),
       ),
       body: new StaggeredGridView.countBuilder(
         primary: false,

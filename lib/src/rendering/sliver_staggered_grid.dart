@@ -254,8 +254,6 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     assert(remainingExtent >= 0.0);
     final double targetEndScrollOffset = scrollOffset + remainingExtent;
 
-    debugPrint('scrollOffset=$scrollOffset, targetEndScrollOffset=$targetEndScrollOffset');
-
     bool reachedEnd = false;
     double trailingScrollOffset = 0.0;
     double leadingScrollOffset = double.infinity;
@@ -266,17 +264,18 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     StaggeredGridConfiguration configuration =
         _gridDelegate.getConfiguration(constraints);
 
+
     double pageSize = configuration.mainAxisOffsetsCacheSize * constraints.viewportMainAxisExtent;
+    if(pageSize == 0.0){
+      geometry = SliverGeometry.zero;
+      childManager.didFinishLayout();
+      return;
+    }
     int pageIndex = scrollOffset ~/ pageSize;
+    assert(pageIndex >= 0);
 
     // If the viewport is resized, we keep the in memory the old offsets caches. (Useful if only the orientation changes multiple times).
-    if(pageSize == 1836.0)
-      {
-        debugPrint('portrait');
-      }
     SplayTreeMap<int, _ViewportOffsets> viewportOffsets = _pageSizeToViewportOffsets.putIfAbsent(pageSize, () => new SplayTreeMap<int, _ViewportOffsets>());
-
-    debugPrint('pageSize=$pageSize, pageIndex=$pageIndex');
 
     _ViewportOffsets viewportOffset;
     if(viewportOffsets.isEmpty){
@@ -286,9 +285,6 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       int smallestKey = viewportOffsets.lastKeyBefore(pageIndex + 1);
       viewportOffset = viewportOffsets[smallestKey];
     }
-
-    debugPrint('viewport offsets length: ${viewportOffsets.length}');
-    debugPrint('viewport offset $viewportOffset');
 
     // A staggered grid always have to layout the child from the zero-index based one to the last visible.
     var mainAxisOffsets = viewportOffset.mainAxisOffsets.toList();
@@ -344,7 +340,6 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       if(geometry.trailingScrollOffset >= viewportOffset.trailingScrollOffset){
         int nextPageIndex = viewportOffset.pageIndex + 1;
         var nextViewportOffset = new _ViewportOffsets(mainAxisOffsets, (nextPageIndex + 1) * pageSize, nextPageIndex, index);
-          debugPrint('Set next viewport offset: $nextViewportOffset');
           viewportOffsets[nextPageIndex] = nextViewportOffset;
           viewportOffset = nextViewportOffset;
       }

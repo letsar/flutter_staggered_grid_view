@@ -3,6 +3,7 @@
 A Flutter staggered grid view which supports multiple columns with rows of varying sizes.
 
 [![Pub](https://img.shields.io/pub/v/flutter_staggered_grid_view.svg)](https://pub.dartlang.org/packages/flutter_staggered_grid_view)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QTT34M25RDNL6)
 
 ![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/example_01.PNG)
 
@@ -16,7 +17,7 @@ A Flutter staggered grid view which supports multiple columns with rows of varyi
 ![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/staggered_1.gif)
 ![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/spannable_1.gif)
 * Tiles can fit the content in the main axis.
-
+![Screenshot](https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/doc/images/dynamic_tile_sizes.gif)
 
 ## Getting started
 
@@ -70,16 +71,10 @@ There are two more constructors: `countBuilder` and `extentBuilder`. These const
 A StaggeredGridView needs to know how to display each tile, and what widget is associated with a tile. 
 
 A tile needs to have a fixed number of cell to occupy in the cross axis.
-For the extent in the main axis you have 3 solutions:
+For the extent in the main axis you have 3 options:
 * You want a fixed number of cells => use `StaggeredTile.count`.
 * You want a fixed extent => use `StaggeredTile.extent`.
 * You want a variable extent, defined by the content of the tile itself => use `StaggeredTile.fit`.
-
-## Disclaimer
-
-:warning: Due to the recent rewriting in order to allow a tile to fit its content, the `AutomaticKeepAlive` does not work with this widget.
-The parameter `addAutomaticKeepAlives` is now `false` by default, and setting it to `true` will result in an error.
-If you absolutely need it, and don't need your tiles to fit their content, please use the 0.1.4 version of this package. 
 
 ## Changelog
 

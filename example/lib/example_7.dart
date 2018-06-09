@@ -6,7 +6,7 @@ class Example07 extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Dynamic tile sizes'),
+        title: new Text('dynamic tile sizes'),
       ),
       body: new StaggeredGridView.count(
         primary: false,

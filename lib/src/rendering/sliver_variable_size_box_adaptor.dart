@@ -449,8 +449,6 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
     assert(mainAxisUnit != null);
     assert(addExtent != null);
 
-    debugPrint('${children.length} children will be paint');
-
     for (var child in children) {
       final double mainAxisDelta = childMainAxisPosition(child);
       final double crossAxisDelta = childCrossAxisPosition(child);

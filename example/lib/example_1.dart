@@ -32,7 +32,7 @@ class Example01 extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
         appBar: new AppBar(
-          title: new Text('Example 01'),
+          title: new Text('example 01'),
         ),
         body: new Padding(
             padding: const EdgeInsets.only(top: 12.0),

@@ -6,7 +6,7 @@ class Example03 extends StatelessWidget {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('StaggeredGridView.count'),
+        title: new Text('staggeredGridView.count'),
       ),
       body: new StaggeredGridView.count(
         primary: false,

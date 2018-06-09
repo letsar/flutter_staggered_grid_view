@@ -38,7 +38,7 @@ class _Example06State extends State<Example06> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Dynamic resizing'),
+        title: new Text('dynamic resizing'),
       ),
       body: new Padding(
         padding: const EdgeInsets.all(4.0),

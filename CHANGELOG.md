@@ -1,7 +1,6 @@
 ## 0.2.0
 * Add a way to let the tile's content to define the tile's extent in the main axis.
 * Add `fit` constructor to `StaggeredTile`.
-* Regression: `AutomaticKeepAlive` does not work anymore.
 
 ## 0.1.4
 * Add `countBuilder` and `extendBuilder` constructors to `SliverStaggeredGrid`
