@@ -37,7 +37,7 @@ class AutomaticKeepAliveVariableSizeBox extends StatefulWidget {
   _AutomaticKeepAliveState createState() => new _AutomaticKeepAliveState();
 }
 
-class _AutomaticKeepAliveState extends State<AutomaticKeepAlive> {
+class _AutomaticKeepAliveState extends State<AutomaticKeepAliveVariableSizeBox> {
   Map<Listenable, VoidCallback> _handles;
   Widget _child;
   bool _keepingAlive = false;
@@ -49,7 +49,7 @@ class _AutomaticKeepAliveState extends State<AutomaticKeepAlive> {
   }
 
   @override
-  void didUpdateWidget(AutomaticKeepAlive oldWidget) {
+  void didUpdateWidget(AutomaticKeepAliveVariableSizeBox oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateChild();
   }

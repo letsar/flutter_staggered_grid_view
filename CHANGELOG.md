@@ -1,3 +1,6 @@
+## 0.2.1
+* Fix #10 `StatefulWidget.createState must return a subtype of State<AutomaticKeepAliveVariableSizeBox>`.
+
 ## 0.2.0
 * Add a way to let the tile's content to define the tile's extent in the main axis.
 * Add `fit` constructor to `StaggeredTile`.

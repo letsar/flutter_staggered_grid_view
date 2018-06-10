@@ -96,11 +96,6 @@ class Example08 extends StatelessWidget {
         itemBuilder: (context, index) => new _Tile(index, _sizes[index]),
         staggeredTileBuilder: (index) => new StaggeredTile.fit(2),
       ),
-//      body: new ListView.builder(
-//        primary: false,
-//        addAutomaticKeepAlives: false,
-//        itemBuilder: (context, index) => new _Tile(index, _sizes[index]),
-// ),
     );
   }
 }
