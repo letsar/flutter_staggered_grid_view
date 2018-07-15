@@ -159,7 +159,7 @@ class SliverVariableSizeBoxAdaptorParentData
 ///  * [RenderSliverFixedExtentList], which places its children in a linear
 ///    array with a fixed extent in the main axis.
 ///  * [RenderSliverGrid], which places its children in arbitrary positions.
-abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
+abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliverMultiKeepAliveBoxAdaptor
     with
         TileContainerRenderObjectMixin<RenderBox,
             SliverVariableSizeBoxAdaptorParentData>,
