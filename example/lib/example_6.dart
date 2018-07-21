@@ -99,8 +99,7 @@ class _Example06Tile extends StatelessWidget {
     @required this.onSelectedItemChanged,
     @required this.maxSize,
     @required this.isSelected,
-  })
-      : super(key: key);
+  }) : super(key: key);
 
   final int index;
   final int size;
@@ -190,8 +189,7 @@ class _TileButton {
     @required this.onTap,
     @required bool isLeft,
     @required bool isTop,
-  })
-      : bottom = isTop ? null : 0.0,
+  })  : bottom = isTop ? null : 0.0,
         top = isTop ? 0.0 : null,
         left = isLeft ? 0.0 : null,
         right = isLeft ? null : 0.0;

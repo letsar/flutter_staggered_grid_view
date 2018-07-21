@@ -1,3 +1,6 @@
+## 0.2.2
+* Add Dart 2 support.
+
 ## 0.2.1
 * Fix #10 `StatefulWidget.createState must return a subtype of State<AutomaticKeepAliveVariableSizeBox>`.
 

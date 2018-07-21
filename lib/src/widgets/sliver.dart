@@ -46,7 +46,8 @@ abstract class SliverVariableSizeChildDelegate extends SliverChildDelegate {
 ///
 ///  * [SliverVariableSizeChildListDelegate], which is a delegate that has an explicit list
 ///    of children.
-class SliverVariableSizeChildBuilderDelegate extends SliverVariableSizeChildDelegate {
+class SliverVariableSizeChildBuilderDelegate
+    extends SliverVariableSizeChildDelegate {
   /// Creates a delegate that supplies children for slivers using the given
   /// builder callback.
   ///
@@ -120,7 +121,9 @@ class SliverVariableSizeChildBuilderDelegate extends SliverVariableSizeChildDele
   int get estimatedChildCount => childCount;
 
   @override
-  bool shouldRebuild(covariant SliverVariableSizeChildBuilderDelegate oldDelegate) => true;
+  bool shouldRebuild(
+          covariant SliverVariableSizeChildBuilderDelegate oldDelegate) =>
+      true;
 }
 
 /// A delegate that supplies variable size children for slivers using an explicit list.
@@ -152,7 +155,8 @@ class SliverVariableSizeChildBuilderDelegate extends SliverVariableSizeChildDele
 ///
 ///  * [SliverVariableSizeChildBuilderDelegate], which is a delegate that uses a builder
 ///    callback to construct the children.
-class SliverVariableSizeChildListDelegate extends SliverVariableSizeChildDelegate {
+class SliverVariableSizeChildListDelegate
+    extends SliverVariableSizeChildDelegate {
   /// Creates a delegate that supplies children for slivers using the given
   /// list.
   ///
@@ -210,7 +214,8 @@ class SliverVariableSizeChildListDelegate extends SliverVariableSizeChildDelegat
   int get estimatedChildCount => children.length;
 
   @override
-  bool shouldRebuild(covariant SliverVariableSizeChildListDelegate oldDelegate) {
+  bool shouldRebuild(
+      covariant SliverVariableSizeChildListDelegate oldDelegate) {
     return children != oldDelegate.children;
   }
 }
@@ -274,8 +279,8 @@ abstract class SliverVariableSizeBoxAdaptorWidget extends RenderObjectWidget {
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(
-        new DiagnosticsProperty<SliverVariableSizeChildDelegate>('delegate', delegate));
+    properties.add(new DiagnosticsProperty<SliverVariableSizeChildDelegate>(
+        'delegate', delegate));
   }
 }
 

@@ -6,7 +6,6 @@ import 'package:flutter/rendering.dart';
 
 import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_variable_size_box_adaptor.dart';
-import 'package:flutter_staggered_grid_view/src/rendering/tile_container_render_object_mixin.dart';
 
 /// Signature for a function that creates [StaggeredTile] for a given index.
 typedef StaggeredTile IndexedStaggeredTileBuilder(int index);

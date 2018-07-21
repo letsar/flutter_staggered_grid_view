@@ -37,7 +37,8 @@ class AutomaticKeepAliveVariableSizeBox extends StatefulWidget {
   _AutomaticKeepAliveState createState() => new _AutomaticKeepAliveState();
 }
 
-class _AutomaticKeepAliveState extends State<AutomaticKeepAliveVariableSizeBox> {
+class _AutomaticKeepAliveState
+    extends State<AutomaticKeepAliveVariableSizeBox> {
   Map<Listenable, VoidCallback> _handles;
   Widget _child;
   bool _keepingAlive = false;

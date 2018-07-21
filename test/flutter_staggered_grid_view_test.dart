@@ -198,6 +198,5 @@ void main() {
     expect(tester.getTopLeft(find.text('1')), equals(const Offset(200.0, 0.0)));
     expect(tester.getTopLeft(find.text('2')), equals(const Offset(400.0, 0.0)));
     expect(tester.getTopLeft(find.text('3')), equals(const Offset(0.0, 200.0)));
-    
   });
 }
