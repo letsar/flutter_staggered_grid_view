@@ -1,3 +1,7 @@
+## 0.2.3
+### Fixed
+* Fix the rtl support (https://github.com/letsar/flutter_staggered_grid_view/issues/17).
+
 ## 0.2.2
 * Add Dart 2 support.
 

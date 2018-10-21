@@ -443,7 +443,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       crossAxisExtent: configuration.cellStride * tile.crossAxisCellCount -
           configuration.crossAxisSpacing,
       crossAxisCellCount: tile.crossAxisCellCount,
-      blockIndex: blockIndex,
+      blockIndex: block.index,
     );
     return geometry;
   }
