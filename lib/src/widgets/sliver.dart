@@ -11,12 +11,24 @@ import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
 /// A base class for sliver that have multiple variable size box children.
 ///
 /// Helps subclasses build their children lazily using a [SliverVariableSizeChildDelegate].
-abstract class SliverVariableSizeBoxAdaptorWidget extends SliverMultiKeepAliveBoxAdaptorWidget {
+abstract class SliverVariableSizeBoxAdaptorWidget extends SliverWithKeepAliveWidget {
   /// Initializes fields for subclasses.
   const SliverVariableSizeBoxAdaptorWidget({
     Key key,
-    @required SliverChildDelegate delegate,
-  })  : super(key: key, delegate : delegate);
+    @required this.delegate,
+  })  : super(key: key);
+
+  /// The delegate that provides the children for this widget.
+  ///
+  /// The children are constructed lazily using this widget to avoid creating
+  /// more children than are visible through the [Viewport].
+  ///
+  /// See also:
+  ///
+  ///  * [SliverChildBuilderDelegate] and [SliverChildListDelegate], which are
+  ///    commonly used subclasses of [SliverChildDelegate] that use a builder
+  ///    callback and an explicit child list, respectively.
+  final SliverChildDelegate delegate;
 
   @override
   SliverVariableSizeBoxAdaptorElement createElement() =>
@@ -24,13 +36,39 @@ abstract class SliverVariableSizeBoxAdaptorWidget extends SliverMultiKeepAliveBo
 
   @override
   RenderSliverVariableSizeBoxAdaptor createRenderObject(BuildContext context);
+
+  /// Returns an estimate of the max scroll extent for all the children.
+  ///
+  /// Subclasses should override this function if they have additional
+  /// information about their max scroll extent.
+  ///
+  /// This is used by [SliverMultiBoxAdaptorElement] to implement part of the
+  /// [RenderSliverBoxChildManager] API.
+  ///
+  /// The default implementation defers to [delegate] via its
+  /// [SliverChildDelegate.estimateMaxScrollOffset] method.
+  double estimateMaxScrollOffset(
+      SliverConstraints constraints,
+      int firstIndex,
+      int lastIndex,
+      double leadingScrollOffset,
+      double trailingScrollOffset,
+      ) {
+    assert(lastIndex >= firstIndex);
+    return delegate.estimateMaxScrollOffset(
+      firstIndex,
+      lastIndex,
+      leadingScrollOffset,
+      trailingScrollOffset,
+    );
+  }
 }
 
 /// An element that lazily builds children for a [SliverVariableSizeBoxAdaptorWidget].
 ///
 /// Implements [RenderSliverVariableSizeBoxChildManager], which lets this element manage
 /// the children of subclasses of [RenderSliverVariableSizeBoxAdaptor].
-class SliverVariableSizeBoxAdaptorElement extends SliverMultiKeepAliveBoxAdaptorElement
+class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     implements RenderSliverVariableSizeBoxChildManager {
   /// Creates an element that lazily builds children for the given widget.
   SliverVariableSizeBoxAdaptorElement(SliverVariableSizeBoxAdaptorWidget widget)
