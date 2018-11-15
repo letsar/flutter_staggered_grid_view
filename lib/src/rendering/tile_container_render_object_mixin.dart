@@ -6,12 +6,8 @@ import 'package:flutter/rendering.dart';
 ///
 /// Provides a child model for a render object subclass that stores children
 /// in a HashMap.
-abstract class TileContainerRenderObjectMixin<ChildType extends RenderObject,
-    ParentDataType extends ParentData> extends RenderObject {
-  // This class is intended to be used as a mixin, and should not be
-  // extended directly.
-  factory TileContainerRenderObjectMixin._() => null;
-
+mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
+    ParentDataType extends ParentData> on RenderObject {
   final SplayTreeMap<int, ChildType> _childRenderObjects =
       new SplayTreeMap<int, ChildType>();
 
