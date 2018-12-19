@@ -1,3 +1,7 @@
+## 0.2.5
+### Changed
+* Use the new SliverWithKeepAliveWidget.
+
 ## 0.2.4
 ### Fixed
 * Dart 2.1 mixin support.

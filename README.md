@@ -28,7 +28,7 @@ In the `pubspec.yaml` of your flutter project, add the following dependency:
 ```yaml
 dependencies:
   ...
-  flutter_staggered_grid_view: "^0.2.4"
+  flutter_staggered_grid_view: "^0.2.5"
 ```
 
 In your library add the following import:

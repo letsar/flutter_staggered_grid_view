@@ -161,6 +161,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
     with
         TileContainerRenderObjectMixin<RenderBox,
             SliverVariableSizeBoxAdaptorParentData>,
+        RenderSliverWithKeepAliveMixin,
         RenderSliverHelpers {
   /// Creates a sliver with multiple box children.
   ///
