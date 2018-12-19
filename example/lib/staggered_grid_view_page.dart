@@ -11,8 +11,7 @@ class StaggeredGridViewPage extends StatelessWidget {
     @required this.tiles,
     this.mainAxisSpacing: 4.0,
     this.crossAxisSpacing: 4.0,
-  })
-      : _staggeredGridViewMode = _StaggeredGridViewMode.count,
+  })  : _staggeredGridViewMode = _StaggeredGridViewMode.count,
         maxCrossAxisExtent = null;
 
   const StaggeredGridViewPage.extent({
@@ -21,8 +20,7 @@ class StaggeredGridViewPage extends StatelessWidget {
     @required this.tiles,
     this.mainAxisSpacing: 4.0,
     this.crossAxisSpacing: 4.0,
-  })
-      : _staggeredGridViewMode = _StaggeredGridViewMode.extent,
+  })  : _staggeredGridViewMode = _StaggeredGridViewMode.extent,
         crossAxisCount = null;
 
   static const EdgeInsetsGeometry padding =

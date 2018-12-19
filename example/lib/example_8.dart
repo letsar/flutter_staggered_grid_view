@@ -73,7 +73,8 @@ final Uint8List kTransparentImage = new Uint8List.fromList(<int>[
 
 List<IntSize> _createSizes(int count) {
   Random rnd = new Random();
-  return new List.generate(count, (i) => new IntSize((rnd.nextInt(500) + 200), rnd.nextInt(800) + 200));
+  return new List.generate(count,
+      (i) => new IntSize((rnd.nextInt(500) + 200), rnd.nextInt(800) + 200));
 }
 
 class Example08 extends StatelessWidget {

@@ -62,6 +62,13 @@ abstract class SliverVariableSizeBoxAdaptorWidget extends SliverWithKeepAliveWid
       trailingScrollOffset,
     );
   }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(new DiagnosticsProperty<SliverChildDelegate>(
+        'delegate', delegate));
+  }
 }
 
 /// An element that lazily builds children for a [SliverVariableSizeBoxAdaptorWidget].

@@ -5,32 +5,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class ExampleTests extends StatelessWidget {
-  ExampleTests() : products = List.generate(50, (i)=> Product('test $i'));
+  ExampleTests() : products = List.generate(50, (i) => Product('test $i'));
 
   final List<Product> products;
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('random dynamic tile sizes'),
-      ),
-      body: CustomScrollView(
-        slivers: <Widget>[
-          SliverStaggeredGrid.countBuilder(
-            crossAxisCount: 2,
-            staggeredTileBuilder: (_) => StaggeredTile.fit(1),
-            itemBuilder: (context, index) => ProductGridItem(products[index],),
-            itemCount: products.length,
-          ),
-        ],
-      )
-    );
+        appBar: new AppBar(
+          title: new Text('random dynamic tile sizes'),
+        ),
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverStaggeredGrid.countBuilder(
+              crossAxisCount: 2,
+              staggeredTileBuilder: (_) => StaggeredTile.fit(1),
+              itemBuilder: (context, index) => ProductGridItem(
+                    products[index],
+                  ),
+              itemCount: products.length,
+            ),
+          ],
+        ));
   }
 }
 
 class Leaf extends StatefulWidget {
-  const Leaf({ Key key, this.child }) : super(key: key);
+  const Leaf({Key key, this.child}) : super(key: key);
   final Widget child;
   @override
   _LeafState createState() => new _LeafState();
@@ -83,13 +84,12 @@ class ProductGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new Card(
-      child: Container(
-        color: Colors.blue,
-        height: 80.0,
-        child: Center(
-          child: Text(product.name),
-        ),
-      )
-    );
+        child: Container(
+      color: Colors.blue,
+      height: 80.0,
+      child: Center(
+        child: Text(product.name),
+      ),
+    ));
   }
 }

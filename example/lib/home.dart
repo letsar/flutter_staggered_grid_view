@@ -98,8 +98,7 @@ class HomeHeaderTile extends StatelessWidget {
           child: new Text(
             title,
             textAlign: TextAlign.center,
-            style: Theme
-                .of(context)
+            style: Theme.of(context)
                 .primaryTextTheme
                 .title
                 .copyWith(color: backgroundColor),
