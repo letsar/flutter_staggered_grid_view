@@ -11,12 +11,13 @@ import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
 /// A base class for sliver that have multiple variable size box children.
 ///
 /// Helps subclasses build their children lazily using a [SliverVariableSizeChildDelegate].
-abstract class SliverVariableSizeBoxAdaptorWidget extends SliverWithKeepAliveWidget {
+abstract class SliverVariableSizeBoxAdaptorWidget
+    extends SliverWithKeepAliveWidget {
   /// Initializes fields for subclasses.
   const SliverVariableSizeBoxAdaptorWidget({
     Key key,
     @required this.delegate,
-  })  : super(key: key);
+  }) : super(key: key);
 
   /// The delegate that provides the children for this widget.
   ///
@@ -48,12 +49,12 @@ abstract class SliverVariableSizeBoxAdaptorWidget extends SliverWithKeepAliveWid
   /// The default implementation defers to [delegate] via its
   /// [SliverChildDelegate.estimateMaxScrollOffset] method.
   double estimateMaxScrollOffset(
-      SliverConstraints constraints,
-      int firstIndex,
-      int lastIndex,
-      double leadingScrollOffset,
-      double trailingScrollOffset,
-      ) {
+    SliverConstraints constraints,
+    int firstIndex,
+    int lastIndex,
+    double leadingScrollOffset,
+    double trailingScrollOffset,
+  ) {
     assert(lastIndex >= firstIndex);
     return delegate.estimateMaxScrollOffset(
       firstIndex,
@@ -66,8 +67,8 @@ abstract class SliverVariableSizeBoxAdaptorWidget extends SliverWithKeepAliveWid
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(new DiagnosticsProperty<SliverChildDelegate>(
-        'delegate', delegate));
+    properties.add(
+        new DiagnosticsProperty<SliverChildDelegate>('delegate', delegate));
   }
 }
 
@@ -128,8 +129,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   }
 
   Widget _build(int index) {
-    return _childWidgets.putIfAbsent(
-        index, () => widget.delegate.build(this, index));
+    return _childWidgets[index] = widget.delegate.build(this, index);
   }
 
   @override

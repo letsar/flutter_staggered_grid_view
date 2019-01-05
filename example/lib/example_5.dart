@@ -14,19 +14,24 @@ const List<Color> _kColors = const <Color>[
 ];
 
 List<StaggeredTile> _generateRandomTiles(int count) {
-  Random rnd = new Random();
-  return new List.generate(count,
-      (i) => new StaggeredTile.count(rnd.nextInt(4) + 1, rnd.nextInt(6) + 1));
+  Random rnd = Random();
+  return List.generate(count,
+      (i) => StaggeredTile.count(rnd.nextInt(4) + 1, rnd.nextInt(6) + 1));
+}
+
+List<Color> _generateRandomColors(int count) {
+  Random rnd = Random();
+  return List.generate(count, (i) => _kColors[rnd.nextInt(_kColors.length)]);
 }
 
 class Example05 extends StatelessWidget {
   Example05()
-      : _random = new Random(),
-        _tiles = _generateRandomTiles(_kItemCount).toList();
+      : _tiles = _generateRandomTiles(_kItemCount).toList(),
+        _colors = _generateRandomColors(_kItemCount).toList();
 
   static const int _kItemCount = 1000;
-  final Random _random;
   final List<StaggeredTile> _tiles;
+  final List<Color> _colors;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +55,7 @@ class Example05 extends StatelessWidget {
   Widget _getChild(BuildContext context, int index) {
     return new Container(
       key: new ObjectKey('$index'),
-      color: _kColors[_random.nextInt(_kColors.length)],
+      color: _colors[index],
       child: new Center(
         child: new CircleAvatar(
           backgroundColor: Colors.white,
