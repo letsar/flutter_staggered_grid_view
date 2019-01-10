@@ -88,6 +88,17 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   @override
   RenderSliverVariableSizeBoxAdaptor get renderObject => super.renderObject;
 
+  @override
+  void update(covariant SliverVariableSizeBoxAdaptorWidget newWidget) {
+    final SliverVariableSizeBoxAdaptorWidget oldWidget = widget;
+    super.update(newWidget);
+    final SliverChildDelegate newDelegate = newWidget.delegate;
+    final SliverChildDelegate oldDelegate = oldWidget.delegate;
+    if (newDelegate != oldDelegate &&
+        (newDelegate.runtimeType != oldDelegate.runtimeType ||
+            newDelegate.shouldRebuild(oldDelegate))) performRebuild();
+  }
+
   // We inflate widgets at two different times:
   //  1. When we ourselves are told to rebuild (see performRebuild).
   //  2. When our render object needs a new child (see createChild).
@@ -129,7 +140,8 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   }
 
   Widget _build(int index) {
-    return _childWidgets[index] = widget.delegate.build(this, index);
+    return _childWidgets.putIfAbsent(
+        index, () => widget.delegate.build(this, index));
   }
 
   @override
