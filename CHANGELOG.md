@@ -1,3 +1,7 @@
+## 0.3.0
+### Fixed
+* Upgrade to AndroidX and fixes the BoxHitTestResult exception (https://github.com/letsar/flutter_staggered_grid_view/issues/49)
+
 ## 0.2.7
 ### Fixed
 * Better fix for the bug where items are built only once.
