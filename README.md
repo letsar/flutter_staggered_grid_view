@@ -31,6 +31,8 @@ dependencies:
   flutter_staggered_grid_view: "^0.2.7"
 ```
 
+For flutter after v1.7, please use version after `0.4.0`, otherwise `0.3.0` or below.
+
 In your library add the following import:
 
 ```dart
