@@ -206,8 +206,8 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   void remove(int index) {
     final RenderBox child = this[index];
     final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
-    if (!childParentData._keptAlive) {
+        child?.parentData;
+    if (!(childParentData?._keptAlive ?? false)) {
       super.remove(index);
       return;
     }
