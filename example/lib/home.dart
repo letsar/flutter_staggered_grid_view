@@ -3,7 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'routes.dart';
 
-const List<StaggeredTile> _tiles = <StaggeredTile>[
+const List<StaggeredTile> _tiles = const <StaggeredTile>[
   StaggeredTile.count(2, 0.5),
   StaggeredTile.count(1, 1),
   StaggeredTile.count(1, 1),
@@ -23,7 +23,8 @@ const List<StaggeredTile> _tiles = <StaggeredTile>[
   StaggeredTile.count(1, 1),
   StaggeredTile.count(1, 1),
   StaggeredTile.count(1, 1),
-  //const StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  //StaggeredTile.count(1, 1),
 ];
 
 List<Widget> _children = const <Widget>[
@@ -53,7 +54,8 @@ List<Widget> _children = const <Widget>[
   HomeTile('random tiles', Colors.pink, example05),
   HomeTile('dynamic resizing', Colors.pink, example06),
   HomeTile('dynamic tile sizes', Colors.pink, example07),
-  HomeTile('random dynamic tile sizes', Colors.pink, example08),
+  HomeTile('vertical random dynamic tile sizes', Colors.pink, example08),
+  HomeTile('hoizontal random dynamic tile sizes', Colors.pink, example09),
   //HomeTile('test', Colors.pink, exampleTests),
 ];
 

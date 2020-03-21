@@ -3,9 +3,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
-
-import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_variable_size_box_adaptor.dart';
+import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
 
 /// Signature for a function that creates [StaggeredTile] for a given index.
 typedef IndexedStaggeredTileBuilder = StaggeredTile? Function(int index);
@@ -233,7 +232,9 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
   RenderSliverStaggeredGrid({
     required RenderSliverVariableSizeBoxChildManager childManager,
     required SliverStaggeredGridDelegate gridDelegate,
+    Axis scrollDirection = Axis.vertical,
   })  : _gridDelegate = gridDelegate,
+        _scrollDirection = scrollDirection,
         _pageSizeToViewportOffsets =
             HashMap<double, SplayTreeMap<int, _ViewportOffsets?>>(),
         super(childManager: childManager);
@@ -261,6 +262,14 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       markNeedsLayout();
     }
     _gridDelegate = value;
+  }
+
+  Axis get scrollDirection => _scrollDirection;
+  Axis _scrollDirection;
+  set scrollDirection(Axis value) {
+    if (_scrollDirection == value) return;
+    if (value.runtimeType != _gridDelegate.runtimeType) markNeedsLayout();
+    _scrollDirection = value;
   }
 
   final HashMap<double, SplayTreeMap<int, _ViewportOffsets?>>
@@ -331,8 +340,9 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       RenderBox? child;
       if (!hasTrailingScrollOffset) {
         // Layout the child to compute its tailingScrollOffset.
-        final constraints =
-            BoxConstraints.tightFor(width: geometry.crossAxisExtent);
+        final constraints = _scrollDirection == Axis.vertical
+            ? BoxConstraints.tightFor(width: geometry.crossAxisExtent)
+            : BoxConstraints.tightFor(height: geometry.crossAxisExtent);
         child = addAndLayoutChild(index, constraints, parentUsesSize: true);
         geometry = geometry.copyWith(mainAxisExtent: paintExtentOf(child!));
       }

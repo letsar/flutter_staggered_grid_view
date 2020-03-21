@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:flutter_staggered_grid_view/src/rendering/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/sliver.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
-import 'package:flutter_staggered_grid_view/src/rendering/sliver_staggered_grid.dart';
 
 /// A scrollable, 2D array of widgets with variable sizes.
 ///
@@ -502,6 +501,7 @@ class StaggeredGridView extends BoxScrollView {
     return SliverStaggeredGrid(
       delegate: childrenDelegate,
       gridDelegate: gridDelegate,
+      scrollDirection: scrollDirection,
     );
   }
 }
