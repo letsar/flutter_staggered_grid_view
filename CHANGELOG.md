@@ -1,3 +1,7 @@
+## 0.4.0
+### Fixed
+* Fixed the BoxHitTestResult exception (https://github.com/letsar/flutter_staggered_grid_view/issues/49) again after flutter v1.7 since flutter has changed the function signature for `hitTestChildren`, check [old](https://github.com/flutter/flutter/blob/953bbe2ccd45461f9cafc7c060cf2297227631d0/packages/flutter/lib/src/rendering/sliver_multi_box_adaptor.dart#L481) and [new](https://github.com/flutter/flutter/blob/b712a172f9694745f50505c93340883493b505e5/packages/flutter/lib/src/rendering/sliver_multi_box_adaptor.dart#L560)
+
 ## 0.3.0
 ### Fixed
 * Upgrade to AndroidX and fixes the BoxHitTestResult exception (https://github.com/letsar/flutter_staggered_grid_view/issues/49)

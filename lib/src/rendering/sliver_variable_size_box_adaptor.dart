@@ -374,10 +374,11 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   }
 
   @override
-  bool hitTestChildren(HitTestResult result,
-      {@required double mainAxisPosition, @required double crossAxisPosition}) {
+  bool hitTestChildren(SliverHitTestResult result, 
+      { @required double mainAxisPosition, @required double crossAxisPosition }) {
+    final BoxHitTestResult boxResult = BoxHitTestResult.wrap(result);
     for (var child in children) {
-      if (hitTestBoxChild(BoxHitTestResult.wrap(result), child,
+      if (hitTestBoxChild(boxResult, child,
           mainAxisPosition: mainAxisPosition,
           crossAxisPosition: crossAxisPosition)) return true;
     }
