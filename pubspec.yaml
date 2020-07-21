@@ -1,8 +1,8 @@
 name: flutter_staggered_grid_view
-description: A Flutter staggered grid view
-version: 0.3.0
-author: Romain Rastel <lets4r@gmail.com>
+description: A Flutter staggered grid view (masonry tiles) which supports multiple columns with rows of varying sizes
+version: 0.3.1
 homepage: https://github.com/letsar/flutter_staggered_grid_view
+
 dependencies:
   flutter:
     sdk: flutter
@@ -14,4 +14,4 @@ dev_dependencies:
 
 environment:
   sdk: ">=1.19.0 <3.0.0"
-  flutter: ">=1.6.0"
+  flutter: ">=1.12.0"

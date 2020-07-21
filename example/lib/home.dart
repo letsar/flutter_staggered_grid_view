@@ -100,7 +100,7 @@ class HomeHeaderTile extends StatelessWidget {
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .primaryTextTheme
-                .title
+                .headline6
                 .copyWith(color: backgroundColor),
           ),
         ),
@@ -129,7 +129,7 @@ class HomeTile extends StatelessWidget {
             child: new Text(
               title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).primaryTextTheme.title.copyWith(
+              style: Theme.of(context).primaryTextTheme.headline6.copyWith(
                   color:
                       ThemeData.estimateBrightnessForColor(backgroundColor) ==
                               Brightness.dark

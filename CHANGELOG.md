@@ -1,3 +1,7 @@
+## 0.3.1
+### Fixed
+* Static analysis issues.
+
 ## 0.3.0
 ### Fixed
 * Upgrade to AndroidX and fixes the BoxHitTestResult exception (https://github.com/letsar/flutter_staggered_grid_view/issues/49)
