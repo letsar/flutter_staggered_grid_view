@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-final Uint8List kTransparentImage = new Uint8List.fromList(<int>[
+final Uint8List kTransparentImage = Uint8List.fromList(<int>[
   0x89,
   0x50,
   0x4E,
@@ -72,9 +72,9 @@ final Uint8List kTransparentImage = new Uint8List.fromList(<int>[
 ]);
 
 List<IntSize> _createSizes(int count) {
-  Random rnd = new Random();
-  return new List.generate(count,
-      (i) => new IntSize((rnd.nextInt(500) + 200), rnd.nextInt(800) + 200));
+  final rnd = Random();
+  return List.generate(
+      count, (i) => IntSize(rnd.nextInt(500) + 200, rnd.nextInt(800) + 200));
 }
 
 class Example08 extends StatelessWidget {
@@ -85,17 +85,17 @@ class Example08 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('random dynamic tile sizes'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('random dynamic tile sizes'),
       ),
-      body: new StaggeredGridView.countBuilder(
+      body: StaggeredGridView.countBuilder(
         primary: false,
         crossAxisCount: 4,
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
-        itemBuilder: (context, index) => new _Tile(index, _sizes[index]),
-        staggeredTileBuilder: (index) => new StaggeredTile.fit(2),
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+        itemBuilder: (context, index) => _Tile(index, _sizes[index]),
+        staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
       ),
     );
   }
@@ -116,33 +116,33 @@ class _Tile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
-      child: new Column(
+    return Card(
+      child: Column(
         children: <Widget>[
-          new Stack(
+          Stack(
             children: <Widget>[
-              //new Center(child: new CircularProgressIndicator()),
-              new Center(
-                child: new FadeInImage.memoryNetwork(
+              //Center(child: CircularProgressIndicator()),
+              Center(
+                child: FadeInImage.memoryNetwork(
                   placeholder: kTransparentImage,
                   image: 'https://picsum.photos/${size.width}/${size.height}/',
                 ),
               ),
             ],
           ),
-          new Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: new Column(
+          Padding(
+            padding: const EdgeInsets.all(4),
+            child: Column(
               children: <Widget>[
-                new Text(
+                Text(
                   'Image number $index',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                new Text(
+                Text(
                   'Width: ${size.width}',
                   style: const TextStyle(color: Colors.grey),
                 ),
-                new Text(
+                Text(
                   'Height: ${size.height}',
                   style: const TextStyle(color: Colors.grey),
                 ),

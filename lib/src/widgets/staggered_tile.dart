@@ -37,7 +37,7 @@ class StaggeredTile {
   final int crossAxisCellCount;
 
   /// The number of cells occupied in the main axis.
-  final num mainAxisCellCount;
+  final double mainAxisCellCount;
 
   /// The number of pixels occupied in the main axis.
   final double mainAxisExtent;

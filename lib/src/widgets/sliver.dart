@@ -33,7 +33,7 @@ abstract class SliverVariableSizeBoxAdaptorWidget
 
   @override
   SliverVariableSizeBoxAdaptorElement createElement() =>
-      new SliverVariableSizeBoxAdaptorElement(this);
+      SliverVariableSizeBoxAdaptorElement(this);
 
   @override
   RenderSliverVariableSizeBoxAdaptor createRenderObject(BuildContext context);
@@ -68,7 +68,8 @@ abstract class SliverVariableSizeBoxAdaptorWidget
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-        new DiagnosticsProperty<SliverChildDelegate>('delegate', delegate));
+      DiagnosticsProperty<SliverChildDelegate>('delegate', delegate),
+    );
   }
 }
 
@@ -83,10 +84,12 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
       : super(widget);
 
   @override
-  SliverVariableSizeBoxAdaptorWidget get widget => super.widget;
+  SliverVariableSizeBoxAdaptorWidget get widget =>
+      super.widget as SliverVariableSizeBoxAdaptorWidget;
 
   @override
-  RenderSliverVariableSizeBoxAdaptor get renderObject => super.renderObject;
+  RenderSliverVariableSizeBoxAdaptor get renderObject =>
+      super.renderObject as RenderSliverVariableSizeBoxAdaptor;
 
   @override
   void update(covariant SliverVariableSizeBoxAdaptorWidget newWidget) {
@@ -96,19 +99,21 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     final SliverChildDelegate oldDelegate = oldWidget.delegate;
     if (newDelegate != oldDelegate &&
         (newDelegate.runtimeType != oldDelegate.runtimeType ||
-            newDelegate.shouldRebuild(oldDelegate))) performRebuild();
+            newDelegate.shouldRebuild(oldDelegate))) {
+      performRebuild();
+    }
   }
 
   // We inflate widgets at two different times:
   //  1. When we ourselves are told to rebuild (see performRebuild).
-  //  2. When our render object needs a new child (see createChild).
+  //  2. When our render object needs a child (see createChild).
   // In both cases, we cache the results of calling into our delegate to get the widget,
   // so that if we do case 2 later, we don't call the builder again.
   // Any time we do case 1, though, we reset the cache.
 
-  final Map<int, Widget> _childWidgets = new HashMap<int, Widget>();
+  final Map<int, Widget> _childWidgets = HashMap<int, Widget>();
   final SplayTreeMap<int, Element> _childElements =
-      new SplayTreeMap<int, Element>();
+      SplayTreeMap<int, Element>();
 
   @override
   void performRebuild() {
@@ -165,11 +170,11 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
 
   @override
   Element updateChild(Element child, Widget newWidget, dynamic newSlot) {
-    final SliverVariableSizeBoxAdaptorParentData oldParentData =
-        child?.renderObject?.parentData;
+    final oldParentData = child?.renderObject?.parentData
+        as SliverVariableSizeBoxAdaptorParentData;
     final Element newChild = super.updateChild(child, newWidget, newSlot);
-    final SliverVariableSizeBoxAdaptorParentData newParentData =
-        newChild?.renderObject?.parentData;
+    final newParentData = newChild?.renderObject?.parentData
+        as SliverVariableSizeBoxAdaptorParentData;
 
     // Preserve the old layoutOffset if the renderObject was swapped out.
     if (oldParentData != newParentData &&
@@ -216,8 +221,12 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     double trailingScrollOffset,
   ) {
     final int childCount = this.childCount;
-    if (childCount == null) return double.infinity;
-    if (lastIndex == childCount - 1) return trailingScrollOffset;
+    if (childCount == null) {
+      return double.infinity;
+    }
+    if (lastIndex == childCount - 1) {
+      return trailingScrollOffset;
+    }
     final int reifiedCount = lastIndex - firstIndex + 1;
     final double averageExtent =
         (trailingScrollOffset - leadingScrollOffset) / reifiedCount;
@@ -275,8 +284,8 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   @override
   void didAdoptChild(RenderBox child) {
     assert(_currentlyUpdatingChildIndex != null);
-    final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
+    final childParentData =
+        child.parentData as SliverVariableSizeBoxAdaptorParentData;
     childParentData.index = _currentlyUpdatingChildIndex;
   }
 
@@ -294,8 +303,8 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     assert(renderObject.debugValidateChild(child));
     renderObject[_currentlyUpdatingChildIndex] = child;
     assert(() {
-      final SliverVariableSizeBoxAdaptorParentData childParentData =
-          child.parentData;
+      final childParentData =
+          child.parentData as SliverVariableSizeBoxAdaptorParentData;
       assert(slot == childParentData.index);
       return true;
     }());
@@ -325,8 +334,8 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   @override
   void debugVisitOnstageChildren(ElementVisitor visitor) {
     _childElements.values.where((Element child) {
-      final SliverMultiBoxAdaptorParentData parentData =
-          child.renderObject.parentData;
+      final parentData =
+          child.renderObject.parentData as SliverMultiBoxAdaptorParentData;
       double itemExtent;
       switch (renderObject.constraints.axis) {
         case Axis.horizontal:
@@ -361,7 +370,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
 /// list, shows 8 boxes:
 ///
 /// ```dart
-///new SliverStaggeredGrid.count(
+///SliverStaggeredGrid.count(
 ///  crossAxisCount: 4,
 ///  mainAxisSpacing: 4.0,
 ///  crossAxisSpacing: 4.0,
@@ -413,15 +422,15 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   ///
   /// See also:
   ///
-  ///  * [new StaggeredGridView.count], the equivalent constructor for [StaggeredGridView] widgets.
+  ///  * [StaggeredGridView.count], the equivalent constructor for [StaggeredGridView] widgets.
   SliverStaggeredGrid.count({
     Key key,
     @required int crossAxisCount,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-    List<Widget> children: const <Widget>[],
-    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
-  })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+    double mainAxisSpacing = 0.0,
+    double crossAxisSpacing = 0.0,
+    List<Widget> children = const <Widget>[],
+    List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
+  })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -429,9 +438,11 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           staggeredTileCount: staggeredTiles?.length,
         ),
         super(
-            key: key,
-            delegate: new SliverChildListDelegate(children,
-                addAutomaticKeepAlives: true));
+          key: key,
+          delegate: SliverChildListDelegate(
+            children,
+          ),
+        );
 
   /// Creates a sliver that builds multiple box children in a two dimensional
   /// arrangement with a fixed number of tiles in the cross axis.
@@ -445,7 +456,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   ///
   /// See also:
   ///
-  ///  * [new StaggeredGridView.countBuilder], the equivalent constructor for
+  ///  * [StaggeredGridView.countBuilder], the equivalent constructor for
   ///  [StaggeredGridView] widgets.
   SliverStaggeredGrid.countBuilder({
     Key key,
@@ -453,9 +464,9 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     @required IndexedStaggeredTileBuilder staggeredTileBuilder,
     @required IndexedWidgetBuilder itemBuilder,
     @required int itemCount,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-  })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+    double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
+  })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -467,8 +478,6 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
-            addAutomaticKeepAlives: true,
-            addRepaintBoundaries: true,
           ),
         );
 
@@ -480,15 +489,15 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   ///
   /// See also:
   ///
-  ///  * [new StaggeredGridView.extent], the equivalent constructor for [StaggeredGridView] widgets.
+  ///  * [StaggeredGridView.extent], the equivalent constructor for [StaggeredGridView] widgets.
   SliverStaggeredGrid.extent({
     Key key,
     @required double maxCrossAxisExtent,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-    List<Widget> children: const <Widget>[],
-    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
-  })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
+    double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
+    List<Widget> children = const <Widget>[],
+    List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
+  })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -496,9 +505,11 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           staggeredTileCount: staggeredTiles?.length,
         ),
         super(
-            key: key,
-            delegate: new SliverChildListDelegate(children,
-                addAutomaticKeepAlives: true));
+          key: key,
+          delegate: SliverChildListDelegate(
+            children,
+          ),
+        );
 
   /// Creates a sliver that builds multiple box children in a two dimensional
   /// arrangement with tiles that each have a maximum cross-axis extent.
@@ -512,7 +523,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   ///
   /// See also:
   ///
-  ///  * [new StaggeredGridView.extentBuilder], the equivalent constructor for
+  ///  * [StaggeredGridView.extentBuilder], the equivalent constructor for
   ///  [StaggeredGridView] widgets.
   SliverStaggeredGrid.extentBuilder({
     Key key,
@@ -520,9 +531,9 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     @required IndexedStaggeredTileBuilder staggeredTileBuilder,
     @required IndexedWidgetBuilder itemBuilder,
     @required int itemCount,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-  })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
+    double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
+  })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -534,8 +545,6 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
-            addAutomaticKeepAlives: true,
-            addRepaintBoundaries: true,
           ),
         );
 
@@ -544,8 +553,8 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
 
   @override
   RenderSliverStaggeredGrid createRenderObject(BuildContext context) {
-    final SliverVariableSizeBoxAdaptorElement element = context;
-    return new RenderSliverStaggeredGrid(
+    final element = context as SliverVariableSizeBoxAdaptorElement;
+    return RenderSliverStaggeredGrid(
         childManager: element, gridDelegate: gridDelegate);
   }
 

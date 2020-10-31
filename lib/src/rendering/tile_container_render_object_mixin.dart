@@ -9,7 +9,7 @@ import 'package:flutter/rendering.dart';
 mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
     ParentDataType extends ParentData> on RenderObject {
   final SplayTreeMap<int, ChildType> _childRenderObjects =
-      new SplayTreeMap<int, ChildType>();
+      SplayTreeMap<int, ChildType>();
 
   /// The number of children.
   int get childCount => _childRenderObjects.length;
@@ -27,7 +27,7 @@ mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
   bool debugValidateChild(RenderObject child) {
     assert(() {
       if (child is! ChildType) {
-        throw new FlutterError(
+        throw FlutterError(
             'A $runtimeType expected a child of type $ChildType but received a '
             'child of type ${child.runtimeType}.\n'
             'RenderObjects expect specific types of children because they '
@@ -51,7 +51,9 @@ mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
 
   void operator []=(int index, ChildType child) {
     assert(child != null);
-    if (index == null || index < 0) throw new ArgumentError(index);
+    if (index == null || index < 0) {
+      throw ArgumentError(index);
+    }
     _removeChild(_childRenderObjects[index]);
     adoptChild(child);
     _childRenderObjects[index] = child;
@@ -63,7 +65,7 @@ mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
 
   /// Remove the child at the specified index from the child list.
   void remove(int index) {
-    ChildType child = _childRenderObjects.remove(index);
+    final child = _childRenderObjects.remove(index);
     _removeChild(child);
   }
 

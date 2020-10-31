@@ -8,18 +8,18 @@ class ExampleTests extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('random dynamic tile sizes'),
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('random dynamic tile sizes'),
         ),
         body: CustomScrollView(
           slivers: <Widget>[
             SliverStaggeredGrid.countBuilder(
               crossAxisCount: 2,
-              staggeredTileBuilder: (_) => StaggeredTile.fit(1),
+              staggeredTileBuilder: (_) => const StaggeredTile.fit(1),
               itemBuilder: (context, index) => ProductGridItem(
-                    products[index],
-                  ),
+                products[index],
+              ),
               itemCount: products.length,
             ),
           ],
@@ -31,7 +31,7 @@ class Leaf extends StatefulWidget {
   const Leaf({Key key, this.child}) : super(key: key);
   final Widget child;
   @override
-  _LeafState createState() => new _LeafState();
+  _LeafState createState() => _LeafState();
 }
 
 class _LeafState extends State<Leaf> {
@@ -49,8 +49,8 @@ class _LeafState extends State<Leaf> {
     _keepAlive = value;
     if (_keepAlive) {
       if (_handle == null) {
-        _handle = new KeepAliveHandle();
-        new KeepAliveNotification(_handle).dispatch(context);
+        _handle = KeepAliveHandle();
+        KeepAliveNotification(_handle).dispatch(context);
       }
     } else {
       _handle?.release();
@@ -61,8 +61,8 @@ class _LeafState extends State<Leaf> {
   @override
   Widget build(BuildContext context) {
     if (_keepAlive && _handle == null) {
-      _handle = new KeepAliveHandle();
-      new KeepAliveNotification(_handle).dispatch(context);
+      _handle = KeepAliveHandle();
+      KeepAliveNotification(_handle).dispatch(context);
     }
     return widget.child;
   }
@@ -80,10 +80,10 @@ class ProductGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
+    return Card(
         child: Container(
       color: Colors.blue,
-      height: 80.0,
+      height: 80,
       child: Center(
         child: Text(product.name),
       ),

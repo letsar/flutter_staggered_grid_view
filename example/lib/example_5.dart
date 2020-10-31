@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-const List<Color> _kColors = const <Color>[
+const List<Color> _kColors = <Color>[
   Colors.green,
   Colors.blue,
   Colors.red,
@@ -14,13 +14,15 @@ const List<Color> _kColors = const <Color>[
 ];
 
 List<StaggeredTile> _generateRandomTiles(int count) {
-  Random rnd = Random();
-  return List.generate(count,
-      (i) => StaggeredTile.count(rnd.nextInt(4) + 1, rnd.nextInt(6) + 1));
+  final rnd = Random();
+  return List.generate(
+      count,
+      (i) => StaggeredTile.count(
+          rnd.nextInt(4) + 1, rnd.nextInt(6).toDouble() + 1));
 }
 
 List<Color> _generateRandomColors(int count) {
-  Random rnd = Random();
+  final rnd = Random();
   return List.generate(count, (i) => _kColors[rnd.nextInt(_kColors.length)]);
 }
 
@@ -35,15 +37,15 @@ class Example05 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('random tiles'),
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('random tiles'),
         ),
-        body: new StaggeredGridView.countBuilder(
+        body: StaggeredGridView.countBuilder(
           primary: false,
           crossAxisCount: 4,
-          crossAxisSpacing: 4.0,
-          mainAxisSpacing: 4.0,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
           staggeredTileBuilder: _getTile,
           itemBuilder: _getChild,
           itemCount: _kItemCount,
@@ -53,13 +55,13 @@ class Example05 extends StatelessWidget {
   StaggeredTile _getTile(int index) => _tiles[index];
 
   Widget _getChild(BuildContext context, int index) {
-    return new Container(
-      key: new ObjectKey('$index'),
+    return Container(
+      key: ObjectKey('$index'),
       color: _colors[index],
-      child: new Center(
-        child: new CircleAvatar(
+      child: Center(
+        child: CircleAvatar(
           backgroundColor: Colors.white,
-          child: new Text('$index'),
+          child: Text('$index'),
         ),
       ),
     );

@@ -9,8 +9,8 @@ class StaggeredGridViewPage extends StatelessWidget {
     @required this.title,
     @required this.crossAxisCount,
     @required this.tiles,
-    this.mainAxisSpacing: 4.0,
-    this.crossAxisSpacing: 4.0,
+    this.mainAxisSpacing = 4,
+    this.crossAxisSpacing = 4,
   })  : _staggeredGridViewMode = _StaggeredGridViewMode.count,
         maxCrossAxisExtent = null;
 
@@ -18,13 +18,12 @@ class StaggeredGridViewPage extends StatelessWidget {
     @required this.title,
     @required this.maxCrossAxisExtent,
     @required this.tiles,
-    this.mainAxisSpacing: 4.0,
-    this.crossAxisSpacing: 4.0,
+    this.mainAxisSpacing = 4,
+    this.crossAxisSpacing = 4,
   })  : _staggeredGridViewMode = _StaggeredGridViewMode.extent,
         crossAxisCount = null;
 
-  static const EdgeInsetsGeometry padding =
-      const EdgeInsets.symmetric(horizontal: 4.0);
+  static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(horizontal: 4);
 
   final String title;
   final List<StaggeredTile> tiles;
@@ -36,19 +35,19 @@ class StaggeredGridViewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text(title),
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(title),
         ),
-        body: new Padding(
-            padding: const EdgeInsets.only(top: 4.0),
+        body: Padding(
+            padding: const EdgeInsets.only(top: 4),
             child: _buildStaggeredGridView(context)));
   }
 
   Widget _buildStaggeredGridView(BuildContext context) {
     switch (_staggeredGridViewMode) {
       case _StaggeredGridViewMode.count:
-        return new StaggeredGridView.countBuilder(
+        return StaggeredGridView.countBuilder(
           crossAxisCount: crossAxisCount,
           itemCount: tiles.length,
           itemBuilder: _getChild,
@@ -58,7 +57,7 @@ class StaggeredGridViewPage extends StatelessWidget {
           staggeredTileBuilder: _getStaggeredTile,
         );
       default:
-        return new StaggeredGridView.extentBuilder(
+        return StaggeredGridView.extentBuilder(
           maxCrossAxisExtent: maxCrossAxisExtent,
           itemCount: tiles.length,
           itemBuilder: _getChild,
@@ -75,8 +74,7 @@ class StaggeredGridViewPage extends StatelessWidget {
   }
 
   TileWidget _getChild(BuildContext context, int index) {
-    return new TileWidget(
-        key: new ObjectKey(index), index: index, backgroundColor: Colors.green);
+    return TileWidget(key: ObjectKey(index), index: index);
   }
 }
 
