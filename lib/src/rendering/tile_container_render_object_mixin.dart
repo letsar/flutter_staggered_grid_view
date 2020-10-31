@@ -47,11 +47,10 @@ mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
     return true;
   }
 
-  ChildType operator [](int index) => _childRenderObjects[index];
+  ChildType? operator [](int index) => _childRenderObjects[index];
 
   void operator []=(int index, ChildType child) {
-    assert(child != null);
-    if (index == null || index < 0) {
+    if (index < 0) {
       throw ArgumentError(index);
     }
     _removeChild(_childRenderObjects[index]);
@@ -59,7 +58,7 @@ mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
     _childRenderObjects[index] = child;
   }
 
-  void forEachChild(void f(ChildType child)) {
+  void forEachChild(void Function(ChildType child) f) {
     _childRenderObjects.values.forEach(f);
   }
 
@@ -69,7 +68,7 @@ mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
     _removeChild(child);
   }
 
-  void _removeChild(ChildType child) {
+  void _removeChild(ChildType? child) {
     if (child != null) {
       // Remove the old child.
       dropChild(child);

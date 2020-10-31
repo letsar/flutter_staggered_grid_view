@@ -7,7 +7,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 Size _getTileSize(StaggeredTile tile, double cellLength) {
   return Size(
     tile.crossAxisCellCount * cellLength,
-    tile.mainAxisExtent ?? tile.mainAxisCellCount * cellLength,
+    tile.mainAxisExtent ?? tile.mainAxisCellCount! * cellLength,
   );
 }
 

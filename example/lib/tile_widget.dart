@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 class TileWidget extends StatelessWidget {
   const TileWidget(
-      {Key key, @required this.index, this.backgroundColor = Colors.green})
+      {Key? key, required this.index, this.backgroundColor = Colors.green})
       : super(key: key);
 
   final int index;

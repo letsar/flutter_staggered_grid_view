@@ -98,9 +98,9 @@ class HomeHeaderTile extends StatelessWidget {
           child: Text(
             title,
             textAlign: TextAlign.center,
-            style: Theme.of(context)
+            style: Theme.of(context)!
                 .primaryTextTheme
-                .headline6
+                .headline6!
                 .copyWith(color: backgroundColor),
           ),
         ),
@@ -122,14 +122,14 @@ class HomeTile extends StatelessWidget {
       color: backgroundColor,
       child: InkWell(
         onTap:
-            route == null ? null : () => Navigator.of(context).pushNamed(route),
+            route == null ? null : () => Navigator.of(context)!.pushNamed(route),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Text(
               title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).primaryTextTheme.headline6.copyWith(
+              style: Theme.of(context)!.primaryTextTheme.headline6!.copyWith(
                   color:
                       ThemeData.estimateBrightnessForColor(backgroundColor) ==
                               Brightness.dark

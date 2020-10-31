@@ -6,18 +6,18 @@ import 'tile_widget.dart';
 
 class StaggeredGridViewPage extends StatelessWidget {
   const StaggeredGridViewPage.count({
-    @required this.title,
-    @required this.crossAxisCount,
-    @required this.tiles,
+    required this.title,
+    required this.crossAxisCount,
+    required this.tiles,
     this.mainAxisSpacing = 4,
     this.crossAxisSpacing = 4,
   })  : _staggeredGridViewMode = _StaggeredGridViewMode.count,
         maxCrossAxisExtent = null;
 
   const StaggeredGridViewPage.extent({
-    @required this.title,
-    @required this.maxCrossAxisExtent,
-    @required this.tiles,
+    required this.title,
+    required this.maxCrossAxisExtent,
+    required this.tiles,
     this.mainAxisSpacing = 4,
     this.crossAxisSpacing = 4,
   })  : _staggeredGridViewMode = _StaggeredGridViewMode.extent,
@@ -27,10 +27,10 @@ class StaggeredGridViewPage extends StatelessWidget {
 
   final String title;
   final List<StaggeredTile> tiles;
-  final int crossAxisCount;
+  final int? crossAxisCount;
   final double mainAxisSpacing;
   final double crossAxisSpacing;
-  final double maxCrossAxisExtent;
+  final double? maxCrossAxisExtent;
   final _StaggeredGridViewMode _staggeredGridViewMode;
 
   @override
@@ -48,7 +48,7 @@ class StaggeredGridViewPage extends StatelessWidget {
     switch (_staggeredGridViewMode) {
       case _StaggeredGridViewMode.count:
         return StaggeredGridView.countBuilder(
-          crossAxisCount: crossAxisCount,
+          crossAxisCount: crossAxisCount!,
           itemCount: tiles.length,
           itemBuilder: _getChild,
           mainAxisSpacing: mainAxisSpacing,
@@ -58,7 +58,7 @@ class StaggeredGridViewPage extends StatelessWidget {
         );
       default:
         return StaggeredGridView.extentBuilder(
-          maxCrossAxisExtent: maxCrossAxisExtent,
+          maxCrossAxisExtent: maxCrossAxisExtent!,
           itemCount: tiles.length,
           itemBuilder: _getChild,
           mainAxisSpacing: mainAxisSpacing,
@@ -69,7 +69,7 @@ class StaggeredGridViewPage extends StatelessWidget {
     }
   }
 
-  StaggeredTile _getStaggeredTile(int i) {
+  StaggeredTile? _getStaggeredTile(int i) {
     return i >= tiles.length ? null : tiles[i];
   }
 

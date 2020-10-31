@@ -28,15 +28,15 @@ class ExampleTests extends StatelessWidget {
 }
 
 class Leaf extends StatefulWidget {
-  const Leaf({Key key, this.child}) : super(key: key);
-  final Widget child;
+  const Leaf({Key? key, this.child}) : super(key: key);
+  final Widget? child;
   @override
   _LeafState createState() => _LeafState();
 }
 
 class _LeafState extends State<Leaf> {
   bool _keepAlive = false;
-  KeepAliveHandle _handle;
+  KeepAliveHandle? _handle;
 
   @override
   void deactivate() {
@@ -50,7 +50,7 @@ class _LeafState extends State<Leaf> {
     if (_keepAlive) {
       if (_handle == null) {
         _handle = KeepAliveHandle();
-        KeepAliveNotification(_handle).dispatch(context);
+        KeepAliveNotification(_handle!).dispatch(context);
       }
     } else {
       _handle?.release();
@@ -62,9 +62,9 @@ class _LeafState extends State<Leaf> {
   Widget build(BuildContext context) {
     if (_keepAlive && _handle == null) {
       _handle = KeepAliveHandle();
-      KeepAliveNotification(_handle).dispatch(context);
+      KeepAliveNotification(_handle!).dispatch(context);
     }
-    return widget.child;
+    return widget.child!;
   }
 }
 

@@ -25,7 +25,7 @@ class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<int>(
+      body: StreamBuilder<int?>(
         stream: BlocProvider.of<SimpleBloc>(context).counter,
         initialData: 0,
         builder: (context, snapshot) =>
@@ -65,8 +65,8 @@ class GridTest extends StatelessWidget {
 
 class StaggeredTest extends StatelessWidget {
   const StaggeredTest(this.count, this.value);
-  final int count;
-  final int value;
+  final int? count;
+  final int? value;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +103,7 @@ class SimpleBloc implements Disposable {
 
   final StreamController<int> _counterController;
   final Stream<int> counter;
-  int _counter;
+  late int _counter;
 
   void dispose() {
     _counterController.close();
@@ -117,9 +117,9 @@ class SimpleBloc implements Disposable {
 
 class BlocProvider<T extends Disposable> extends StatefulWidget {
   const BlocProvider({
-    Key key,
-    @required this.child,
-    @required this.bloc,
+    Key? key,
+    required this.child,
+    required this.bloc,
   }) : super(key: key);
 
   final T bloc;
@@ -129,7 +129,7 @@ class BlocProvider<T extends Disposable> extends StatefulWidget {
   _BlocProviderState<T> createState() => _BlocProviderState<T>();
 
   static T of<T extends Disposable>(BuildContext context) {
-    final provider = context.findAncestorWidgetOfExactType<BlocProvider<T>>();
+    final provider = context.findAncestorWidgetOfExactType<BlocProvider<T>>()!;
     return provider.bloc;
   }
 }

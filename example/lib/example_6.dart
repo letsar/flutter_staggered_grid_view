@@ -30,7 +30,7 @@ class _Example06State extends State<Example06> {
     4,
   ];
 
-  int _selectedIndex;
+  int? _selectedIndex;
 
   final int crossAxisCount;
 
@@ -91,14 +91,14 @@ class _Example06State extends State<Example06> {
 
 class _Example06Tile extends StatelessWidget {
   const _Example06Tile({
-    Key key,
-    @required this.index,
-    @required this.size,
-    @required this.onSizeDown,
-    @required this.onSizeUp,
-    @required this.onSelectedItemChanged,
-    @required this.maxSize,
-    @required this.isSelected,
+    Key? key,
+    required this.index,
+    required this.size,
+    required this.onSizeDown,
+    required this.onSizeUp,
+    required this.onSelectedItemChanged,
+    required this.maxSize,
+    required this.isSelected,
   }) : super(key: key);
 
   final int index;
@@ -185,19 +185,19 @@ final _TileButton _kCloseTileButton = _TileButton(
 
 class _TileButton {
   const _TileButton({
-    @required this.text,
-    @required this.onTap,
-    @required bool isLeft,
-    @required bool isTop,
+    required this.text,
+    required this.onTap,
+    required bool isLeft,
+    required bool isTop,
   })  : bottom = isTop ? null : 0.0,
         top = isTop ? 0.0 : null,
         left = isLeft ? 0.0 : null,
         right = isLeft ? null : 0.0;
 
-  final double bottom;
-  final double top;
-  final double left;
-  final double right;
+  final double? bottom;
+  final double? top;
+  final double? left;
+  final double? right;
   final String text;
   final ValueChanged<_Example06Tile> onTap;
 }
