@@ -11,8 +11,8 @@ analyzer:
     included_file_warning: ignore
     missing_required_param: error
     missing_return: error
-  enable-experiment:
-    - non-nullable
+  # enable-experiment:
+  #   - non-nullable
 
 linter:
   rules:

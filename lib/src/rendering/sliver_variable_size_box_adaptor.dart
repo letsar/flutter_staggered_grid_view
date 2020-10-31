@@ -197,7 +197,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
     final childParentData =
         child.parentData as SliverVariableSizeBoxAdaptorParentData;
     if (!childParentData._keptAlive) {
-      childManager.didAdoptChild(child);
+      childManager.didAdoptChild(child as RenderBox);
     }
   }
 
@@ -412,7 +412,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
 
   @override
   void applyPaintTransform(RenderObject child, Matrix4 transform) {
-    applyPaintTransformForBoxChild(child, transform);
+    applyPaintTransformForBoxChild(child as RenderBox, transform);
   }
 
   @override

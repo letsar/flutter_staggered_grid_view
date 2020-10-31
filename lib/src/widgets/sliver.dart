@@ -297,7 +297,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   }
 
   @override
-  void insertChildRenderObject(covariant RenderObject child, int slot) {
+  void insertChildRenderObject(covariant RenderBox child, int slot) {
     assert(slot != null);
     assert(_currentlyUpdatingChildIndex == slot);
     assert(renderObject.debugValidateChild(child));
