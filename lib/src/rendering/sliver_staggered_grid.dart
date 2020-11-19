@@ -90,9 +90,9 @@ class StaggeredGridConfiguration {
   }
 
   /// Creates a staggered tile with the computed extent from the given tile.
-  StaggeredTile _normalizeStaggeredTile(StaggeredTile? staggeredTile) {
+  StaggeredTile? _normalizeStaggeredTile(StaggeredTile? staggeredTile) {
     if (staggeredTile == null) {
-      return null!;
+      return null;
     } else {
       final crossAxisCellCount =
           staggeredTile.crossAxisCellCount.clamp(0, crossAxisCount).toInt();
@@ -210,8 +210,7 @@ class SliverStaggeredGridGeometry {
         'mainAxisExtent: $mainAxisExtent, '
         'crossAxisExtent: $crossAxisExtent, '
         'crossAxisCellCount: $crossAxisCellCount, '
-        'startIndex: $blockIndex'
-        ')';
+        'startIndex: $blockIndex)';
   }
 }
 

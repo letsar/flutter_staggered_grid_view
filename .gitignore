@@ -18,3 +18,5 @@ doc/api/
 .idea/
 .DS_Store
 .vscode/
+
+example/ios/Flutter/flutter_export_environment\.sh
