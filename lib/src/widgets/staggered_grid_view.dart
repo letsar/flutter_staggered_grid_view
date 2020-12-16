@@ -136,6 +136,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
+    String restorationId,
   })  : assert(gridDelegate != null),
         childrenDelegate = new SliverChildListDelegate(
           children,
@@ -151,6 +152,7 @@ class StaggeredGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          restorationId: restorationId,
         );
 
   /// Creates a scrollable, 2D array of widgets that are created on demand.
@@ -186,6 +188,7 @@ class StaggeredGridView extends BoxScrollView {
     int itemCount,
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
+    String restorationId,
   })  : assert(gridDelegate != null),
         childrenDelegate = new SliverChildBuilderDelegate(
           itemBuilder,
@@ -202,6 +205,7 @@ class StaggeredGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          restorationId: restorationId,
         );
 
   /// Creates a scrollable, 2D array of widgets with both a custom
@@ -221,6 +225,7 @@ class StaggeredGridView extends BoxScrollView {
     ScrollPhysics physics,
     bool shrinkWrap: false,
     EdgeInsetsGeometry padding,
+    String restorationId,
     @required this.gridDelegate,
     @required this.childrenDelegate,
   })  : assert(gridDelegate != null),
@@ -234,6 +239,7 @@ class StaggeredGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          restorationId: restorationId,
         );
 
   /// Creates a scrollable, 2D array of widgets of variable sizes with a fixed
@@ -267,6 +273,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
     List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
+    String restorationId,
   })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
@@ -288,6 +295,7 @@ class StaggeredGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          restorationId: restorationId,
         );
 
   /// Creates a scrollable, 2D array of widgets of variable sizes with a fixed
@@ -329,6 +337,7 @@ class StaggeredGridView extends BoxScrollView {
     double crossAxisSpacing: 0.0,
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
+    String restorationId,
   })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
@@ -351,6 +360,7 @@ class StaggeredGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          restorationId: restorationId,
         );
 
   /// Creates a scrollable, 2D array of widgets of variable sizes with tiles
@@ -390,6 +400,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addRepaintBoundaries: true,
     List<Widget> children: const <Widget>[],
     List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
+    String restorationId,
   })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
@@ -411,6 +422,7 @@ class StaggeredGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          restorationId: restorationId,
         );
 
   /// Creates a scrollable, 2D array of widgets of variable sizes with tiles
@@ -448,6 +460,7 @@ class StaggeredGridView extends BoxScrollView {
     double crossAxisSpacing: 0.0,
     bool addAutomaticKeepAlives: true,
     bool addRepaintBoundaries: true,
+    String restorationId,
   })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
@@ -470,6 +483,7 @@ class StaggeredGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          restorationId: restorationId,
         );
 
   /// A delegate that controls the layout of the children within the
