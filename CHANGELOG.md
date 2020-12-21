@@ -1,3 +1,7 @@
+## 0.4.0-nullsafety.2
+### Added
+* Support for state restoration
+
 ## 0.4.0-nullsafety.1
 ### Added
 * Null Safety Support
