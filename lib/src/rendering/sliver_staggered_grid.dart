@@ -314,6 +314,11 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
         BoxConstraints constraints =
             new BoxConstraints.tightFor(width: geometry.crossAxisExtent);
         child = addAndLayoutChild(index, constraints, parentUsesSize: true);
+        if (child == null) {
+          // There are no children left.
+          reachedEnd = true;
+          break;
+        }
         geometry = geometry.copyWith(mainAxisExtent: paintExtentOf(child));
       }
 
