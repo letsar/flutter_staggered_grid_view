@@ -129,7 +129,11 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
       } else if (_didUnderflow) {
         firstIndex = _childElements.firstKey()!;
         lastIndex = _childElements.lastKey()! + 1;
+      } else {
+        firstIndex = _childElements.firstKey()!;
+        lastIndex = _childElements.lastKey()!;
       }
+
       for (int index = firstIndex; index <= lastIndex; ++index) {
         _currentlyUpdatingChildIndex = index;
         final Element? newChild =
