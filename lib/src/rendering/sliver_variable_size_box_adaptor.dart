@@ -127,6 +127,7 @@ class SliverVariableSizeBoxAdaptorParentData
   /// Whether the widget is currently in the
   /// [RenderSliverVariableSizeBoxAdaptor._keepAliveBucket].
   bool _keptAlive = false;
+  bool keepAlive = false;
 
   @override
   String toString() => 'crossAxisOffset=$crossAxisOffset; ${super.toString()}';

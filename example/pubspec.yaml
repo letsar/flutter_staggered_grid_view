@@ -12,6 +12,11 @@ dependencies:
   flutter_staggered_grid_view:
     path: ../
 
+
+environment:
+  sdk: ">=2.7.0 <3.0.0"
+#  flutter: ">=1.17.0"
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
