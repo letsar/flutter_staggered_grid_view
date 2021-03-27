@@ -20,3 +20,4 @@ doc/api/
 .vscode/
 
 example/ios/Flutter/flutter_export_environment\.sh
+/.vs
