@@ -10,14 +10,14 @@ import 'example_7.dart';
 import 'example_8.dart';
 import 'example_tests.dart';
 import 'home.dart';
-import 'spannable_count_extent_page.dart';
 import 'spannable_count_count_page.dart';
-import 'spannable_extent_extent_page.dart';
+import 'spannable_count_extent_page.dart';
 import 'spannable_extent_count_page.dart';
-import 'staggered_count_extent_page.dart';
+import 'spannable_extent_extent_page.dart';
 import 'staggered_count_count_page.dart';
-import 'staggered_extent_extent_page.dart';
+import 'staggered_count_extent_page.dart';
 import 'staggered_extent_count_page.dart';
+import 'staggered_extent_extent_page.dart';
 
 const String homeRoute = '/';
 
@@ -42,30 +42,28 @@ const String example08 = '/example_08';
 const String exampleTests = '/example_tests';
 
 Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
-  homeRoute: (BuildContext context) => new Home(),
-  staggeredCountCountRoute: (BuildContext context) =>
-      new StaggeredCountCountPage(),
+  homeRoute: (BuildContext context) => Home(),
+  staggeredCountCountRoute: (BuildContext context) => StaggeredCountCountPage(),
   staggeredExtentCountRoute: (BuildContext context) =>
-      new StaggeredExtentCountPage(),
+      StaggeredExtentCountPage(),
   staggeredCountExtentRoute: (BuildContext context) =>
-      new StaggeredCountExtentPage(),
+      StaggeredCountExtentPage(),
   staggeredExtentExtentRoute: (BuildContext context) =>
-      new StaggeredExtentExtentPage(),
-  spannableCountCountRoute: (BuildContext context) =>
-      new SpannableCountCountPage(),
+      StaggeredExtentExtentPage(),
+  spannableCountCountRoute: (BuildContext context) => SpannableCountCountPage(),
   spannableExtentCountRoute: (BuildContext context) =>
-      new SpannableExtentCountPage(),
+      SpannableExtentCountPage(),
   spannableCountExtentRoute: (BuildContext context) =>
-      new SpannableCountExtentPage(),
+      SpannableCountExtentPage(),
   spannableExtentExtentRoute: (BuildContext context) =>
-      new SpannableExtentExtentPage(),
-  example01: (BuildContext context) => new Example01(),
-  example02: (BuildContext context) => new Example02(),
-  example03: (BuildContext context) => new Example03(),
-  example04: (BuildContext context) => new Example04(),
-  example05: (BuildContext context) => new Example05(),
-  example06: (BuildContext context) => new Example06(),
-  example07: (BuildContext context) => new Example07(),
-  example08: (BuildContext context) => new Example08(),
-  exampleTests: (BuildContext context) => new ExampleTests(),
+      SpannableExtentExtentPage(),
+  example01: (BuildContext context) => Example01(),
+  example02: (BuildContext context) => Example02(),
+  example03: (BuildContext context) => Example03(),
+  example04: (BuildContext context) => Example04(),
+  example05: (BuildContext context) => Example05(),
+  example06: (BuildContext context) => Example06(),
+  example07: (BuildContext context) => Example07(),
+  example08: (BuildContext context) => Example08(),
+  exampleTests: (BuildContext context) => ExampleTests(),
 };

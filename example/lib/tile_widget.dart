@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 class TileWidget extends StatelessWidget {
   const TileWidget(
-      {Key key, @required this.index, this.backgroundColor: Colors.green})
+      {Key? key, required this.index, this.backgroundColor = Colors.green})
       : super(key: key);
 
   final int index;
@@ -12,12 +12,12 @@ class TileWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      color: this.backgroundColor,
-      child: new Center(
-          child: new CircleAvatar(
+    return Container(
+      color: backgroundColor,
+      child: Center(
+          child: CircleAvatar(
         backgroundColor: Colors.white,
-        child: new Text('$index'),
+        child: Text('$index'),
       )),
     );
   }

@@ -8,28 +8,26 @@ import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_variable_size_box_adaptor.dart';
 
 /// Signature for a function that creates [StaggeredTile] for a given index.
-typedef StaggeredTile IndexedStaggeredTileBuilder(int index);
+typedef IndexedStaggeredTileBuilder = StaggeredTile? Function(int index);
 
 /// Specifies how a staggered grid is configured.
 @immutable
 class StaggeredGridConfiguration {
   ///  Creates an object that holds the configuration of a staggered grid.
-  StaggeredGridConfiguration({
-    @required this.crossAxisCount,
-    @required this.staggeredTileBuilder,
-    @required this.cellExtent,
-    @required this.mainAxisSpacing,
-    @required this.crossAxisSpacing,
-    @required this.reverseCrossAxis,
-    @required this.staggeredTileCount,
+  const StaggeredGridConfiguration({
+    required this.crossAxisCount,
+    required this.staggeredTileBuilder,
+    required this.cellExtent,
+    required this.mainAxisSpacing,
+    required this.crossAxisSpacing,
+    required this.reverseCrossAxis,
+    required this.staggeredTileCount,
     this.mainAxisOffsetsCacheSize = 3,
-  })  : assert(crossAxisCount != null && crossAxisCount > 0),
-        assert(staggeredTileBuilder != null),
-        assert(cellExtent != null && cellExtent >= 0),
-        assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
-        assert(crossAxisSpacing != null && crossAxisSpacing >= 0),
-        assert(
-            mainAxisOffsetsCacheSize != null && mainAxisOffsetsCacheSize > 0),
+  })  : assert(crossAxisCount > 0),
+        assert(cellExtent >= 0),
+        assert(mainAxisSpacing >= 0),
+        assert(crossAxisSpacing >= 0),
+        assert(mainAxisOffsetsCacheSize > 0),
         cellStride = cellExtent + crossAxisSpacing;
 
   /// The maximum number of children in the cross axis.
@@ -53,7 +51,7 @@ class StaggeredGridConfiguration {
   ///
   /// If null, the number of tiles is determined by the least index for which
   /// [builder] returns null.
-  final int staggeredTileCount;
+  final int? staggeredTileCount;
 
   /// Whether the children should be placed in the opposite order of increasing
   /// coordinates in the cross axis.
@@ -72,12 +70,12 @@ class StaggeredGridConfiguration {
   final int mainAxisOffsetsCacheSize;
 
   List<double> generateMainAxisOffsets() =>
-      new List.generate(crossAxisCount, (i) => 0.0);
+      List.generate(crossAxisCount, (i) => 0.0);
 
   /// Gets a normalized tile for the given index.
-  StaggeredTile getStaggeredTile(int index) {
-    StaggeredTile tile;
-    if (staggeredTileCount == null || index < staggeredTileCount) {
+  StaggeredTile? getStaggeredTile(int index) {
+    StaggeredTile? tile;
+    if (staggeredTileCount == null || index < staggeredTileCount!) {
       // There is maybe a tile for this index.
       tile = _normalizeStaggeredTile(staggeredTileBuilder(index));
     }
@@ -87,21 +85,21 @@ class StaggeredGridConfiguration {
   /// Computes the main axis extent of any staggered tile.
   double _getStaggeredTileMainAxisExtent(StaggeredTile tile) {
     return tile.mainAxisExtent ??
-        (tile.mainAxisCellCount * cellExtent) +
-            (tile.mainAxisCellCount - 1) * mainAxisSpacing;
+        (tile.mainAxisCellCount! * cellExtent) +
+            (tile.mainAxisCellCount! - 1) * mainAxisSpacing;
   }
 
   /// Creates a staggered tile with the computed extent from the given tile.
-  StaggeredTile _normalizeStaggeredTile(StaggeredTile staggeredTile) {
+  StaggeredTile? _normalizeStaggeredTile(StaggeredTile? staggeredTile) {
     if (staggeredTile == null) {
       return null;
     } else {
-      int crossAxisCellCount =
-          staggeredTile.crossAxisCellCount.clamp(0, crossAxisCount);
+      final crossAxisCellCount =
+          staggeredTile.crossAxisCellCount.clamp(0, crossAxisCount).toInt();
       if (staggeredTile.fitContent) {
-        return new StaggeredTile.fit(crossAxisCellCount);
+        return StaggeredTile.fit(crossAxisCellCount);
       } else {
-        return new StaggeredTile.extent(
+        return StaggeredTile.extent(
             crossAxisCellCount, _getStaggeredTileMainAxisExtent(staggeredTile));
       }
     }
@@ -130,20 +128,40 @@ bool _nearEqual(double d1, double d2) {
 ///  * [RenderSliverStaggeredGrid], which uses this class during its
 ///    [RenderSliverStaggeredGrid.performLayout] method.
 @immutable
-class SliverStaggeredGridGeometry extends SliverGridGeometry {
+class SliverStaggeredGridGeometry {
   /// Creates an object that describes the placement of a child in a [RenderSliverStaggeredGrid].
   const SliverStaggeredGridGeometry({
-    @required scrollOffset,
-    @required crossAxisOffset,
-    @required mainAxisExtent,
-    @required crossAxisExtent,
-    @required this.crossAxisCellCount,
-    @required this.blockIndex,
-  }) : super(
-            scrollOffset: scrollOffset,
-            crossAxisOffset: crossAxisOffset,
-            mainAxisExtent: mainAxisExtent,
-            crossAxisExtent: crossAxisExtent);
+    required this.scrollOffset,
+    required this.crossAxisOffset,
+    required this.mainAxisExtent,
+    required this.crossAxisExtent,
+    required this.crossAxisCellCount,
+    required this.blockIndex,
+  });
+
+  /// The scroll offset of the leading edge of the child relative to the leading
+  /// edge of the parent.
+  final double scrollOffset;
+
+  /// The offset of the child in the non-scrolling axis.
+  ///
+  /// If the scroll axis is vertical, this offset is from the left-most edge of
+  /// the parent to the left-most edge of the child. If the scroll axis is
+  /// horizontal, this offset is from the top-most edge of the parent to the
+  /// top-most edge of the child.
+  final double crossAxisOffset;
+
+  /// The extent of the child in the scrolling axis.
+  ///
+  /// If the scroll axis is vertical, this extent is the child's height. If the
+  /// scroll axis is horizontal, this extent is the child's width.
+  final double? mainAxisExtent;
+
+  /// The extent of the child in the non-scrolling axis.
+  ///
+  /// If the scroll axis is vertical, this extent is the child's width. If the
+  /// scroll axis is horizontal, this extent is the child's height.
+  final double crossAxisExtent;
 
   final int crossAxisCellCount;
 
@@ -151,15 +169,19 @@ class SliverStaggeredGridGeometry extends SliverGridGeometry {
 
   bool get hasTrailingScrollOffset => mainAxisExtent != null;
 
+  /// The scroll offset of the trailing edge of the child relative to the
+  /// leading edge of the parent.
+  double get trailingScrollOffset => scrollOffset + (mainAxisExtent ?? 0);
+
   SliverStaggeredGridGeometry copyWith({
-    double scrollOffset,
-    double crossAxisOffset,
-    double mainAxisExtent,
-    double crossAxisExtent,
-    int crossAxisCellCount,
-    int blockIndex,
+    double? scrollOffset,
+    double? crossAxisOffset,
+    double? mainAxisExtent,
+    double? crossAxisExtent,
+    int? crossAxisCellCount,
+    int? blockIndex,
   }) {
-    return new SliverStaggeredGridGeometry(
+    return SliverStaggeredGridGeometry(
       scrollOffset: scrollOffset ?? this.scrollOffset,
       crossAxisOffset: crossAxisOffset ?? this.crossAxisOffset,
       mainAxisExtent: mainAxisExtent ?? this.mainAxisExtent,
@@ -171,7 +193,6 @@ class SliverStaggeredGridGeometry extends SliverGridGeometry {
 
   /// Returns a tight [BoxConstraints] that forces the child to have the
   /// required size.
-  @override
   BoxConstraints getBoxConstraints(SliverConstraints constraints) {
     return constraints.asBoxConstraints(
       minExtent: mainAxisExtent ?? 0.0,
@@ -188,8 +209,7 @@ class SliverStaggeredGridGeometry extends SliverGridGeometry {
         'mainAxisExtent: $mainAxisExtent, '
         'crossAxisExtent: $crossAxisExtent, '
         'crossAxisCellCount: $crossAxisCellCount, '
-        'startIndex: $blockIndex'
-        ')';
+        'startIndex: $blockIndex)';
   }
 }
 
@@ -211,18 +231,17 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
   ///
   /// The [configuration] and [childManager] arguments must not be null.
   RenderSliverStaggeredGrid({
-    @required RenderSliverVariableSizeBoxChildManager childManager,
-    @required SliverStaggeredGridDelegate gridDelegate,
-  })  : assert(gridDelegate != null),
-        _gridDelegate = gridDelegate,
+    required RenderSliverVariableSizeBoxChildManager childManager,
+    required SliverStaggeredGridDelegate gridDelegate,
+  })  : _gridDelegate = gridDelegate,
         _pageSizeToViewportOffsets =
-            new HashMap<double, SplayTreeMap<int, _ViewportOffsets>>(),
+            HashMap<double, SplayTreeMap<int, _ViewportOffsets?>>(),
         super(childManager: childManager);
 
   @override
   void setupParentData(RenderObject child) {
     if (child.parentData is! SliverVariableSizeBoxAdaptorParentData) {
-      var data = new SliverVariableSizeBoxAdaptorParentData();
+      final data = SliverVariableSizeBoxAdaptorParentData();
 
       // By default we will keep it true.
       //data.keepAlive = true;
@@ -234,14 +253,17 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
   SliverStaggeredGridDelegate get gridDelegate => _gridDelegate;
   SliverStaggeredGridDelegate _gridDelegate;
   set gridDelegate(SliverStaggeredGridDelegate value) {
-    assert(value != null);
-    if (_gridDelegate == value) return;
+    if (_gridDelegate == value) {
+      return;
+    }
     if (value.runtimeType != _gridDelegate.runtimeType ||
-        value.shouldRelayout(_gridDelegate)) markNeedsLayout();
+        value.shouldRelayout(_gridDelegate)) {
+      markNeedsLayout();
+    }
     _gridDelegate = value;
   }
 
-  HashMap<double, SplayTreeMap<int, _ViewportOffsets>>
+  final HashMap<double, SplayTreeMap<int, _ViewportOffsets?>>
       _pageSizeToViewportOffsets;
 
   @override
@@ -257,49 +279,47 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     final double targetEndScrollOffset = scrollOffset + remainingExtent;
 
     bool reachedEnd = false;
-    double trailingScrollOffset = 0.0;
+    double trailingScrollOffset = 0;
     double leadingScrollOffset = double.infinity;
     bool visible = false;
     int firstIndex = 0;
     int lastIndex = 0;
 
-    StaggeredGridConfiguration configuration =
-        _gridDelegate.getConfiguration(constraints);
+    final configuration = _gridDelegate.getConfiguration(constraints);
 
-    double pageSize = configuration.mainAxisOffsetsCacheSize *
+    final pageSize = configuration.mainAxisOffsetsCacheSize *
         constraints.viewportMainAxisExtent;
     if (pageSize == 0.0) {
       geometry = SliverGeometry.zero;
       childManager.didFinishLayout();
       return;
     }
-    int pageIndex = scrollOffset ~/ pageSize;
+    final pageIndex = scrollOffset ~/ pageSize;
     assert(pageIndex >= 0);
 
     // If the viewport is resized, we keep the in memory the old offsets caches. (Useful if only the orientation changes multiple times).
-    SplayTreeMap<int, _ViewportOffsets> viewportOffsets =
-        _pageSizeToViewportOffsets.putIfAbsent(
-            pageSize, () => new SplayTreeMap<int, _ViewportOffsets>());
+    final viewportOffsets = _pageSizeToViewportOffsets.putIfAbsent(
+        pageSize, () => SplayTreeMap<int, _ViewportOffsets?>());
 
-    _ViewportOffsets viewportOffset;
+    _ViewportOffsets? viewportOffset;
     if (viewportOffsets.isEmpty) {
-      viewportOffset = new _ViewportOffsets(
-          configuration.generateMainAxisOffsets(), pageSize);
+      viewportOffset =
+          _ViewportOffsets(configuration.generateMainAxisOffsets(), pageSize);
       viewportOffsets[0] = viewportOffset;
     } else {
-      int smallestKey = viewportOffsets.lastKeyBefore(pageIndex + 1);
-      viewportOffset = viewportOffsets[smallestKey];
+      final smallestKey = viewportOffsets.lastKeyBefore(pageIndex + 1);
+      viewportOffset = viewportOffsets[smallestKey!];
     }
 
     // A staggered grid always have to layout the child from the zero-index based one to the last visible.
-    var mainAxisOffsets = viewportOffset.mainAxisOffsets.toList();
-    HashSet<int> visibleIndices = new HashSet<int>();
+    final mainAxisOffsets = viewportOffset!.mainAxisOffsets.toList();
+    final visibleIndices = HashSet<int>();
 
     // Iterate through all children while they can be visible.
     for (var index = viewportOffset.firstChildIndex;
         mainAxisOffsets.any((o) => o <= targetEndScrollOffset);
         index++) {
-      SliverStaggeredGridGeometry geometry =
+      SliverStaggeredGridGeometry? geometry =
           getSliverStaggeredGeometry(index, configuration, mainAxisOffsets);
       if (geometry == null) {
         // There are either no children, or we are past the end of all our children.
@@ -308,13 +328,13 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       }
 
       final bool hasTrailingScrollOffset = geometry.hasTrailingScrollOffset;
-      RenderBox child;
+      RenderBox? child;
       if (!hasTrailingScrollOffset) {
         // Layout the child to compute its tailingScrollOffset.
-        BoxConstraints constraints =
-            new BoxConstraints.tightFor(width: geometry.crossAxisExtent);
+        final constraints =
+            BoxConstraints.tightFor(width: geometry.crossAxisExtent);
         child = addAndLayoutChild(index, constraints, parentUsesSize: true);
-        geometry = geometry.copyWith(mainAxisExtent: paintExtentOf(child));
+        geometry = geometry.copyWith(mainAxisExtent: paintExtentOf(child!));
       }
 
       if (!visible &&
@@ -331,8 +351,8 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       }
 
       if (child != null) {
-        SliverVariableSizeBoxAdaptorParentData childParentData =
-            child.parentData;
+        final childParentData =
+            child.parentData! as SliverVariableSizeBoxAdaptorParentData;
         childParentData.layoutOffset = geometry.scrollOffset;
         childParentData.crossAxisOffset = geometry.crossAxisOffset;
         assert(childParentData.index == index);
@@ -343,9 +363,9 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       }
 
       if (geometry.trailingScrollOffset >=
-          viewportOffset.trailingScrollOffset) {
-        int nextPageIndex = viewportOffset.pageIndex + 1;
-        var nextViewportOffset = new _ViewportOffsets(mainAxisOffsets,
+          viewportOffset!.trailingScrollOffset) {
+        final nextPageIndex = viewportOffset.pageIndex + 1;
+        final nextViewportOffset = _ViewportOffsets(mainAxisOffsets,
             (nextPageIndex + 1) * pageSize, nextPageIndex, index);
         viewportOffsets[nextPageIndex] = nextViewportOffset;
         viewportOffset = nextViewportOffset;
@@ -364,11 +384,11 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     collectGarbage(visibleIndices);
 
     if (!visible) {
-      if (scrollOffset > viewportOffset.trailingScrollOffset) {
+      if (scrollOffset > viewportOffset!.trailingScrollOffset) {
         // We are outside the bounds, we have to correct the scroll.
-        double viewportOffsetScrollOffset = pageSize * viewportOffset.pageIndex;
-        double correction = viewportOffsetScrollOffset - scrollOffset;
-        geometry = new SliverGeometry(
+        final viewportOffsetScrollOffset = pageSize * viewportOffset.pageIndex;
+        final correction = viewportOffsetScrollOffset - scrollOffset;
+        geometry = SliverGeometry(
           scrollOffsetCorrection: correction,
         );
       } else {
@@ -404,7 +424,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       to: trailingScrollOffset,
     );
 
-    geometry = new SliverGeometry(
+    geometry = SliverGeometry(
       scrollExtent: estimatedMaxScrollOffset,
       paintExtent: paintExtent,
       cacheExtent: cacheExtent,
@@ -415,28 +435,31 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     );
 
     // We may have started the layout while scrolled to the end, which would not
-    // expose a new child.
-    if (estimatedMaxScrollOffset == trailingScrollOffset)
+    // expose a child.
+    if (estimatedMaxScrollOffset == trailingScrollOffset) {
       childManager.setDidUnderflow(true);
+    }
     childManager.didFinishLayout();
   }
 
-  static SliverStaggeredGridGeometry getSliverStaggeredGeometry(int index,
+  static SliverStaggeredGridGeometry? getSliverStaggeredGeometry(int index,
       StaggeredGridConfiguration configuration, List<double> offsets) {
-    var tile = configuration.getStaggeredTile(index);
-    if (tile == null) return null;
+    final tile = configuration.getStaggeredTile(index);
+    if (tile == null) {
+      return null;
+    }
 
-    var block = _findFirstAvailableBlockWithCrossAxisCount(
+    final block = _findFirstAvailableBlockWithCrossAxisCount(
         tile.crossAxisCellCount, offsets);
 
-    var scrollOffset = block.minOffset;
+    final scrollOffset = block.minOffset;
     var blockIndex = block.index;
     if (configuration.reverseCrossAxis) {
       blockIndex =
           configuration.crossAxisCount - tile.crossAxisCellCount - blockIndex;
     }
-    var crossAxisOffset = blockIndex * configuration.cellStride;
-    var geometry = new SliverStaggeredGridGeometry(
+    final crossAxisOffset = blockIndex * configuration.cellStride;
+    final geometry = SliverStaggeredGridGeometry(
       scrollOffset: scrollOffset,
       crossAxisOffset: crossAxisOffset,
       mainAxisExtent: tile.mainAxisExtent,
@@ -452,13 +475,13 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
   static _Block _findFirstAvailableBlockWithCrossAxisCount(
       int crossAxisCount, List<double> offsets) {
     return _findFirstAvailableBlockWithCrossAxisCountAndOffsets(
-        crossAxisCount, new List.from(offsets));
+        crossAxisCount, List.from(offsets));
   }
 
   /// Finds the first available block with at least the specified [crossAxisCount].
   static _Block _findFirstAvailableBlockWithCrossAxisCountAndOffsets(
       int crossAxisCount, List<double> offsets) {
-    _Block block = _findFirstAvailableBlock(offsets);
+    final block = _findFirstAvailableBlock(offsets);
     if (block.crossAxisCount < crossAxisCount) {
       // Not enough space for the specified cross axis count.
       // We have to fill this block and try again.
@@ -484,7 +507,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
     // Ex: 0.1 + 0.2 = 0.30000000000000004 and not 0.3.
 
     for (var i = index; i < offsets.length; ++i) {
-      double offset = offsets[i];
+      final offset = offsets[i];
       if (offset < minBlockOffset && !_nearEqual(offset, minBlockOffset)) {
         index = i;
         maxBlockOffset = minBlockOffset;
@@ -503,7 +526,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
       }
     }
 
-    return new _Block(index, crossAxisCount, minBlockOffset, maxBlockOffset);
+    return _Block(index, crossAxisCount, minBlockOffset, maxBlockOffset);
   }
 }
 
@@ -513,7 +536,7 @@ class _ViewportOffsets {
     this.trailingScrollOffset, [
     this.pageIndex = 0,
     this.firstChildIndex = 0,
-  ]) : this.mainAxisOffsets = new List.from(mainAxisOffsets);
+  ]) : mainAxisOffsets = mainAxisOffsets.toList();
 
   final int pageIndex;
 
@@ -546,13 +569,12 @@ abstract class SliverStaggeredGridDelegate {
   /// All of the arguments must not be null. The [mainAxisSpacing] and
   /// [crossAxisSpacing] arguments must not be negative.
   const SliverStaggeredGridDelegate({
-    @required this.staggeredTileBuilder,
-    this.mainAxisSpacing: 0.0,
-    this.crossAxisSpacing: 0.0,
+    required this.staggeredTileBuilder,
+    this.mainAxisSpacing = 0,
+    this.crossAxisSpacing = 0,
     this.staggeredTileCount,
-  })  : assert(staggeredTileBuilder != null),
-        assert(mainAxisSpacing != null && mainAxisSpacing >= 0),
-        assert(crossAxisSpacing != null && crossAxisSpacing >= 0);
+  })  : assert(mainAxisSpacing >= 0),
+        assert(crossAxisSpacing >= 0);
 
   /// The number of logical pixels between each child along the main axis.
   final double mainAxisSpacing;
@@ -568,12 +590,11 @@ abstract class SliverStaggeredGridDelegate {
   ///
   /// If null, the number of tiles is determined by the least index for which
   /// [builder] returns null.
-  final int staggeredTileCount;
+  final int? staggeredTileCount;
 
   bool _debugAssertIsValid() {
-    assert(staggeredTileBuilder != null);
-    assert(mainAxisSpacing >= 0.0);
-    assert(crossAxisSpacing >= 0.0);
+    assert(mainAxisSpacing >= 0);
+    assert(crossAxisSpacing >= 0);
     return true;
   }
 
@@ -621,12 +642,12 @@ class SliverStaggeredGridDelegateWithFixedCrossAxisCount
   /// [crossAxisSpacing] arguments must not be negative. The [crossAxisCount]
   /// argument must be greater than zero.
   const SliverStaggeredGridDelegateWithFixedCrossAxisCount({
-    @required this.crossAxisCount,
-    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-    int staggeredTileCount,
-  })  : assert(crossAxisCount != null && crossAxisCount > 0),
+    required this.crossAxisCount,
+    required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
+    int? staggeredTileCount,
+  })  : assert(crossAxisCount > 0),
         super(
           staggeredTileBuilder: staggeredTileBuilder,
           mainAxisSpacing: mainAxisSpacing,
@@ -649,7 +670,7 @@ class SliverStaggeredGridDelegateWithFixedCrossAxisCount
     final double usableCrossAxisExtent =
         constraints.crossAxisExtent - crossAxisSpacing * (crossAxisCount - 1);
     final double cellExtent = usableCrossAxisExtent / crossAxisCount;
-    return new StaggeredGridConfiguration(
+    return StaggeredGridConfiguration(
       crossAxisCount: crossAxisCount,
       staggeredTileBuilder: staggeredTileBuilder,
       staggeredTileCount: staggeredTileCount,
@@ -701,12 +722,12 @@ class SliverStaggeredGridDelegateWithMaxCrossAxisExtent
   /// All of the arguments must not be null. The [maxCrossAxisExtent],
   /// [mainAxisSpacing] and [crossAxisSpacing] arguments must not be negative.
   const SliverStaggeredGridDelegateWithMaxCrossAxisExtent({
-    @required this.maxCrossAxisExtent,
-    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-    int staggeredTileCount,
-  })  : assert(maxCrossAxisExtent != null && maxCrossAxisExtent > 0),
+    required this.maxCrossAxisExtent,
+    required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
+    int? staggeredTileCount,
+  })  : assert(maxCrossAxisExtent > 0),
         super(
           staggeredTileBuilder: staggeredTileBuilder,
           mainAxisSpacing: mainAxisSpacing,
@@ -745,7 +766,7 @@ class SliverStaggeredGridDelegateWithMaxCrossAxisExtent
         constraints.crossAxisExtent - crossAxisSpacing * (crossAxisCount - 1);
 
     final double cellExtent = usableCrossAxisExtent / crossAxisCount;
-    return new StaggeredGridConfiguration(
+    return StaggeredGridConfiguration(
       crossAxisCount: crossAxisCount,
       staggeredTileBuilder: staggeredTileBuilder,
       staggeredTileCount: staggeredTileCount,

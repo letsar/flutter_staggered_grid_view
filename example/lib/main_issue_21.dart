@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
 
 class MyScreen extends StatefulWidget {
   @override
-  _MyScreenState createState() => new _MyScreenState();
+  _MyScreenState createState() => _MyScreenState();
 }
 
 class _MyScreenState extends State<MyScreen> {
@@ -29,19 +29,19 @@ class _MyScreenState extends State<MyScreen> {
     return Scaffold(
       body: StaggeredTest(_count, _count),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
         onPressed: () {
           setState(() {
             _count++;
           });
         },
+        child: const Icon(Icons.add),
       ),
     );
   }
 }
 
 class GridTest extends StatelessWidget {
-  GridTest(this.count, this.value);
+  const GridTest(this.count, this.value);
   final int count;
   final int value;
 
@@ -65,7 +65,7 @@ class GridTest extends StatelessWidget {
 }
 
 class StaggeredTest extends StatelessWidget {
-  StaggeredTest(this.count, this.value);
+  const StaggeredTest(this.count, this.value);
   final int count;
   final int value;
 
@@ -77,7 +77,7 @@ class StaggeredTest extends StatelessWidget {
       crossAxisSpacing: 2,
       mainAxisSpacing: 2,
       addAutomaticKeepAlives: false,
-      staggeredTileBuilder: (index) => StaggeredTile.extent(1, 30),
+      staggeredTileBuilder: (index) => const StaggeredTile.extent(1, 30),
       itemBuilder: (context, index) {
         return Container(
           color: Colors.green,

@@ -15,8 +15,8 @@ abstract class SliverVariableSizeBoxAdaptorWidget
     extends SliverWithKeepAliveWidget {
   /// Initializes fields for subclasses.
   const SliverVariableSizeBoxAdaptorWidget({
-    Key key,
-    @required this.delegate,
+    Key? key,
+    required this.delegate,
   }) : super(key: key);
 
   /// The delegate that provides the children for this widget.
@@ -33,7 +33,7 @@ abstract class SliverVariableSizeBoxAdaptorWidget
 
   @override
   SliverVariableSizeBoxAdaptorElement createElement() =>
-      new SliverVariableSizeBoxAdaptorElement(this);
+      SliverVariableSizeBoxAdaptorElement(this);
 
   @override
   RenderSliverVariableSizeBoxAdaptor createRenderObject(BuildContext context);
@@ -48,7 +48,7 @@ abstract class SliverVariableSizeBoxAdaptorWidget
   ///
   /// The default implementation defers to [delegate] via its
   /// [SliverChildDelegate.estimateMaxScrollOffset] method.
-  double estimateMaxScrollOffset(
+  double? estimateMaxScrollOffset(
     SliverConstraints constraints,
     int firstIndex,
     int lastIndex,
@@ -68,7 +68,8 @@ abstract class SliverVariableSizeBoxAdaptorWidget
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-        new DiagnosticsProperty<SliverChildDelegate>('delegate', delegate));
+      DiagnosticsProperty<SliverChildDelegate>('delegate', delegate),
+    );
   }
 }
 
@@ -83,10 +84,12 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
       : super(widget);
 
   @override
-  SliverVariableSizeBoxAdaptorWidget get widget => super.widget;
+  SliverVariableSizeBoxAdaptorWidget get widget =>
+      super.widget as SliverVariableSizeBoxAdaptorWidget;
 
   @override
-  RenderSliverVariableSizeBoxAdaptor get renderObject => super.renderObject;
+  RenderSliverVariableSizeBoxAdaptor get renderObject =>
+      super.renderObject as RenderSliverVariableSizeBoxAdaptor;
 
   @override
   void update(covariant SliverVariableSizeBoxAdaptorWidget newWidget) {
@@ -96,19 +99,21 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     final SliverChildDelegate oldDelegate = oldWidget.delegate;
     if (newDelegate != oldDelegate &&
         (newDelegate.runtimeType != oldDelegate.runtimeType ||
-            newDelegate.shouldRebuild(oldDelegate))) performRebuild();
+            newDelegate.shouldRebuild(oldDelegate))) {
+      performRebuild();
+    }
   }
 
   // We inflate widgets at two different times:
   //  1. When we ourselves are told to rebuild (see performRebuild).
-  //  2. When our render object needs a new child (see createChild).
+  //  2. When our render object needs a child (see createChild).
   // In both cases, we cache the results of calling into our delegate to get the widget,
   // so that if we do case 2 later, we don't call the builder again.
   // Any time we do case 1, though, we reset the cache.
 
-  final Map<int, Widget> _childWidgets = new HashMap<int, Widget>();
+  final Map<int, Widget?> _childWidgets = HashMap<int, Widget?>();
   final SplayTreeMap<int, Element> _childElements =
-      new SplayTreeMap<int, Element>();
+      SplayTreeMap<int, Element>();
 
   @override
   void performRebuild() {
@@ -116,17 +121,22 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     super.performRebuild();
     assert(_currentlyUpdatingChildIndex == null);
     try {
-      int firstIndex = _childElements.firstKey();
-      int lastIndex = _childElements.lastKey();
+      late final int firstIndex;
+      late final int lastIndex;
       if (_childElements.isEmpty) {
         firstIndex = 0;
         lastIndex = 0;
       } else if (_didUnderflow) {
-        lastIndex += 1;
+        firstIndex = _childElements.firstKey()!;
+        lastIndex = _childElements.lastKey()! + 1;
+      } else {
+        firstIndex = _childElements.firstKey()!;
+        lastIndex = _childElements.lastKey()!;
       }
+
       for (int index = firstIndex; index <= lastIndex; ++index) {
         _currentlyUpdatingChildIndex = index;
-        final Element newChild =
+        final Element? newChild =
             updateChild(_childElements[index], _build(index), index);
         if (newChild != null) {
           _childElements[index] = newChild;
@@ -139,7 +149,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     }
   }
 
-  Widget _build(int index) {
+  Widget? _build(int index) {
     return _childWidgets.putIfAbsent(
         index, () => widget.delegate.build(this, index));
   }
@@ -147,8 +157,8 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   @override
   void createChild(int index) {
     assert(_currentlyUpdatingChildIndex == null);
-    owner.buildScope(this, () {
-      Element newChild;
+    owner!.buildScope(this, () {
+      Element? newChild;
       try {
         _currentlyUpdatingChildIndex = index;
         newChild = updateChild(_childElements[index], _build(index), index);
@@ -164,12 +174,12 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   }
 
   @override
-  Element updateChild(Element child, Widget newWidget, dynamic newSlot) {
-    final SliverVariableSizeBoxAdaptorParentData oldParentData =
-        child?.renderObject?.parentData;
-    final Element newChild = super.updateChild(child, newWidget, newSlot);
-    final SliverVariableSizeBoxAdaptorParentData newParentData =
-        newChild?.renderObject?.parentData;
+  Element? updateChild(Element? child, Widget? newWidget, dynamic newSlot) {
+    final oldParentData = child?.renderObject?.parentData
+        as SliverVariableSizeBoxAdaptorParentData?;
+    final Element? newChild = super.updateChild(child, newWidget, newSlot);
+    final newParentData = newChild?.renderObject?.parentData
+        as SliverVariableSizeBoxAdaptorParentData?;
 
     // set keepAlive to true in order to populate the cache
     if (newParentData != null) {
@@ -188,7 +198,6 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
 
   @override
   void forgetChild(Element child) {
-    assert(child != null);
     assert(child.slot != null);
     assert(_childElements.containsKey(child.slot));
     _childElements.remove(child.slot);
@@ -200,11 +209,11 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     final int index = renderObject.indexOf(child);
     assert(_currentlyUpdatingChildIndex == null);
     assert(index >= 0);
-    owner.buildScope(this, () {
+    owner!.buildScope(this, () {
       assert(_childElements.containsKey(index));
       try {
         _currentlyUpdatingChildIndex = index;
-        final Element result = updateChild(_childElements[index], null, index);
+        final Element? result = updateChild(_childElements[index], null, index);
         assert(result == null);
       } finally {
         _currentlyUpdatingChildIndex = null;
@@ -214,18 +223,22 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     });
   }
 
-  double _extrapolateMaxScrollOffset(
-    int firstIndex,
-    int lastIndex,
-    double leadingScrollOffset,
-    double trailingScrollOffset,
+  double? _extrapolateMaxScrollOffset(
+    int? firstIndex,
+    int? lastIndex,
+    double? leadingScrollOffset,
+    double? trailingScrollOffset,
   ) {
-    final int childCount = this.childCount;
-    if (childCount == null) return double.infinity;
-    if (lastIndex == childCount - 1) return trailingScrollOffset;
-    final int reifiedCount = lastIndex - firstIndex + 1;
+    final int? childCount = widget.delegate.estimatedChildCount;
+    if (childCount == null) {
+      return double.infinity;
+    }
+    if (lastIndex == childCount - 1) {
+      return trailingScrollOffset;
+    }
+    final int reifiedCount = lastIndex! - firstIndex! + 1;
     final double averageExtent =
-        (trailingScrollOffset - leadingScrollOffset) / reifiedCount;
+        (trailingScrollOffset! - leadingScrollOffset!) / reifiedCount;
     final int remainingCount = childCount - lastIndex - 1;
     return trailingScrollOffset + averageExtent * remainingCount;
   }
@@ -233,28 +246,28 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   @override
   double estimateMaxScrollOffset(
     SliverConstraints constraints, {
-    int firstIndex,
-    int lastIndex,
-    double leadingScrollOffset,
-    double trailingScrollOffset,
+    int? firstIndex,
+    int? lastIndex,
+    double? leadingScrollOffset,
+    double? trailingScrollOffset,
   }) {
     return widget.estimateMaxScrollOffset(
           constraints,
-          firstIndex,
-          lastIndex,
-          leadingScrollOffset,
-          trailingScrollOffset,
+          firstIndex!,
+          lastIndex!,
+          leadingScrollOffset!,
+          trailingScrollOffset!,
         ) ??
         _extrapolateMaxScrollOffset(
           firstIndex,
           lastIndex,
           leadingScrollOffset,
           trailingScrollOffset,
-        );
+        )!;
   }
 
   @override
-  int get childCount => widget.delegate.estimatedChildCount;
+  int get childCount => widget.delegate.estimatedChildCount ?? 0;
 
   @override
   void didStartLayout() {
@@ -269,7 +282,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     widget.delegate.didFinishLayout(firstIndex, lastIndex);
   }
 
-  int _currentlyUpdatingChildIndex;
+  int? _currentlyUpdatingChildIndex;
 
   @override
   bool debugAssertChildListLocked() {
@@ -280,8 +293,8 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   @override
   void didAdoptChild(RenderBox child) {
     assert(_currentlyUpdatingChildIndex != null);
-    final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
+    final childParentData =
+        child.parentData! as SliverVariableSizeBoxAdaptorParentData;
     childParentData.index = _currentlyUpdatingChildIndex;
   }
 
@@ -293,59 +306,62 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   }
 
   @override
-  void insertChildRenderObject(covariant RenderObject child, int slot) {
-    assert(slot != null);
+  void insertRenderObjectChild(covariant RenderBox child, int slot) {
     assert(_currentlyUpdatingChildIndex == slot);
     assert(renderObject.debugValidateChild(child));
-    renderObject[_currentlyUpdatingChildIndex] = child;
+    renderObject[_currentlyUpdatingChildIndex!] = child;
     assert(() {
-      final SliverVariableSizeBoxAdaptorParentData childParentData =
-          child.parentData;
+      final childParentData =
+          child.parentData! as SliverVariableSizeBoxAdaptorParentData;
       assert(slot == childParentData.index);
       return true;
     }());
   }
 
   @override
-  void moveChildRenderObject(covariant RenderObject child, int slot) {
-    // TODO(ianh): At some point we should be better about noticing when a
-    // particular LocalKey changes slot, and handle moving the nodes around.
+  void moveRenderObjectChild(
+    covariant RenderObject child,
+    covariant Object? oldSlot,
+    covariant Object? newSlot,
+  ) {
     assert(false);
   }
 
   @override
-  void removeChildRenderObject(covariant RenderObject child) {
+  void removeRenderObjectChild(
+    covariant RenderObject child,
+    covariant Object? slot,
+  ) {
     assert(_currentlyUpdatingChildIndex != null);
-    renderObject.remove(_currentlyUpdatingChildIndex);
+    renderObject.remove(_currentlyUpdatingChildIndex!);
   }
 
   @override
   void visitChildren(ElementVisitor visitor) {
     // The toList() is to make a copy so that the underlying list can be modified by
     // the visitor:
-    assert(!_childElements.values.any((Element child) => child == null));
     _childElements.values.toList().forEach(visitor);
   }
 
   @override
   void debugVisitOnstageChildren(ElementVisitor visitor) {
     _childElements.values.where((Element child) {
-      final SliverMultiBoxAdaptorParentData parentData =
-          child.renderObject.parentData;
-      double itemExtent;
+      final parentData =
+          child.renderObject!.parentData as SliverMultiBoxAdaptorParentData?;
+      late double itemExtent;
       switch (renderObject.constraints.axis) {
         case Axis.horizontal:
-          itemExtent = child.renderObject.paintBounds.width;
+          itemExtent = child.renderObject!.paintBounds.width;
           break;
         case Axis.vertical:
-          itemExtent = child.renderObject.paintBounds.height;
+          itemExtent = child.renderObject!.paintBounds.height;
           break;
       }
 
-      return parentData.layoutOffset <
+      return parentData!.layoutOffset! <
               renderObject.constraints.scrollOffset +
                   renderObject.constraints.remainingPaintExtent &&
-          parentData.layoutOffset + itemExtent >
+          parentData.layoutOffset! + itemExtent >
               renderObject.constraints.scrollOffset;
     }).forEach(visitor);
   }
@@ -366,7 +382,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
 /// list, shows 8 boxes:
 ///
 /// ```dart
-///new SliverStaggeredGrid.count(
+///SliverStaggeredGrid.count(
 ///  crossAxisCount: 4,
 ///  mainAxisSpacing: 4.0,
 ///  crossAxisSpacing: 4.0,
@@ -405,9 +421,9 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   /// Creates a sliver that places multiple box children in a two dimensional
   /// arrangement.
   const SliverStaggeredGrid({
-    Key key,
-    @required SliverChildDelegate delegate,
-    @required this.gridDelegate,
+    Key? key,
+    required SliverChildDelegate delegate,
+    required this.gridDelegate,
   }) : super(key: key, delegate: delegate);
 
   /// Creates a sliver that places multiple box children in a two dimensional
@@ -418,25 +434,27 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   ///
   /// See also:
   ///
-  ///  * [new StaggeredGridView.count], the equivalent constructor for [StaggeredGridView] widgets.
+  ///  * [StaggeredGridView.count], the equivalent constructor for [StaggeredGridView] widgets.
   SliverStaggeredGrid.count({
-    Key key,
-    @required int crossAxisCount,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-    List<Widget> children: const <Widget>[],
-    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
-  })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+    Key? key,
+    required int crossAxisCount,
+    double mainAxisSpacing = 0.0,
+    double crossAxisSpacing = 0.0,
+    List<Widget> children = const <Widget>[],
+    List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
+  })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
           staggeredTileBuilder: (i) => staggeredTiles[i],
-          staggeredTileCount: staggeredTiles?.length,
+          staggeredTileCount: staggeredTiles.length,
         ),
         super(
-            key: key,
-            delegate: new SliverChildListDelegate(children,
-                addAutomaticKeepAlives: true));
+          key: key,
+          delegate: SliverChildListDelegate(
+            children,
+          ),
+        );
 
   /// Creates a sliver that builds multiple box children in a two dimensional
   /// arrangement with a fixed number of tiles in the cross axis.
@@ -450,17 +468,17 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   ///
   /// See also:
   ///
-  ///  * [new StaggeredGridView.countBuilder], the equivalent constructor for
+  ///  * [StaggeredGridView.countBuilder], the equivalent constructor for
   ///  [StaggeredGridView] widgets.
   SliverStaggeredGrid.countBuilder({
-    Key key,
-    @required int crossAxisCount,
-    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
-    @required IndexedWidgetBuilder itemBuilder,
-    @required int itemCount,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-  })  : gridDelegate = new SliverStaggeredGridDelegateWithFixedCrossAxisCount(
+    Key? key,
+    required int crossAxisCount,
+    required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    required IndexedWidgetBuilder itemBuilder,
+    required int itemCount,
+    double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
+  })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -472,8 +490,6 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
-            addAutomaticKeepAlives: true,
-            addRepaintBoundaries: true,
           ),
         );
 
@@ -485,25 +501,27 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   ///
   /// See also:
   ///
-  ///  * [new StaggeredGridView.extent], the equivalent constructor for [StaggeredGridView] widgets.
+  ///  * [StaggeredGridView.extent], the equivalent constructor for [StaggeredGridView] widgets.
   SliverStaggeredGrid.extent({
-    Key key,
-    @required double maxCrossAxisExtent,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-    List<Widget> children: const <Widget>[],
-    List<StaggeredTile> staggeredTiles: const <StaggeredTile>[],
-  })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
+    Key? key,
+    required double maxCrossAxisExtent,
+    double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
+    List<Widget> children = const <Widget>[],
+    List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
+  })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
           staggeredTileBuilder: (i) => staggeredTiles[i],
-          staggeredTileCount: staggeredTiles?.length,
+          staggeredTileCount: staggeredTiles.length,
         ),
         super(
-            key: key,
-            delegate: new SliverChildListDelegate(children,
-                addAutomaticKeepAlives: true));
+          key: key,
+          delegate: SliverChildListDelegate(
+            children,
+          ),
+        );
 
   /// Creates a sliver that builds multiple box children in a two dimensional
   /// arrangement with tiles that each have a maximum cross-axis extent.
@@ -517,17 +535,17 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   ///
   /// See also:
   ///
-  ///  * [new StaggeredGridView.extentBuilder], the equivalent constructor for
+  ///  * [StaggeredGridView.extentBuilder], the equivalent constructor for
   ///  [StaggeredGridView] widgets.
   SliverStaggeredGrid.extentBuilder({
-    Key key,
-    @required double maxCrossAxisExtent,
-    @required IndexedStaggeredTileBuilder staggeredTileBuilder,
-    @required IndexedWidgetBuilder itemBuilder,
-    @required int itemCount,
-    double mainAxisSpacing: 0.0,
-    double crossAxisSpacing: 0.0,
-  })  : gridDelegate = new SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
+    Key? key,
+    required double maxCrossAxisExtent,
+    required IndexedStaggeredTileBuilder staggeredTileBuilder,
+    required IndexedWidgetBuilder itemBuilder,
+    required int itemCount,
+    double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
+  })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
@@ -539,8 +557,6 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
-            addAutomaticKeepAlives: true,
-            addRepaintBoundaries: true,
           ),
         );
 
@@ -549,8 +565,8 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
 
   @override
   RenderSliverStaggeredGrid createRenderObject(BuildContext context) {
-    final SliverVariableSizeBoxAdaptorElement element = context;
-    return new RenderSliverStaggeredGrid(
+    final element = context as SliverVariableSizeBoxAdaptorElement;
+    return RenderSliverStaggeredGrid(
         childManager: element, gridDelegate: gridDelegate);
   }
 
@@ -558,22 +574,5 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   void updateRenderObject(
       BuildContext context, RenderSliverStaggeredGrid renderObject) {
     renderObject.gridDelegate = gridDelegate;
-  }
-
-  @override
-  double estimateMaxScrollOffset(
-    SliverConstraints constraints,
-    int firstIndex,
-    int lastIndex,
-    double leadingScrollOffset,
-    double trailingScrollOffset,
-  ) {
-    return super.estimateMaxScrollOffset(
-      constraints,
-      firstIndex,
-      lastIndex,
-      leadingScrollOffset,
-      trailingScrollOffset,
-    );
   }
 }

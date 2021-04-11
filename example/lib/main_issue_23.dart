@@ -25,15 +25,15 @@ class MyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<int>(
+      body: StreamBuilder<int?>(
         stream: BlocProvider.of<SimpleBloc>(context).counter,
         initialData: 0,
         builder: (context, snapshot) =>
             StaggeredTest(snapshot.data, snapshot.data),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
         onPressed: BlocProvider.of<SimpleBloc>(context).increment,
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -64,9 +64,9 @@ class GridTest extends StatelessWidget {
 }
 
 class StaggeredTest extends StatelessWidget {
-  StaggeredTest(this.count, this.value);
-  final int count;
-  final int value;
+  const StaggeredTest(this.count, this.value);
+  final int? count;
+  final int? value;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,7 @@ class StaggeredTest extends StatelessWidget {
       crossAxisSpacing: 2,
       mainAxisSpacing: 2,
       addAutomaticKeepAlives: false,
-      staggeredTileBuilder: (index) => StaggeredTile.extent(1, 30),
+      staggeredTileBuilder: (index) => const StaggeredTile.extent(1, 30),
       itemBuilder: (context, index) {
         return Container(
           color: Colors.green,
@@ -92,18 +92,18 @@ abstract class Disposable {
 }
 
 class SimpleBloc implements Disposable {
+  factory SimpleBloc() {
+    return SimpleBloc._(StreamController<int>());
+  }
+
   SimpleBloc._(this._counterController)
       : counter = _counterController.stream.asBroadcastStream() {
     _counter = 0;
   }
 
-  factory SimpleBloc() {
-    return SimpleBloc._(StreamController<int>());
-  }
-
   final StreamController<int> _counterController;
   final Stream<int> counter;
-  int _counter;
+  late int _counter;
 
   void dispose() {
     _counterController.close();
@@ -116,10 +116,10 @@ class SimpleBloc implements Disposable {
 }
 
 class BlocProvider<T extends Disposable> extends StatefulWidget {
-  BlocProvider({
-    Key key,
-    @required this.child,
-    @required this.bloc,
+  const BlocProvider({
+    Key? key,
+    required this.child,
+    required this.bloc,
   }) : super(key: key);
 
   final T bloc;
@@ -129,8 +129,7 @@ class BlocProvider<T extends Disposable> extends StatefulWidget {
   _BlocProviderState<T> createState() => _BlocProviderState<T>();
 
   static T of<T extends Disposable>(BuildContext context) {
-    BlocProvider<T> provider =
-        context.findAncestorWidgetOfExactType<BlocProvider<T>>();
+    final provider = context.findAncestorWidgetOfExactType<BlocProvider<T>>()!;
     return provider.bloc;
   }
 }

@@ -57,10 +57,10 @@ abstract class RenderSliverVariableSizeBoxChildManager {
   /// index.
   double estimateMaxScrollOffset(
     SliverConstraints constraints, {
-    int firstIndex,
-    int lastIndex,
-    double leadingScrollOffset,
-    double trailingScrollOffset,
+    int? firstIndex,
+    int? lastIndex,
+    double? leadingScrollOffset,
+    double? trailingScrollOffset,
   });
 
   /// Called to obtain a precise measure of the total number of children.
@@ -93,6 +93,7 @@ abstract class RenderSliverVariableSizeBoxChildManager {
   ///
   /// Useful for subclasses to determine whether newly added children could
   /// affect the visible contents of the [RenderSliverVariableSizeBoxAdaptor].
+  // ignore: avoid_positional_boolean_parameters
   void setDidUnderflow(bool value);
 
   /// Called at the beginning of layout to indicate that layout is about to
@@ -122,7 +123,7 @@ class SliverVariableSizeBoxAdaptorParentData
   /// the parent to the left-most edge of the child. If the scroll axis is
   /// horizontal, this offset is from the top-most edge of the parent to the
   /// top-most edge of the child.
-  double crossAxisOffset;
+  late double crossAxisOffset;
 
   /// Whether the widget is currently in the
   /// [RenderSliverVariableSizeBoxAdaptor._keepAliveBucket].
@@ -167,14 +168,13 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   ///
   /// The [childManager] argument must not be null.
   RenderSliverVariableSizeBoxAdaptor(
-      {@required RenderSliverVariableSizeBoxChildManager childManager})
-      : assert(childManager != null),
-        _childManager = childManager;
+      {required RenderSliverVariableSizeBoxChildManager childManager})
+      : _childManager = childManager;
 
   @override
   void setupParentData(RenderObject child) {
     if (child.parentData is! SliverVariableSizeBoxAdaptorParentData) {
-      child.parentData = new SliverVariableSizeBoxAdaptorParentData();
+      child.parentData = SliverVariableSizeBoxAdaptorParentData();
     }
   }
 
@@ -194,9 +194,11 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   @override
   void adoptChild(RenderObject child) {
     super.adoptChild(child);
-    final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
-    if (!childParentData._keptAlive) childManager.didAdoptChild(child);
+    final childParentData =
+        child.parentData! as SliverVariableSizeBoxAdaptorParentData;
+    if (!childParentData._keptAlive) {
+      childManager.didAdoptChild(child as RenderBox);
+    }
   }
 
   bool _debugAssertChildListLocked() =>
@@ -204,11 +206,11 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
 
   @override
   void remove(int index) {
-    final RenderBox child = this[index];
+    final RenderBox? child = this[index];
 
     // if child is null, it means this element was cached - drop the cached element
     if (child == null) {
-      RenderBox cachedChild = _keepAliveBucket[index];
+      final RenderBox? cachedChild = _keepAliveBucket[index];
       if (cachedChild != null) {
         dropChild(cachedChild);
         _keepAliveBucket.remove(index);
@@ -216,13 +218,13 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
       return;
     }
 
-    final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
+    final childParentData =
+        child.parentData! as SliverVariableSizeBoxAdaptorParentData;
     if (!childParentData._keptAlive) {
       super.remove(index);
       return;
     }
-    assert(_keepAliveBucket[childParentData.index] == child);
+    assert(_keepAliveBucket[childParentData.index!] == child);
     _keepAliveBucket.remove(childParentData.index);
     dropChild(child);
   }
@@ -238,9 +240,9 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
     invokeLayoutCallback<SliverConstraints>((SliverConstraints constraints) {
       assert(constraints == this.constraints);
       if (_keepAliveBucket.containsKey(index)) {
-        final RenderBox child = _keepAliveBucket.remove(index);
-        final SliverVariableSizeBoxAdaptorParentData childParentData =
-            child.parentData;
+        final RenderBox child = _keepAliveBucket.remove(index)!;
+        final childParentData =
+            child.parentData! as SliverVariableSizeBoxAdaptorParentData;
         assert(childParentData._keptAlive);
         dropChild(child);
         child.parentData = childParentData;
@@ -253,13 +255,13 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   }
 
   void _destroyOrCacheChild(int index) {
-    final RenderBox child = this[index];
-    final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
+    final RenderBox child = this[index]!;
+    final childParentData =
+        child.parentData! as SliverVariableSizeBoxAdaptorParentData;
     if (childParentData.keepAlive) {
       assert(!childParentData._keptAlive);
       remove(index);
-      _keepAliveBucket[childParentData.index] = child;
+      _keepAliveBucket[childParentData.index!] = child;
       child.parentData = childParentData;
       super.adoptChild(child);
       childParentData._keptAlive = true;
@@ -297,7 +299,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   bool addChild(int index) {
     assert(_debugAssertChildListLocked());
     _createOrObtainChild(index);
-    RenderBox child = this[index];
+    final child = this[index];
     if (child != null) {
       assert(indexOf(child) == index);
       return true;
@@ -306,14 +308,14 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
     return false;
   }
 
-  RenderBox addAndLayoutChild(
+  RenderBox? addAndLayoutChild(
     int index,
     BoxConstraints childConstraints, {
-    bool parentUsesSize: false,
+    bool parentUsesSize = false,
   }) {
     assert(_debugAssertChildListLocked());
     _createOrObtainChild(index);
-    RenderBox child = this[index];
+    final child = this[index];
     if (child != null) {
       assert(indexOf(child) == index);
       child.layout(childConstraints, parentUsesSize: parentUsesSize);
@@ -345,15 +347,15 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
       // to prepare our list ahead of time.)
       _keepAliveBucket.values
           .where((RenderBox child) {
-            final SliverVariableSizeBoxAdaptorParentData childParentData =
-                child.parentData;
+            final childParentData =
+                child.parentData! as SliverVariableSizeBoxAdaptorParentData;
             return !childParentData.keepAlive;
           })
           .toList()
           .forEach(_childManager.removeChild);
       assert(_keepAliveBucket.values.where((RenderBox child) {
-        final SliverVariableSizeBoxAdaptorParentData childParentData =
-            child.parentData;
+        final childParentData =
+            child.parentData! as SliverVariableSizeBoxAdaptorParentData;
         return !childParentData.keepAlive;
       }).isEmpty);
     });
@@ -362,18 +364,16 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   /// Returns the index of the given child, as given by the
   /// [SliverVariableSizeBoxAdaptorParentData.index] field of the child's [parentData].
   int indexOf(RenderBox child) {
-    assert(child != null);
-    final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
+    final childParentData =
+        child.parentData! as SliverVariableSizeBoxAdaptorParentData;
     assert(childParentData.index != null);
-    return childParentData.index;
+    return childParentData.index!;
   }
 
   /// Returns the dimension of the given child in the main axis, as given by the
   /// child's [RenderBox.size] property. This is only valid after layout.
   @protected
   double paintExtentOf(RenderBox child) {
-    assert(child != null);
     assert(child.hasSize);
     switch (constraints.axis) {
       case Axis.horizontal:
@@ -381,88 +381,88 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
       case Axis.vertical:
         return child.size.height;
     }
-    return null;
   }
 
   @override
   bool hitTestChildren(HitTestResult result,
-      {@required double mainAxisPosition, @required double crossAxisPosition}) {
-    for (var child in children) {
+      {required double mainAxisPosition, required double crossAxisPosition}) {
+    for (final child in children) {
       if (hitTestBoxChild(BoxHitTestResult.wrap(result), child,
           mainAxisPosition: mainAxisPosition,
-          crossAxisPosition: crossAxisPosition)) return true;
+          crossAxisPosition: crossAxisPosition)) {
+        return true;
+      }
     }
     return false;
   }
 
   @override
   double childMainAxisPosition(RenderBox child) {
-    return childScrollOffset(child) - constraints.scrollOffset;
+    return childScrollOffset(child)! - constraints.scrollOffset;
   }
 
   @override
   double childCrossAxisPosition(RenderBox child) {
-    final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
+    final childParentData =
+        child.parentData! as SliverVariableSizeBoxAdaptorParentData;
     return childParentData.crossAxisOffset;
   }
 
   @override
-  double childScrollOffset(RenderObject child) {
-    assert(child != null);
+  double? childScrollOffset(RenderObject child) {
     assert(child.parent == this);
-    final SliverVariableSizeBoxAdaptorParentData childParentData =
-        child.parentData;
+    final childParentData =
+        child.parentData! as SliverVariableSizeBoxAdaptorParentData;
     assert(childParentData.layoutOffset != null);
     return childParentData.layoutOffset;
   }
 
   @override
   void applyPaintTransform(RenderObject child, Matrix4 transform) {
-    applyPaintTransformForBoxChild(child, transform);
+    applyPaintTransformForBoxChild(child as RenderBox, transform);
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    if (childCount == 0) return;
+    if (childCount == 0) {
+      return;
+    }
     // offset is to the top-left corner, regardless of our axis direction.
     // originOffset gives us the delta from the real origin to the origin in the axis direction.
-    Offset mainAxisUnit, crossAxisUnit, originOffset;
-    bool addExtent;
+    Offset? mainAxisUnit, crossAxisUnit, originOffset;
+    bool? addExtent;
     switch (applyGrowthDirectionToAxisDirection(
         constraints.axisDirection, constraints.growthDirection)) {
       case AxisDirection.up:
-        mainAxisUnit = const Offset(0.0, -1.0);
-        crossAxisUnit = const Offset(1.0, 0.0);
-        originOffset = offset + new Offset(0.0, geometry.paintExtent);
+        mainAxisUnit = const Offset(0, -1);
+        crossAxisUnit = const Offset(1, 0);
+        originOffset = offset + Offset(0, geometry!.paintExtent);
         addExtent = true;
         break;
       case AxisDirection.right:
-        mainAxisUnit = const Offset(1.0, 0.0);
-        crossAxisUnit = const Offset(0.0, 1.0);
+        mainAxisUnit = const Offset(1, 0);
+        crossAxisUnit = const Offset(0, 1);
         originOffset = offset;
         addExtent = false;
         break;
       case AxisDirection.down:
-        mainAxisUnit = const Offset(0.0, 1.0);
-        crossAxisUnit = const Offset(1.0, 0.0);
+        mainAxisUnit = const Offset(0, 1);
+        crossAxisUnit = const Offset(1, 0);
         originOffset = offset;
         addExtent = false;
         break;
       case AxisDirection.left:
-        mainAxisUnit = const Offset(-1.0, 0.0);
-        crossAxisUnit = const Offset(0.0, 1.0);
-        originOffset = offset + new Offset(geometry.paintExtent, 0.0);
+        mainAxisUnit = const Offset(-1, 0);
+        crossAxisUnit = const Offset(0, 1);
+        originOffset = offset + Offset(geometry!.paintExtent, 0);
         addExtent = true;
         break;
     }
-    assert(mainAxisUnit != null);
-    assert(addExtent != null);
 
-    for (var child in children) {
+    for (final child in children) {
       final double mainAxisDelta = childMainAxisPosition(child);
       final double crossAxisDelta = childCrossAxisPosition(child);
-      Offset childOffset = new Offset(
+      Offset childOffset = Offset(
         originOffset.dx +
             mainAxisUnit.dx * mainAxisDelta +
             crossAxisUnit.dx * crossAxisDelta,
@@ -470,7 +470,9 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
             mainAxisUnit.dy * mainAxisDelta +
             crossAxisUnit.dy * crossAxisDelta,
       );
-      if (addExtent) childOffset += mainAxisUnit * paintExtentOf(child);
+      if (addExtent) {
+        childOffset += mainAxisUnit * paintExtentOf(child);
+      }
       context.paintChild(child, childOffset);
     }
   }
@@ -478,7 +480,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    properties.add(new DiagnosticsNode.message(childCount > 0
+    properties.add(DiagnosticsNode.message(childCount > 0
         ? 'currently live children: ${indices.join(',')}'
         : 'no children current live'));
   }
@@ -487,17 +489,17 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   List<DiagnosticsNode> debugDescribeChildren() {
     final List<DiagnosticsNode> childList = <DiagnosticsNode>[];
     if (childCount > 0) {
-      for (RenderBox child in children) {
-        final SliverVariableSizeBoxAdaptorParentData childParentData =
-            child.parentData;
+      for (final child in children) {
+        final childParentData =
+            child.parentData! as SliverVariableSizeBoxAdaptorParentData;
         childList.add(child.toDiagnosticsNode(
             name: 'child with index ${childParentData.index}'));
       }
     }
     if (_keepAliveBucket.isNotEmpty) {
       final List<int> indices = _keepAliveBucket.keys.toList()..sort();
-      for (int index in indices) {
-        childList.add(_keepAliveBucket[index].toDiagnosticsNode(
+      for (final index in indices) {
+        childList.add(_keepAliveBucket[index]!.toDiagnosticsNode(
           name: 'child with index $index (kept alive offstage)',
           style: DiagnosticsTreeStyle.offstage,
         ));

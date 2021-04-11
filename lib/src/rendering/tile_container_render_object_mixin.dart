@@ -9,7 +9,7 @@ import 'package:flutter/rendering.dart';
 mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
     ParentDataType extends ParentData> on RenderObject {
   final SplayTreeMap<int, ChildType> _childRenderObjects =
-      new SplayTreeMap<int, ChildType>();
+      SplayTreeMap<int, ChildType>();
 
   /// The number of children.
   int get childCount => _childRenderObjects.length;
@@ -27,7 +27,7 @@ mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
   bool debugValidateChild(RenderObject child) {
     assert(() {
       if (child is! ChildType) {
-        throw new FlutterError(
+        throw FlutterError(
             'A $runtimeType expected a child of type $ChildType but received a '
             'child of type ${child.runtimeType}.\n'
             'RenderObjects expect specific types of children because they '
@@ -47,27 +47,28 @@ mixin TileContainerRenderObjectMixin<ChildType extends RenderObject,
     return true;
   }
 
-  ChildType operator [](int index) => _childRenderObjects[index];
+  ChildType? operator [](int index) => _childRenderObjects[index];
 
   void operator []=(int index, ChildType child) {
-    assert(child != null);
-    if (index == null || index < 0) throw new ArgumentError(index);
+    if (index < 0) {
+      throw ArgumentError(index);
+    }
     _removeChild(_childRenderObjects[index]);
     adoptChild(child);
     _childRenderObjects[index] = child;
   }
 
-  void forEachChild(void f(ChildType child)) {
+  void forEachChild(void Function(ChildType child) f) {
     _childRenderObjects.values.forEach(f);
   }
 
   /// Remove the child at the specified index from the child list.
   void remove(int index) {
-    ChildType child = _childRenderObjects.remove(index);
+    final child = _childRenderObjects.remove(index);
     _removeChild(child);
   }
 
-  void _removeChild(ChildType child) {
+  void _removeChild(ChildType? child) {
     if (child != null) {
       // Remove the old child.
       dropChild(child);

@@ -3,75 +3,75 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 import 'routes.dart';
 
-const List<StaggeredTile> _tiles = const <StaggeredTile>[
-  const StaggeredTile.count(2, 0.5),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(2, 0.5),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(2, 0.5),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
-  const StaggeredTile.count(1, 1),
+const List<StaggeredTile> _tiles = <StaggeredTile>[
+  StaggeredTile.count(2, 0.5),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(2, 0.5),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(2, 0.5),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
+  StaggeredTile.count(1, 1),
   //const StaggeredTile.count(1, 1),
 ];
 
-List<Widget> _children = <Widget>[
-  const HomeHeaderTile('Staggered layouts', Colors.indigo),
-  const HomeTile(
+List<Widget> _children = const <Widget>[
+  HomeHeaderTile('Staggered layouts', Colors.indigo),
+  HomeTile(
       'count constructor\ncount tile', Colors.indigo, staggeredCountCountRoute),
-  const HomeTile('extent constructor\ncount tile', Colors.indigo,
+  HomeTile('extent constructor\ncount tile', Colors.indigo,
       staggeredExtentCountRoute),
-  const HomeTile('count constructor\nextent tile', Colors.indigo,
+  HomeTile('count constructor\nextent tile', Colors.indigo,
       staggeredCountExtentRoute),
-  const HomeTile('extent constructor\nextent tile', Colors.indigo,
+  HomeTile('extent constructor\nextent tile', Colors.indigo,
       staggeredExtentExtentRoute),
-  const HomeHeaderTile('Spannable layouts', Colors.purple),
-  const HomeTile(
+  HomeHeaderTile('Spannable layouts', Colors.purple),
+  HomeTile(
       'count constructor\ncount tile', Colors.purple, spannableCountCountRoute),
-  const HomeTile('extent constructor\ncount tile', Colors.purple,
+  HomeTile('extent constructor\ncount tile', Colors.purple,
       spannableExtentCountRoute),
-  const HomeTile('count constructor\nextent tile', Colors.purple,
+  HomeTile('count constructor\nextent tile', Colors.purple,
       spannableCountExtentRoute),
-  const HomeTile('extent constructor\nextent tile', Colors.purple,
+  HomeTile('extent constructor\nextent tile', Colors.purple,
       spannableExtentExtentRoute),
-  const HomeHeaderTile('More examples', Colors.pink),
-  const HomeTile('example 01', Colors.pink, example01),
-  const HomeTile('example 02', Colors.pink, example02),
-  const HomeTile('example 03', Colors.pink, example03),
-  const HomeTile('example 04', Colors.pink, example04),
-  const HomeTile('random tiles', Colors.pink, example05),
-  const HomeTile('dynamic resizing', Colors.pink, example06),
-  const HomeTile('dynamic tile sizes', Colors.pink, example07),
-  const HomeTile('random dynamic tile sizes', Colors.pink, example08),
-  //const HomeTile('test', Colors.pink, exampleTests),
+  HomeHeaderTile('More examples', Colors.pink),
+  HomeTile('example 01', Colors.pink, example01),
+  HomeTile('example 02', Colors.pink, example02),
+  HomeTile('example 03', Colors.pink, example03),
+  HomeTile('example 04', Colors.pink, example04),
+  HomeTile('random tiles', Colors.pink, example05),
+  HomeTile('dynamic resizing', Colors.pink, example06),
+  HomeTile('dynamic tile sizes', Colors.pink, example07),
+  HomeTile('random dynamic tile sizes', Colors.pink, example08),
+  //HomeTile('test', Colors.pink, exampleTests),
 ];
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-        appBar: new AppBar(
-          title: new Text('StaggeredGridView Demo'),
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('StaggeredGridView Demo'),
         ),
-        body: new Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
-          child: new StaggeredGridView.count(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: StaggeredGridView.count(
             crossAxisCount: 2,
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 10.0,
-            children: _children,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
             staggeredTiles: _tiles,
+            children: _children,
           ),
         ));
   }
@@ -85,22 +85,22 @@ class HomeHeaderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Container(
-      decoration: new BoxDecoration(
-          border: new Border(
-              bottom: new BorderSide(
+    return Container(
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(
         color: backgroundColor,
       ))),
-      child: new Align(
+      child: Align(
         alignment: Alignment.bottomCenter,
-        child: new Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: new Text(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Text(
             title,
             textAlign: TextAlign.center,
             style: Theme.of(context)
                 .primaryTextTheme
-                .headline6
+                .headline6!
                 .copyWith(color: backgroundColor),
           ),
         ),
@@ -118,18 +118,17 @@ class HomeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return new Card(
+    return Card(
       color: backgroundColor,
-      child: new InkWell(
-        onTap:
-            route == null ? null : () => Navigator.of(context).pushNamed(route),
-        child: new Center(
-          child: new Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: new Text(
+      child: InkWell(
+        onTap: () => Navigator.of(context).pushNamed(route),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
               title,
               textAlign: TextAlign.center,
-              style: Theme.of(context).primaryTextTheme.headline6.copyWith(
+              style: Theme.of(context).primaryTextTheme.headline6!.copyWith(
                   color:
                       ThemeData.estimateBrightnessForColor(backgroundColor) ==
                               Brightness.dark
