@@ -93,6 +93,7 @@ abstract class RenderSliverVariableSizeBoxChildManager {
   ///
   /// Useful for subclasses to determine whether newly added children could
   /// affect the visible contents of the [RenderSliverVariableSizeBoxAdaptor].
+  // ignore: avoid_positional_boolean_parameters
   void setDidUnderflow(bool value);
 
   /// Called at the beginning of layout to indicate that layout is about to

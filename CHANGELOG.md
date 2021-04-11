@@ -1,3 +1,7 @@
+## 0.4.0
+### Changed
+* Stable null safety version
+
 ## 0.4.0-nullsafety.3
 ### Fixed
 * LateInitializationError: Local `firstIndex` has not been initialized. (https://github.com/letsar/flutter_staggered_grid_view/issues/151)

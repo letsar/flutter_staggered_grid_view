@@ -121,7 +121,7 @@ class HomeTile extends StatelessWidget {
     return Card(
       color: backgroundColor,
       child: InkWell(
-        onTap: () => Navigator.of(context)!.pushNamed(route),
+        onTap: () => Navigator.of(context).pushNamed(route),
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(8),

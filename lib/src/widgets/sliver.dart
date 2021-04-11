@@ -301,7 +301,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   }
 
   @override
-  void insertChildRenderObject(covariant RenderBox child, int slot) {
+  void insertRenderObjectChild(covariant RenderBox child, int slot) {
     assert(_currentlyUpdatingChildIndex == slot);
     assert(renderObject.debugValidateChild(child));
     renderObject[_currentlyUpdatingChildIndex!] = child;
@@ -314,14 +314,19 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   }
 
   @override
-  void moveChildRenderObject(covariant RenderObject child, int? slot) {
-    // TODO(ianh): At some point we should be better about noticing when a
-    // particular LocalKey changes slot, and handle moving the nodes around.
+  void moveRenderObjectChild(
+    covariant RenderObject child,
+    covariant Object? oldSlot,
+    covariant Object? newSlot,
+  ) {
     assert(false);
   }
 
   @override
-  void removeChildRenderObject(covariant RenderObject child) {
+  void removeRenderObjectChild(
+    covariant RenderObject child,
+    covariant Object? slot,
+  ) {
     assert(_currentlyUpdatingChildIndex != null);
     renderObject.remove(_currentlyUpdatingChildIndex!);
   }
@@ -564,22 +569,5 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   void updateRenderObject(
       BuildContext context, RenderSliverStaggeredGrid renderObject) {
     renderObject.gridDelegate = gridDelegate;
-  }
-
-  @override
-  double? estimateMaxScrollOffset(
-    SliverConstraints constraints,
-    int firstIndex,
-    int lastIndex,
-    double leadingScrollOffset,
-    double trailingScrollOffset,
-  ) {
-    return super.estimateMaxScrollOffset(
-      constraints,
-      firstIndex,
-      lastIndex,
-      leadingScrollOffset,
-      trailingScrollOffset,
-    );
   }
 }

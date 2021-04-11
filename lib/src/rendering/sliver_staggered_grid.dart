@@ -193,7 +193,6 @@ class SliverStaggeredGridGeometry {
 
   /// Returns a tight [BoxConstraints] that forces the child to have the
   /// required size.
-  @override
   BoxConstraints getBoxConstraints(SliverConstraints constraints) {
     return constraints.asBoxConstraints(
       minExtent: mainAxisExtent ?? 0.0,
@@ -234,7 +233,7 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
   RenderSliverStaggeredGrid({
     required RenderSliverVariableSizeBoxChildManager childManager,
     required SliverStaggeredGridDelegate gridDelegate,
-  })   : _gridDelegate = gridDelegate,
+  })  : _gridDelegate = gridDelegate,
         _pageSizeToViewportOffsets =
             HashMap<double, SplayTreeMap<int, _ViewportOffsets?>>(),
         super(childManager: childManager);
