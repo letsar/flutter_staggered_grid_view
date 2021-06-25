@@ -1,9 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
+import 'package:flutter_staggered_grid_view/src/rendering/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/sliver.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
-import 'package:flutter_staggered_grid_view/src/rendering/sliver_staggered_grid.dart';
 
 /// A scrollable, 2D array of widgets with variable sizes.
 ///
@@ -137,22 +136,23 @@ class StaggeredGridView extends BoxScrollView {
     bool addRepaintBoundaries = true,
     List<Widget> children = const <Widget>[],
     String? restorationId,
+    Clip clipBehavior = Clip.hardEdge,
   })  : childrenDelegate = SliverChildListDelegate(
           children,
           addAutomaticKeepAlives: addAutomaticKeepAlives,
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
-          key: key,
-          scrollDirection: scrollDirection,
-          reverse: reverse,
-          controller: controller,
-          primary: primary,
-          physics: physics,
-          shrinkWrap: shrinkWrap,
-          padding: padding,
-          restorationId: restorationId,
-        );
+            key: key,
+            scrollDirection: scrollDirection,
+            reverse: reverse,
+            controller: controller,
+            primary: primary,
+            physics: physics,
+            shrinkWrap: shrinkWrap,
+            padding: padding,
+            restorationId: restorationId,
+            clipBehavior: clipBehavior);
 
   /// Creates a scrollable, 2D array of widgets that are created on demand.
   ///
@@ -188,6 +188,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
     String? restorationId,
+    Clip clipBehavior = Clip.hardEdge,
   })  : childrenDelegate = SliverChildBuilderDelegate(
           itemBuilder,
           childCount: itemCount,
@@ -195,16 +196,16 @@ class StaggeredGridView extends BoxScrollView {
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
-          key: key,
-          scrollDirection: scrollDirection,
-          reverse: reverse,
-          controller: controller,
-          primary: primary,
-          physics: physics,
-          shrinkWrap: shrinkWrap,
-          padding: padding,
-          restorationId: restorationId,
-        );
+            key: key,
+            scrollDirection: scrollDirection,
+            reverse: reverse,
+            controller: controller,
+            primary: primary,
+            physics: physics,
+            shrinkWrap: shrinkWrap,
+            padding: padding,
+            restorationId: restorationId,
+            clipBehavior: clipBehavior);
 
   /// Creates a scrollable, 2D array of widgets with both a custom
   /// [SliverStaggeredGridDelegate] and a custom [SliverVariableSizeChildDelegate].
@@ -224,19 +225,20 @@ class StaggeredGridView extends BoxScrollView {
     bool shrinkWrap = false,
     EdgeInsetsGeometry? padding,
     String? restorationId,
+    Clip clipBehavior = Clip.hardEdge,
     required this.gridDelegate,
     required this.childrenDelegate,
   }) : super(
-          key: key,
-          scrollDirection: scrollDirection,
-          reverse: reverse,
-          controller: controller,
-          primary: primary,
-          physics: physics,
-          shrinkWrap: shrinkWrap,
-          padding: padding,
-          restorationId: restorationId,
-        );
+            key: key,
+            scrollDirection: scrollDirection,
+            reverse: reverse,
+            controller: controller,
+            primary: primary,
+            physics: physics,
+            shrinkWrap: shrinkWrap,
+            padding: padding,
+            restorationId: restorationId,
+            clipBehavior: clipBehavior);
 
   /// Creates a scrollable, 2D array of widgets of variable sizes with a fixed
   /// number of tiles in the cross axis.
@@ -270,6 +272,7 @@ class StaggeredGridView extends BoxScrollView {
     List<Widget> children = const <Widget>[],
     List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
     String? restorationId,
+    Clip clipBehavior = Clip.hardEdge,
   })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
@@ -283,16 +286,16 @@ class StaggeredGridView extends BoxScrollView {
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
-          key: key,
-          scrollDirection: scrollDirection,
-          reverse: reverse,
-          controller: controller,
-          primary: primary,
-          physics: physics,
-          shrinkWrap: shrinkWrap,
-          padding: padding,
-          restorationId: restorationId,
-        );
+            key: key,
+            scrollDirection: scrollDirection,
+            reverse: reverse,
+            controller: controller,
+            primary: primary,
+            physics: physics,
+            shrinkWrap: shrinkWrap,
+            padding: padding,
+            restorationId: restorationId,
+            clipBehavior: clipBehavior);
 
   /// Creates a scrollable, 2D array of widgets of variable sizes with a fixed
   /// number of tiles in the cross axis that are created on demand.
@@ -334,6 +337,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
     String? restorationId,
+    Clip clipBehavior = Clip.hardEdge,
   })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
@@ -348,16 +352,16 @@ class StaggeredGridView extends BoxScrollView {
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
-          key: key,
-          scrollDirection: scrollDirection,
-          reverse: reverse,
-          controller: controller,
-          primary: primary,
-          physics: physics,
-          shrinkWrap: shrinkWrap,
-          padding: padding,
-          restorationId: restorationId,
-        );
+            key: key,
+            scrollDirection: scrollDirection,
+            reverse: reverse,
+            controller: controller,
+            primary: primary,
+            physics: physics,
+            shrinkWrap: shrinkWrap,
+            padding: padding,
+            restorationId: restorationId,
+            clipBehavior: clipBehavior);
 
   /// Creates a scrollable, 2D array of widgets of variable sizes with tiles
   /// that  each have a maximum cross-axis extent.
@@ -397,6 +401,7 @@ class StaggeredGridView extends BoxScrollView {
     List<Widget> children = const <Widget>[],
     List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
     String? restorationId,
+    Clip clipBehavior = Clip.hardEdge,
   })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
@@ -410,16 +415,16 @@ class StaggeredGridView extends BoxScrollView {
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
-          key: key,
-          scrollDirection: scrollDirection,
-          reverse: reverse,
-          controller: controller,
-          primary: primary,
-          physics: physics,
-          shrinkWrap: shrinkWrap,
-          padding: padding,
-          restorationId: restorationId,
-        );
+            key: key,
+            scrollDirection: scrollDirection,
+            reverse: reverse,
+            controller: controller,
+            primary: primary,
+            physics: physics,
+            shrinkWrap: shrinkWrap,
+            padding: padding,
+            restorationId: restorationId,
+            clipBehavior: clipBehavior);
 
   /// Creates a scrollable, 2D array of widgets of variable sizes with tiles
   /// that  each have a maximum cross-axis extent that are created on demand.
@@ -457,6 +462,7 @@ class StaggeredGridView extends BoxScrollView {
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
     String? restorationId,
+    Clip clipBehavior = Clip.hardEdge,
   })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
@@ -471,16 +477,16 @@ class StaggeredGridView extends BoxScrollView {
           addRepaintBoundaries: addRepaintBoundaries,
         ),
         super(
-          key: key,
-          scrollDirection: scrollDirection,
-          reverse: reverse,
-          controller: controller,
-          primary: primary,
-          physics: physics,
-          shrinkWrap: shrinkWrap,
-          padding: padding,
-          restorationId: restorationId,
-        );
+            key: key,
+            scrollDirection: scrollDirection,
+            reverse: reverse,
+            controller: controller,
+            primary: primary,
+            physics: physics,
+            shrinkWrap: shrinkWrap,
+            padding: padding,
+            restorationId: restorationId,
+            clipBehavior: clipBehavior);
 
   /// A delegate that controls the layout of the children within the
   /// [StaggeredGridView].
