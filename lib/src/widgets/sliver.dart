@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_variable_size_box_adaptor.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
@@ -17,7 +16,11 @@ abstract class SliverVariableSizeBoxAdaptorWidget
   const SliverVariableSizeBoxAdaptorWidget({
     Key? key,
     required this.delegate,
+    this.addAutomaticKeepAlives = true,
   }) : super(key: key);
+
+  /// Whether to add keepAlives to children
+  final bool addAutomaticKeepAlives;
 
   /// The delegate that provides the children for this widget.
   ///
@@ -33,7 +36,10 @@ abstract class SliverVariableSizeBoxAdaptorWidget
 
   @override
   SliverVariableSizeBoxAdaptorElement createElement() =>
-      SliverVariableSizeBoxAdaptorElement(this);
+      SliverVariableSizeBoxAdaptorElement(
+        this,
+        addAutomaticKeepAlives: addAutomaticKeepAlives,
+      );
 
   @override
   RenderSliverVariableSizeBoxAdaptor createRenderObject(BuildContext context);
@@ -80,8 +86,12 @@ abstract class SliverVariableSizeBoxAdaptorWidget
 class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     implements RenderSliverVariableSizeBoxChildManager {
   /// Creates an element that lazily builds children for the given widget.
-  SliverVariableSizeBoxAdaptorElement(SliverVariableSizeBoxAdaptorWidget widget)
+  SliverVariableSizeBoxAdaptorElement(SliverVariableSizeBoxAdaptorWidget widget,
+      {this.addAutomaticKeepAlives = true})
       : super(widget);
+
+  /// Whether to add keepAlives to children
+  final bool addAutomaticKeepAlives;
 
   @override
   SliverVariableSizeBoxAdaptorWidget get widget =>
@@ -182,7 +192,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
         as SliverVariableSizeBoxAdaptorParentData?;
 
     // set keepAlive to true in order to populate the cache
-    if (newParentData != null) {
+    if (addAutomaticKeepAlives && newParentData != null) {
       newParentData.keepAlive = true;
     }
 
@@ -424,13 +434,21 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     Key? key,
     required SliverChildDelegate delegate,
     required this.gridDelegate,
-  }) : super(key: key, delegate: delegate);
+    bool addAutomaticKeepAlives = true,
+  }) : super(
+          key: key,
+          delegate: delegate,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+        );
 
   /// Creates a sliver that places multiple box children in a two dimensional
   /// arrangement with a fixed number of tiles in the cross axis.
   ///
   /// Uses a [SliverStaggeredGridDelegateWithFixedCrossAxisCount] as the [gridDelegate],
   /// and a [SliverVariableSizeChildListDelegate] as the [delegate].
+  ///
+  /// The `addAutomaticKeepAlives` argument corresponds to the
+  //  [SliverVariableSizeChildListDelegate.addAutomaticKeepAlives] property. The
   ///
   /// See also:
   ///
@@ -442,6 +460,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     double crossAxisSpacing = 0.0,
     List<Widget> children = const <Widget>[],
     List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
+    bool addAutomaticKeepAlives = true,
   })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
@@ -453,6 +472,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           key: key,
           delegate: SliverChildListDelegate(
             children,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
           ),
         );
 
@@ -478,6 +498,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     required int itemCount,
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
+    bool addAutomaticKeepAlives = true,
   })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
@@ -490,6 +511,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
           ),
         );
 
@@ -509,6 +531,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     double crossAxisSpacing = 0,
     List<Widget> children = const <Widget>[],
     List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
+    bool addAutomaticKeepAlives = true,
   })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
@@ -520,6 +543,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           key: key,
           delegate: SliverChildListDelegate(
             children,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
           ),
         );
 
@@ -545,6 +569,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     required int itemCount,
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
+    bool addAutomaticKeepAlives = true,
   })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
@@ -557,6 +582,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
           ),
         );
 
