@@ -21,7 +21,7 @@ class SliverStaggeredImagePage extends StatefulWidget{
 class SliverStaggeredImagePageState extends State<SliverStaggeredImagePage> {
 
   late RefreshController _refreshController;
-  late final Size _screenSize;
+  late Size _screenSize;
 
   final List<String> _imgList = [];
 
@@ -30,15 +30,21 @@ class SliverStaggeredImagePageState extends State<SliverStaggeredImagePage> {
   @override
   void initState() {
     super.initState();
+    _imgList.addAll(rawData.sublist(0,10));
     _refreshController = RefreshController();
   }
 
   Future _loadMore() {
     final Completer<void> c = Completer();
     Future.delayed(const Duration(seconds: 1), () {
-      if(_pageIndex*10 < rawData.length) {
+      if(_pageIndex * 10 < rawData.length) {
+        _pageIndex++;
+
+        final start = _pageIndex * 10;
+        final end = _pageIndex * 10 + 10;
+
         setState(() {
-          _imgList.addAll(rawData.sublist(_pageIndex,_pageIndex + 10));
+          _imgList.addAll(rawData.sublist(start, end > rawData.length ? rawData.length : end));
         });
         _refreshController.loadComplete();
       } else {
@@ -52,9 +58,7 @@ class SliverStaggeredImagePageState extends State<SliverStaggeredImagePage> {
 
   @override
   Widget build(BuildContext context) {
-
     _screenSize = MediaQuery.of(context).size;
-
     return Material(
       color: Colors.white,
       child: Scaffold(
@@ -85,7 +89,7 @@ class SliverStaggeredImagePageState extends State<SliverStaggeredImagePage> {
   Widget _buildSliverStaggered() {
     return SliverStaggeredGrid.countBuilder(
         mainAxisSpacing: 10,crossAxisSpacing: 10,
-        crossAxisCount: 2,
+        crossAxisCount: 4,
         staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
         itemBuilder: (ctx, index) {
           return _buildImgItem(index);

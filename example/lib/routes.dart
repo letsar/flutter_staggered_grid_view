@@ -1,3 +1,4 @@
+import 'package:example/sliver_staggered_with_image_page.dart';
 import 'package:flutter/material.dart';
 
 import 'example_1.dart';
@@ -31,6 +32,7 @@ const String spannableExtentCountRoute = '/spannable_extent_count';
 const String spannableCountExtentRoute = '/spannable_count_extent';
 const String spannableExtentExtentRoute = '/spannable_extent_extent';
 
+const String hugeImageList = 'hugeImageList';
 const String example01 = '/example_01';
 const String example02 = '/example_02';
 const String example03 = '/example_03';
@@ -57,6 +59,7 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
       SpannableCountExtentPage(),
   spannableExtentExtentRoute: (BuildContext context) =>
       SpannableExtentExtentPage(),
+  hugeImageList : (BuildContext context) => SliverStaggeredImagePage(),
   example01: (BuildContext context) => Example01(),
   example02: (BuildContext context) => Example02(),
   example03: (BuildContext context) => Example03(),

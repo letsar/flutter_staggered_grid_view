@@ -46,6 +46,7 @@ List<Widget> _children = const <Widget>[
   HomeTile('extent constructor\nextent tile', Colors.purple,
       spannableExtentExtentRoute),
   HomeHeaderTile('More examples', Colors.pink),
+  HomeTile('sliver staggered with huge image list', Colors.pink, hugeImageList),
   HomeTile('example 01', Colors.pink, example01),
   HomeTile('example 02', Colors.pink, example02),
   HomeTile('example 03', Colors.pink, example03),
