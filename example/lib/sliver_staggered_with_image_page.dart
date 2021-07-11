@@ -37,9 +37,8 @@ class SliverStaggeredImagePageState extends State<SliverStaggeredImagePage> {
   Future _loadMore() {
     final Completer<void> c = Completer();
     Future.delayed(const Duration(seconds: 1), () {
+      _pageIndex++;
       if(_pageIndex * 10 < rawData.length) {
-        _pageIndex++;
-
         final start = _pageIndex * 10;
         final end = _pageIndex * 10 + 10;
 
