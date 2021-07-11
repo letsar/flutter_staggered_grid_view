@@ -90,8 +90,7 @@ class SliverStaggeredImagePageState extends State<SliverStaggeredImagePage> {
     return SliverStaggeredGrid.countBuilder(
         mainAxisSpacing: 10,crossAxisSpacing: 10,
         crossAxisCount: 4,
-        staggeredTileBuilder: (index) =>  StaggeredTile.fit(2),
-        addAutomaticKeepAlives: false,
+        staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
         itemBuilder: (ctx, index) {
           return _buildImgItem(index);
         },

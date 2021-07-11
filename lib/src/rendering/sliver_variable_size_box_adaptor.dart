@@ -168,7 +168,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   ///
   /// The [childManager] argument must not be null.
   RenderSliverVariableSizeBoxAdaptor(
-      {required RenderSliverVariableSizeBoxChildManager childManager})
+      {required RenderSliverVariableSizeBoxChildManager childManager, this.keepBucketSize = 30})
       : _childManager = childManager;
 
   @override
@@ -188,8 +188,18 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   RenderSliverVariableSizeBoxChildManager get childManager => _childManager;
   final RenderSliverVariableSizeBoxChildManager _childManager;
 
+  /// The size of [_keepAliveBucket]
+  final int keepBucketSize;
+
   /// The nodes being kept alive despite not being visible.
   final Map<int, RenderBox> _keepAliveBucket = <int, RenderBox>{};
+
+  /// The node that out of [keepBucketSize] will be kept in [invokeLayoutCallback]
+  /// * Every time of [collectGarbage], nodes that exceed [keepBucketSize] will
+  ///   be moved to [_trashCan],and eventually removed.
+  final List<RenderBox> _trashCan = <RenderBox>[];
+
+  int get halfBucket => (keepBucketSize / 2).ceil();
 
   @override
   void adoptChild(RenderObject child) {
@@ -325,6 +335,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
     return null;
   }
 
+
   /// Called after layout with the number of children that can be garbage
   /// collected at the head and tail of the child list.
   ///
@@ -345,14 +356,49 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
       // Ask the child manager to remove the children that are no longer being
       // kept alive. (This should cause _keepAliveBucket to change, so we have
       // to prepare our list ahead of time.)
-      _keepAliveBucket.values
-          .where((RenderBox child) {
-            final childParentData =
-                child.parentData! as SliverVariableSizeBoxAdaptorParentData;
-            return !childParentData.keepAlive;
-          })
-          .toList()
-          .forEach(_childManager.removeChild);
+
+      //
+
+      if(_keepAliveBucket.length > keepBucketSize) {
+        final int indicesFirst = indices.first;
+        final int indicesEnd = indices.last;
+        int bigCount = 0;
+        int smallCount = 0;
+        _keepAliveBucket.keys.forEach((element) {
+          if(element < indicesFirst) {
+            smallCount++;
+          } else {
+            bigCount++;
+          }
+        });
+
+        _keepAliveBucket.forEach((index, child) {
+          final childParentData =
+          child.parentData! as SliverVariableSizeBoxAdaptorParentData;
+          if(childParentData.keepAlive) {
+            if(smallCount > bigCount) {
+              if(indicesFirst - index > halfBucket) {
+                _trashCan.add(child);
+              }
+            } else {
+              if(index - indicesEnd > halfBucket) {
+                _trashCan.add(child);
+              }
+            }
+          }
+        });
+        _trashCan.forEach(_childManager.removeChild);
+        _trashCan.clear();
+      }
+
+      // _keepAliveBucket.values
+      //     .where((RenderBox child) {
+      //       final childParentData =
+      //           child.parentData! as SliverVariableSizeBoxAdaptorParentData;
+      //       return !childParentData.keepAlive;
+      //     })
+      //     .toList()
+      //     .forEach(_childManager.removeChild);
       assert(_keepAliveBucket.values.where((RenderBox child) {
         final childParentData =
             child.parentData! as SliverVariableSizeBoxAdaptorParentData;
