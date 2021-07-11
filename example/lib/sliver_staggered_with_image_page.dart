@@ -1,6 +1,7 @@
 
 
 import 'dart:async';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -89,7 +90,8 @@ class SliverStaggeredImagePageState extends State<SliverStaggeredImagePage> {
     return SliverStaggeredGrid.countBuilder(
         mainAxisSpacing: 10,crossAxisSpacing: 10,
         crossAxisCount: 4,
-        staggeredTileBuilder: (index) => const StaggeredTile.fit(2),
+        staggeredTileBuilder: (index) =>  StaggeredTile.fit(2),
+        addAutomaticKeepAlives: false,
         itemBuilder: (ctx, index) {
           return _buildImgItem(index);
         },
@@ -112,7 +114,15 @@ class SliverStaggeredImagePageState extends State<SliverStaggeredImagePage> {
 
 }
 
-const List<String> rawData = [
+List<String> insertImgList() {
+  return List.generate(10, (index) {
+    final int w = Random().nextInt(600) + 100;
+    final int h = w + 100;
+    return 'https://picsum.photos/$w/$h';
+  });
+}
+
+List<String> rawData = [
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201804%2F28%2F20180428114906_ulvqd.jpg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628499575&t=76a0121a86d347aee89b82f99f717fe2',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcdn.duitang.com%2Fuploads%2Fitem%2F201303%2F29%2F20130329205806_kTTnv.thumb.700_0.jpeg&refer=http%3A%2F%2Fcdn.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628499576&t=9e767cd24fec55f9d7daff9831597804',
   'https://ss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/9345d688d43f87948c83d520d21b0ef41bd53abb.jpg',
@@ -139,6 +149,7 @@ const List<String> rawData = [
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.article.pchome.net%2F00%2F24%2F13%2F24%2Fpic_lib%2Fs960x639%2F010s960x639.jpg&refer=http%3A%2F%2Fimg.article.pchome.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628500108&t=ffd150185b8d7923580d8d83ec22c901',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2Fe1f8a492d49c81fd9f449018f4ad74db069fd4f21433f-aW0U1z_fw658&refer=http%3A%2F%2Fhbimg.b0.upaiyun.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628500108&t=d3d2e4cda690d0bec468b0b10a24d904',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.ph.126.net%2F8RU2gc3au2g2s6ZUU30iEg%3D%3D%2F1092122909654267255.jpg&refer=http%3A%2F%2Fimg.ph.126.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628500108&t=9c8dbaba6c13706219a0b67f83e22a1b',
+  ...insertImgList(),
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.article.pchome.net%2F00%2F31%2F49%2F81%2Fpic_lib%2Fs960x639%2FDaziran_15s960x639.jpg&refer=http%3A%2F%2Fimg.article.pchome.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628500108&t=cc544690fba8004688f8fcad3cf16641',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.article.pchome.net%2F00%2F42%2F17%2F99%2Fpic_lib%2Fs960x639%2Fzrfj%2520%2864%29s960x639.jpg&refer=http%3A%2F%2Fimg.article.pchome.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628500108&t=84da22007f06bffa8f37645802b0cabc',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.article.pchome.net%2F00%2F39%2F76%2F73%2Fpic_lib%2Fs960x639%2Fcoolfg20081128_003s960x639.jpg&refer=http%3A%2F%2Fimg.article.pchome.net&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628500108&t=81072badd64564453304183a9ad0188f',
@@ -181,6 +192,7 @@ const List<String> rawData = [
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2F1864.img.pp.sohu.com.cn%2Fimages%2Fblog%2F2009%2F7%2F21%2F13%2F19%2F12348f9485fg213.jpg&refer=http%3A%2F%2F1864.img.pp.sohu.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524213&t=04997a66f2325fa53835f7186cc397f6',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fyzhtml01.book118.com%2F2016%2F11%2F21%2F15%2F44088396%2F13.files%2Ffile0001.png&refer=http%3A%2F%2Fyzhtml01.book118.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524213&t=e22e32aab80b9ce965ec11f33ca38e29',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg3.doubanio.com%2Fview%2Fphoto%2Fl%2Fpublic%2Fp2200447825.jpg&refer=http%3A%2F%2Fimg3.doubanio.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524213&t=9f8a4321618edbc9de81dd9b2ee8f829',
+  ...insertImgList(),
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fcdn.duitang.com%2Fuploads%2Fitem%2F201410%2F03%2F20141003130907_jUYze.thumb.700_0.jpeg&refer=http%3A%2F%2Fcdn.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524213&t=ac389f5a6c89e1ea6ff87fced91a082c',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fgss0.baidu.com%2F-Po3dSag_xI4khGko9WTAnF6hhy%2Fzhidao%2Fpic%2Fitem%2Ff603918fa0ec08fad2e8b94657ee3d6d54fbda63.jpg&refer=http%3A%2F%2Fgss0.baidu.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524213&t=6f26efbcb2b12aee34f7358894eb683e',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F63bbd5ba53f612734dc5ed3fc2cdf7a63ff8aa1e38c8d-CtCpcK_fw658&refer=http%3A%2F%2Fhbimg.b0.upaiyun.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524213&t=8cda866fab31d3a299b4183911346462',
@@ -196,6 +208,7 @@ const List<String> rawData = [
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.cn314.com%2Fd%2Ffile%2Fxinwen%2F1d22c3854090eaa5d752fd3b0025a610.jpg&refer=http%3A%2F%2Fwww.cn314.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524367&t=96b3ede930f3cd4cca98171847071f7d',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201505%2F17%2F20150517175811_HKBhE.thumb.700_0.jpeg&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524367&t=3a224c642e34bf37e048b558c67fdf21',
   'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg0.pconline.com.cn%2Fpconline%2F1203%2F19%2F2709783_4.jpg&refer=http%3A%2F%2Fimg0.pconline.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1628524367&t=5634b97cbce73dbdbd59968c559b1aba',
+  ...insertImgList(),
 ];
 
 
