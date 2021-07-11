@@ -630,6 +630,8 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   /// The size of [_keepAliveBucket]
   /// * We will keep some invisible nodes in [_keepAliveBucket].
   ///
+  /// * In some case, we show a large or infinite list (usually with picture),
+  ///   and for make a good performance, we should limit bucket's size.
   /// * More details see [RenderSliverVariableSizeBoxAdaptor].
   ///
   /// * if [addAutomaticKeepAlives] is false, the [_keepAliveBucket] will never work.

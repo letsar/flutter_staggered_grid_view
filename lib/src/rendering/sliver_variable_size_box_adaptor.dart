@@ -188,7 +188,9 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   RenderSliverVariableSizeBoxChildManager get childManager => _childManager;
   final RenderSliverVariableSizeBoxChildManager _childManager;
 
-  /// The size of [_keepAliveBucket]
+  /// The size of [_keepAliveBucket].
+  /// * In sliver running ,the [_keepAliveBucket.length] maybe smaller or
+  ///   bigger than [keepBucketSize].
   final int keepBucketSize;
 
   /// The nodes being kept alive despite not being visible.
@@ -356,19 +358,20 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
       // Ask the child manager to remove the children that are no longer being
       // kept alive. (This should cause _keepAliveBucket to change, so we have
       // to prepare our list ahead of time.)
-
       //
+      // In some case, we show a large or infinite list (usually with picture),
+      // and for make a good performance, we should limit bucket's size.
 
       if(_keepAliveBucket.length > keepBucketSize) {
         final int indicesFirst = indices.first;
         final int indicesEnd = indices.last;
-        int bigCount = 0;
-        int smallCount = 0;
+        int afterIndicesCount = 0;
+        int beforeIndicesCount = 0;
         _keepAliveBucket.keys.forEach((element) {
           if(element < indicesFirst) {
-            smallCount++;
+            beforeIndicesCount++;
           } else {
-            bigCount++;
+            afterIndicesCount++;
           }
         });
 
@@ -376,7 +379,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
           final childParentData =
           child.parentData! as SliverVariableSizeBoxAdaptorParentData;
           if(childParentData.keepAlive) {
-            if(smallCount > bigCount) {
+            if(beforeIndicesCount > afterIndicesCount) {
               if(indicesFirst - index > halfBucket) {
                 _trashCan.add(child);
               }
