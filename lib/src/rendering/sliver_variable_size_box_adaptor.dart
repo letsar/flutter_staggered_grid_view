@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/tile_container_render_object_mixin.dart';
@@ -194,7 +196,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   final int keepBucketSize;
 
   /// The nodes being kept alive despite not being visible.
-  final Map<int, RenderBox> _keepAliveBucket = <int, RenderBox>{};
+  final SplayTreeMap<int, RenderBox> _keepAliveBucket = SplayTreeMap<int, RenderBox>();
 
   /// The node that out of [keepBucketSize] will be kept in [invokeLayoutCallback]
   /// * Every time of [collectGarbage], nodes that exceed [keepBucketSize] will
@@ -365,33 +367,11 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
       if(_keepAliveBucket.length > keepBucketSize) {
         final int indicesFirst = indices.first;
         final int indicesEnd = indices.last;
-        int afterIndicesCount = 0;
-        int beforeIndicesCount = 0;
-        _keepAliveBucket.keys.forEach((element) {
-          if(element < indicesFirst) {
-            beforeIndicesCount++;
-          } else {
-            afterIndicesCount++;
-          }
-        });
-
-        _keepAliveBucket.forEach((index, child) {
-          final childParentData =
-          child.parentData! as SliverVariableSizeBoxAdaptorParentData;
-          if(childParentData.keepAlive) {
-            if(beforeIndicesCount > afterIndicesCount) {
-              if(indicesFirst - index > halfBucket) {
-                _trashCan.add(child);
-              }
-            } else {
-              if(index - indicesEnd > halfBucket) {
-                _trashCan.add(child);
-              }
-            }
-          }
-        });
-        _trashCan.forEach(_childManager.removeChild);
-        _trashCan.clear();
+        _keepAliveBucket.entries.where((entry)
+        => (indicesFirst - entry.key > halfBucket) || (entry.key - indicesEnd > halfBucket))
+            .map<RenderBox>((e) => e.value)
+            .toList()
+            .forEach(_childManager.removeChild);
       }
 
       // _keepAliveBucket.values
