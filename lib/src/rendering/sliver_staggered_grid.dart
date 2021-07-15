@@ -233,10 +233,11 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
   RenderSliverStaggeredGrid({
     required RenderSliverVariableSizeBoxChildManager childManager,
     required SliverStaggeredGridDelegate gridDelegate,
+    int keepBucketSize = 30
   })  : _gridDelegate = gridDelegate,
         _pageSizeToViewportOffsets =
             HashMap<double, SplayTreeMap<int, _ViewportOffsets?>>(),
-        super(childManager: childManager);
+        super(childManager: childManager, keepBucketSize: keepBucketSize);
 
   @override
   void setupParentData(RenderObject child) {

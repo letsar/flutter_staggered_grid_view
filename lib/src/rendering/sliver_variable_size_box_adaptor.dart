@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/tile_container_render_object_mixin.dart';
@@ -168,8 +170,9 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   ///
   /// The [childManager] argument must not be null.
   RenderSliverVariableSizeBoxAdaptor(
-      {required RenderSliverVariableSizeBoxChildManager childManager})
-      : _childManager = childManager;
+      {required RenderSliverVariableSizeBoxChildManager childManager, this.keepBucketSize = 30})
+      : assert(keepBucketSize>0,'keepBucketSize must bigger than 0 !'),
+        _childManager = childManager;
 
   @override
   void setupParentData(RenderObject child) {
@@ -188,8 +191,19 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   RenderSliverVariableSizeBoxChildManager get childManager => _childManager;
   final RenderSliverVariableSizeBoxChildManager _childManager;
 
+  /// The size of [_keepAliveBucket].
+  /// * In sliver running ,the [_keepAliveBucket.length] maybe smaller or
+  ///   bigger than [keepBucketSize].
+  ///
+  /// The node that out of [keepBucketSize] will be kept in [invokeLayoutCallback]
+  /// * Every time of [collectGarbage], nodes that exceed [keepBucketSize] will
+  ///   be removed.
+  final int keepBucketSize;
+
   /// The nodes being kept alive despite not being visible.
-  final Map<int, RenderBox> _keepAliveBucket = <int, RenderBox>{};
+  final SplayTreeMap<int, RenderBox> _keepAliveBucket = SplayTreeMap<int, RenderBox>();
+
+  int get _halfBucket => (keepBucketSize / 2).ceil();
 
   @override
   void adoptChild(RenderObject child) {
@@ -325,6 +339,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
     return null;
   }
 
+
   /// Called after layout with the number of children that can be garbage
   /// collected at the head and tail of the child list.
   ///
@@ -345,14 +360,28 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
       // Ask the child manager to remove the children that are no longer being
       // kept alive. (This should cause _keepAliveBucket to change, so we have
       // to prepare our list ahead of time.)
-      _keepAliveBucket.values
-          .where((RenderBox child) {
-            final childParentData =
-                child.parentData! as SliverVariableSizeBoxAdaptorParentData;
-            return !childParentData.keepAlive;
-          })
-          .toList()
-          .forEach(_childManager.removeChild);
+      //
+      // In some case, we show a large or infinite list (usually with picture),
+      // and for make a good performance, we should limit bucket's size.
+
+      if(_keepAliveBucket.length > keepBucketSize) {
+        final int indicesFirst = indices.first;
+        final int indicesEnd = indices.last;
+        _keepAliveBucket.entries.where((entry)
+        => (indicesFirst - entry.key > _halfBucket) || (entry.key - indicesEnd > _halfBucket))
+            .map<RenderBox>((e) => e.value)
+            .toList()
+            .forEach(_childManager.removeChild);
+      }
+
+      // _keepAliveBucket.values
+      //     .where((RenderBox child) {
+      //       final childParentData =
+      //           child.parentData! as SliverVariableSizeBoxAdaptorParentData;
+      //       return !childParentData.keepAlive;
+      //     })
+      //     .toList()
+      //     .forEach(_childManager.removeChild);
       assert(_keepAliveBucket.values.where((RenderBox child) {
         final childParentData =
             child.parentData! as SliverVariableSizeBoxAdaptorParentData;

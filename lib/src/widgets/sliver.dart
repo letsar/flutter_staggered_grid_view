@@ -17,7 +17,24 @@ abstract class SliverVariableSizeBoxAdaptorWidget
   const SliverVariableSizeBoxAdaptorWidget({
     Key? key,
     required this.delegate,
+    this.addAutomaticKeepAlives = true,
+    this.forceKeepChildWidget = false
   }) : super(key: key);
+
+
+  /// A flag for decide children are/aren't kept.
+  ///
+  /// * if it's true, the children will cached in [_keepAliveBucket].
+  final bool addAutomaticKeepAlives;
+
+  /// Clear the [_childWidgets] when it is false(default value).
+  ///
+  /// * sometimes you refresh whole widget(like called setState/notifyListener() in page),and
+  ///   children's status doesn't change(e.g. called loadMore()),so set
+  ///   this [forceKeepChildWidget] to true maybe is a goods choice, it will avoid to
+  ///   call builder again.
+  ///   more details see the doc above the [SliverVariableSizeBoxAdaptorElement._childWidgets]
+  final bool forceKeepChildWidget;
 
   /// The delegate that provides the children for this widget.
   ///
@@ -33,7 +50,8 @@ abstract class SliverVariableSizeBoxAdaptorWidget
 
   @override
   SliverVariableSizeBoxAdaptorElement createElement() =>
-      SliverVariableSizeBoxAdaptorElement(this);
+      SliverVariableSizeBoxAdaptorElement(this,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,forceKeepChildWidget: forceKeepChildWidget);
 
   @override
   RenderSliverVariableSizeBoxAdaptor createRenderObject(BuildContext context);
@@ -80,8 +98,23 @@ abstract class SliverVariableSizeBoxAdaptorWidget
 class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
     implements RenderSliverVariableSizeBoxChildManager {
   /// Creates an element that lazily builds children for the given widget.
-  SliverVariableSizeBoxAdaptorElement(SliverVariableSizeBoxAdaptorWidget widget)
+  SliverVariableSizeBoxAdaptorElement(
+      SliverVariableSizeBoxAdaptorWidget widget , {this.addAutomaticKeepAlives = true, this.forceKeepChildWidget = false})
       : super(widget);
+
+  /// A flag for decide children are/aren't kept.
+  ///
+  /// * if it's true, the children will cached in [_keepAliveBucket].
+  final bool addAutomaticKeepAlives;
+
+  /// Clear the [_childWidgets] when it is false(default value).
+  ///
+  /// * sometimes you refresh whole widget(like called setState/notifyListener() in page),and
+  ///   children's status doesn't change(e.g. called loadMore()),so set
+  ///   this [forceKeepChildWidget] to true maybe is a goods choice, it will avoid to
+  ///   call builder again.
+  ///   more details see the doc above the [_childWidgets]
+  final bool forceKeepChildWidget;
 
   @override
   SliverVariableSizeBoxAdaptorWidget get widget =>
@@ -117,7 +150,9 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
 
   @override
   void performRebuild() {
-    _childWidgets.clear(); // Reset the cache, as described above.
+    if(! forceKeepChildWidget) {
+      _childWidgets.clear();// Reset the cache, as described above.
+    }
     super.performRebuild();
     assert(_currentlyUpdatingChildIndex == null);
     try {
@@ -150,6 +185,9 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
   }
 
   Widget? _build(int index) {
+    if(forceKeepChildWidget && _childWidgets[index] != null) {
+      return _childWidgets[index];
+    }
     return _childWidgets.putIfAbsent(
         index, () => widget.delegate.build(this, index));
   }
@@ -182,7 +220,7 @@ class SliverVariableSizeBoxAdaptorElement extends RenderObjectElement
         as SliverVariableSizeBoxAdaptorParentData?;
 
     // set keepAlive to true in order to populate the cache
-    if (newParentData != null) {
+    if (addAutomaticKeepAlives && newParentData != null) {
       newParentData.keepAlive = true;
     }
 
@@ -424,7 +462,13 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     Key? key,
     required SliverChildDelegate delegate,
     required this.gridDelegate,
-  }) : super(key: key, delegate: delegate);
+    bool addAutomaticKeepAlives = true,
+    bool forceKeepChildWidget = false,
+    this.keepBucketSize = 30
+  }) : super(key: key, delegate: delegate,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
+            forceKeepChildWidget: forceKeepChildWidget);
+
 
   /// Creates a sliver that places multiple box children in a two dimensional
   /// arrangement with a fixed number of tiles in the cross axis.
@@ -442,6 +486,9 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     double crossAxisSpacing = 0.0,
     List<Widget> children = const <Widget>[],
     List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
+    bool addAutomaticKeepAlives = true,
+    bool forceKeepChildWidget = false,
+    this.keepBucketSize = 30
   })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
@@ -454,6 +501,8 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildListDelegate(
             children,
           ),
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          forceKeepChildWidget: forceKeepChildWidget
         );
 
   /// Creates a sliver that builds multiple box children in a two dimensional
@@ -478,6 +527,9 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     required int itemCount,
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
+    bool addAutomaticKeepAlives = true,
+    bool forceKeepChildWidget = false,
+    this.keepBucketSize = 30
   })  : gridDelegate = SliverStaggeredGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
           mainAxisSpacing: mainAxisSpacing,
@@ -491,6 +543,8 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
             itemBuilder,
             childCount: itemCount,
           ),
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
+          forceKeepChildWidget: forceKeepChildWidget
         );
 
   /// Creates a sliver that places multiple box children in a two dimensional
@@ -509,6 +563,9 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     double crossAxisSpacing = 0,
     List<Widget> children = const <Widget>[],
     List<StaggeredTile> staggeredTiles = const <StaggeredTile>[],
+    bool addAutomaticKeepAlives = true,
+    bool forceKeepChildWidget = false,
+    this.keepBucketSize = 30
   })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
@@ -521,6 +578,8 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildListDelegate(
             children,
           ),
+        addAutomaticKeepAlives: addAutomaticKeepAlives,
+          forceKeepChildWidget: forceKeepChildWidget
         );
 
   /// Creates a sliver that builds multiple box children in a two dimensional
@@ -545,6 +604,9 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
     required int itemCount,
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
+    bool addAutomaticKeepAlives = true,
+    bool forceKeepChildWidget = false,
+    this.keepBucketSize = 30
   })  : gridDelegate = SliverStaggeredGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
           mainAxisSpacing: mainAxisSpacing,
@@ -558,16 +620,30 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
             itemBuilder,
             childCount: itemCount,
           ),
+        addAutomaticKeepAlives: addAutomaticKeepAlives,
+          forceKeepChildWidget: forceKeepChildWidget
         );
 
   /// The delegate that controls the size and position of the children.
   final SliverStaggeredGridDelegate gridDelegate;
 
+  /// The size of [_keepAliveBucket]
+  /// * We will keep some invisible nodes in [_keepAliveBucket],to promote performance.
+  ///
+  /// * In some case, we show a large or infinite list (usually with picture),
+  ///   and for make a good performance, we should limit bucket's size,otherwise it
+  ///   will cost huge memory.
+  ///
+  /// * More details see [RenderSliverVariableSizeBoxAdaptor].
+  ///
+  /// * if [addAutomaticKeepAlives] is false, the [_keepAliveBucket] will never work.
+  final int keepBucketSize;
+
   @override
   RenderSliverStaggeredGrid createRenderObject(BuildContext context) {
     final element = context as SliverVariableSizeBoxAdaptorElement;
     return RenderSliverStaggeredGrid(
-        childManager: element, gridDelegate: gridDelegate);
+        childManager: element, gridDelegate: gridDelegate, keepBucketSize: keepBucketSize);
   }
 
   @override
