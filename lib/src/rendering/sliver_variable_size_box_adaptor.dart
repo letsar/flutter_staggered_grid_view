@@ -171,7 +171,8 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   /// The [childManager] argument must not be null.
   RenderSliverVariableSizeBoxAdaptor(
       {required RenderSliverVariableSizeBoxChildManager childManager, this.keepBucketSize = 30})
-      : _childManager = childManager;
+      : assert(keepBucketSize>0,'keepBucketSize must bigger than 0 !'),
+        _childManager = childManager;
 
   @override
   void setupParentData(RenderObject child) {
@@ -193,17 +194,16 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
   /// The size of [_keepAliveBucket].
   /// * In sliver running ,the [_keepAliveBucket.length] maybe smaller or
   ///   bigger than [keepBucketSize].
+  ///
+  /// The node that out of [keepBucketSize] will be kept in [invokeLayoutCallback]
+  /// * Every time of [collectGarbage], nodes that exceed [keepBucketSize] will
+  ///   be removed.
   final int keepBucketSize;
 
   /// The nodes being kept alive despite not being visible.
   final SplayTreeMap<int, RenderBox> _keepAliveBucket = SplayTreeMap<int, RenderBox>();
 
-  /// The node that out of [keepBucketSize] will be kept in [invokeLayoutCallback]
-  /// * Every time of [collectGarbage], nodes that exceed [keepBucketSize] will
-  ///   be moved to [_trashCan],and eventually removed.
-  final List<RenderBox> _trashCan = <RenderBox>[];
-
-  int get halfBucket => (keepBucketSize / 2).ceil();
+  int get _halfBucket => (keepBucketSize / 2).ceil();
 
   @override
   void adoptChild(RenderObject child) {
@@ -368,7 +368,7 @@ abstract class RenderSliverVariableSizeBoxAdaptor extends RenderSliver
         final int indicesFirst = indices.first;
         final int indicesEnd = indices.last;
         _keepAliveBucket.entries.where((entry)
-        => (indicesFirst - entry.key > halfBucket) || (entry.key - indicesEnd > halfBucket))
+        => (indicesFirst - entry.key > _halfBucket) || (entry.key - indicesEnd > _halfBucket))
             .map<RenderBox>((e) => e.value)
             .toList()
             .forEach(_childManager.removeChild);
