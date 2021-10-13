@@ -3,7 +3,6 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
-
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_variable_size_box_adaptor.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/staggered_tile.dart';
@@ -476,6 +475,9 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
   /// Uses a [SliverStaggeredGridDelegateWithFixedCrossAxisCount] as the [gridDelegate],
   /// and a [SliverVariableSizeChildListDelegate] as the [delegate].
   ///
+  /// The `addAutomaticKeepAlives` argument corresponds to the
+  //  [SliverVariableSizeChildListDelegate.addAutomaticKeepAlives] property. The
+  ///
   /// See also:
   ///
   ///  * [StaggeredGridView.count], the equivalent constructor for [StaggeredGridView] widgets.
@@ -500,6 +502,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           key: key,
           delegate: SliverChildListDelegate(
             children,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
           ),
           addAutomaticKeepAlives: addAutomaticKeepAlives,
           forceKeepChildWidget: forceKeepChildWidget
@@ -542,6 +545,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
           ),
           addAutomaticKeepAlives: addAutomaticKeepAlives,
           forceKeepChildWidget: forceKeepChildWidget
@@ -577,6 +581,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           key: key,
           delegate: SliverChildListDelegate(
             children,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
           ),
         addAutomaticKeepAlives: addAutomaticKeepAlives,
           forceKeepChildWidget: forceKeepChildWidget
@@ -619,6 +624,7 @@ class SliverStaggeredGrid extends SliverVariableSizeBoxAdaptorWidget {
           delegate: SliverChildBuilderDelegate(
             itemBuilder,
             childCount: itemCount,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
           ),
         addAutomaticKeepAlives: addAutomaticKeepAlives,
           forceKeepChildWidget: forceKeepChildWidget

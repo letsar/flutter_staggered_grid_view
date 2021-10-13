@@ -1,3 +1,7 @@
+## 0.4.1
+### Changed
+* Add option to disable keepAlives
+
 ## 0.4.0
 ### Changed
 * Stable null safety version
