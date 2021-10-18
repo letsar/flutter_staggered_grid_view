@@ -317,7 +317,8 @@ class RenderSliverStaggeredGrid extends RenderSliverVariableSizeBoxAdaptor {
 
     // Iterate through all children while they can be visible.
     for (var index = viewportOffset.firstChildIndex;
-        mainAxisOffsets.any((o) => o <= targetEndScrollOffset);
+        index < childManager.childCount &&
+            mainAxisOffsets.any((o) => o <= targetEndScrollOffset);
         index++) {
       SliverStaggeredGridGeometry? geometry =
           getSliverStaggeredGeometry(index, configuration, mainAxisOffsets);
