@@ -92,6 +92,13 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
   }
 
   @override
+  void collectGarbage(int leadingGarbage, int trailingGarbage) {
+    // print('RRL collectGarbage($leadingGarbage,$trailingGarbage)');
+    super.collectGarbage(leadingGarbage, trailingGarbage);
+    print('afterCollect: ${indexOf(firstChild!)}');
+  }
+
+  @override
   void performLayout() {
     childManager.didStartLayout();
     childManager.setDidUnderflow(false);
@@ -142,6 +149,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     // layout offset, we have to find the first child that has valid layout
     // offset.
     if (childScrollOffset(firstChild!) == null) {
+      print('zone A');
       int leadingChildrenWithoutLayoutOffset = 0;
       while (earliestUsefulChild != null &&
           childScrollOffset(earliestUsefulChild) == null) {
@@ -150,6 +158,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       }
       // We should be able to destroy children with null layout offset safely,
       // because they are likely outside of viewport
+      print('collectGarbage 1');
       collectGarbage(leadingChildrenWithoutLayoutOffset, 0);
       // If can not find a valid layout offset, start from the initial child.
       if (firstChild == null) {
@@ -164,6 +173,8 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
 
     // We need to compute the scroll offset of the earliest chidren.
     // Each scroll offset should be less or equals to the scrollOffset.
+    // For the moment the scroll offsets represents the target scroll offset of
+    // the child before the firstChild.
     final scrollOffsets = List.generate(
       crossAxisCount,
       (index) => double.infinity,
@@ -210,7 +221,14 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     while (child != null && scrollOffsets.any((x) => x.isInfinite)) {
       final index = childCrossAxisIndex(child)!;
       final scrollOffset = childScrollOffset(child)!;
-      scrollOffsets[index] = scrollOffset;
+      // final pd = getParentData(child);
+      // We only need to set the scroll offsets of the earliest children.
+      if (scrollOffsets[index] == double.infinity) {
+        scrollOffsets[index] = scrollOffset;
+      }
+      // print(
+      //   'RRL xo child: [${pd.index}]: c:${pd.crossAxisIndex},o:${pd.layoutOffset} | $scrollOffsets',
+      // );
       child = childAfter(child);
     }
 
@@ -225,7 +243,9 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       if (earliestUsefulChild == null) {
         // There are no more child before the current firstChild.
         final childParentData = getParentData(firstChild!);
-        childParentData.applyZero();
+        // childParentData.applyZero();
+        childParentData.layoutOffset = 0;
+
         print('RRL 1 apply zero to ${indexOf(firstChild!)}');
 
         if (scrollOffset == 0) {
@@ -241,6 +261,8 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
           // We ran out of children before reaching the scroll offset.
           // We must inform our parent that this sliver cannot fulfill
           // its contract and that we need a scroll offset correction.
+          print('RRL 1 scrollOffsetCorrection: $scrollOffset $scrollOffsets');
+
           geometry = SliverGeometry(
             scrollOffsetCorrection: -scrollOffset,
           );
@@ -248,28 +270,38 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         }
       }
 
-      final firstChildParentData = computeFirstChildParentData();
-      final firstChildScrollOffset = firstChildParentData.layoutOffset!;
+      final earliestScrollOffset = scrollOffsets.reduce(math.min);
+
+      // TODO may be we should ne test the firstChildScrollOffset, but the
+      // mimimum scrollOffsets value.
 
       // firstChildScrollOffset may contain double precision error
-      // if (firstChildScrollOffset < -precisionErrorTolerance) {
-      //   // Let's assume there is no child before the first child. We will
-      //   // correct it on the next layout if it is not.
-      //   geometry = SliverGeometry(
-      //     scrollOffsetCorrection: -firstChildScrollOffset,
-      //   );
-      //   final childParentData = getParentData(firstChild!);
-      //   childParentData.layoutOffset = 0;
-      //   print('RRL 2 apply zero to ${indexOf(firstChild!)}');
+      if (earliestScrollOffset < -precisionErrorTolerance) {
+        // Let's assume there is no child before the first child. We will
+        // correct it on the next layout if it is not.
+        print('RRL 2 scrollOffsetCorrection:');
 
-      //   return;
-      // }
+        geometry = SliverGeometry(
+          scrollOffsetCorrection: -earliestScrollOffset,
+        );
+        final childParentData = getParentData(firstChild!);
+        final compute = computeFirstChildParentData();
+        // childParentData.applyZero();
+        childParentData.apply(compute);
+        childParentData.layoutOffset = 0;
+        print(
+            'RRL 2 apply zero to ${indexOf(firstChild!)}, $childParentData => $scrollOffsets');
 
+        return;
+      }
+
+      final firstChildParentData = computeFirstChildParentData();
       final childParentData = getParentData(earliestUsefulChild);
       childParentData.apply(firstChildParentData);
+      print('RRL 3 apply $childParentData => $scrollOffsets');
       // Don't forget to update the earliestScrollOffsets.
       scrollOffsets[firstChildParentData.crossAxisIndex!] =
-          firstChildScrollOffset;
+          firstChildParentData.layoutOffset!;
       assert(earliestUsefulChild == firstChild);
       leadingChildWithLayout = earliestUsefulChild;
       trailingChildWithLayout ??= earliestUsefulChild;
@@ -297,8 +329,9 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         final firstChildScrollOffset = firstChildParentData.layoutOffset!;
         // We only need to correct if the leading child actually has a
         // paint extent.
+        // TODO: PROBLEME ICI
         if (firstChildScrollOffset < -precisionErrorTolerance) {
-          print('RRL precision 1');
+          print('RRL 2 scrollOffsetCorrection');
           geometry = SliverGeometry(
             scrollOffsetCorrection: -firstChildScrollOffset,
           );
@@ -352,8 +385,16 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     // for new children.
     // As earliestUsefulChild is already laid out, we start by updating the
     // scroll offsets for the next children.
+
+    // print('bf: $scrollOffsets');
     scrollOffsets[childCrossAxisIndex(child)!] =
         childScrollOffset(child)! + paintExtentOf(child) + mainAxisSpacing;
+    // print('af: $scrollOffsets');
+
+    final pd = getParentData(child);
+    // print(
+    //   'RRL mo child: [${pd.index}]: c:${pd.crossAxisIndex},o:${pd.layoutOffset} | $scrollOffsets',
+    // );
 
     // We also make sure that any infinite scroll offset is set to 0 now.
     for (int i = 0; i < scrollOffsets.length; i++) {
@@ -394,19 +435,24 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       assert(child != null);
       // We always put the next child at the smallest index with the minimum
       // value.
+
       final crossAxisIndex = scrollOffsets.findSmallestIndexWithMinimumValue();
       final childParentData = getParentData(child!);
+
       childParentData.layoutOffset = scrollOffsets[crossAxisIndex];
       childParentData.crossAxisIndex = crossAxisIndex;
       childParentData.crossAxisOffset = crossAxisIndex * stride;
       scrollOffsets[crossAxisIndex] =
           childScrollOffset(child!)! + paintExtentOf(child!) + mainAxisSpacing;
-      print('RRL $scrollOffsets');
+      // print(
+      //   'RRL mo child: [${childParentData.index}]: c:${childParentData.crossAxisIndex},o:${childParentData.layoutOffset} | $scrollOffsets',
+      // );
+      // print('RRL $scrollOffsets');
       assert(childParentData.index == index);
       return true;
     }
 
-    print('RRL scrollOffset: $scrollOffset');
+    // print('RRL scrollOffset: $scrollOffset');
 
     // Find the first child that ends after the scroll offset.
     while (scrollOffsets
@@ -416,6 +462,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         assert(leadingGarbage == childCount);
         assert(child == null);
         // we want to make sure we keep the last child around so we know the end scroll offset
+        print('collectGarbage 2');
         collectGarbage(leadingGarbage - 1, 0);
         assert(firstChild == lastChild);
         final double extent = scrollOffsets.reduce(math.max) - mainAxisSpacing;
@@ -428,7 +475,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     }
 
     // Now find the first child that ends after our end.
-    print('RRL targetEndScrollOffset: $targetEndScrollOffset');
+    // print('RRL targetEndScrollOffset: $targetEndScrollOffset');
     while (scrollOffsets.any(
       (offset) => offset - mainAxisSpacing < targetEndScrollOffset,
     )) {
@@ -449,7 +496,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
 
     // At this point everything should be good to go, we just have to clean up
     // the garbage and report the geometry.
-
+    print('collectGarbage 3');
     collectGarbage(leadingGarbage, trailingGarbage);
 
     assert(debugAssertChildListIsNonEmptyAndContiguous());

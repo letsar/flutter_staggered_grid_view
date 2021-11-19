@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      showPerformanceOverlay: true,
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -41,7 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    extents = List<int>.generate(100, (int index) => rnd.nextInt(5) + 1);
+    // extents = List<int>.generate(100, (int index) => rnd.nextInt(5) + 1);
+    extents = List<int>.generate(100, (int index) => (index % 4) + 1);
   }
 
   @override
@@ -50,10 +52,16 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: IndexedTiles(
-        children: [
-          ...extents.map((int extent) => Tile(extent: extent * 100.0)),
-        ],
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: SizedBox(
+          height: 500,
+          child: IndexedTiles(
+            children: [
+              ...extents.map((int extent) => Tile(extent: extent * 100.0)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -70,7 +78,13 @@ class Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.red,
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.black,
+          width: 1.0,
+        ),
+        color: Colors.red,
+      ),
       height: extent,
       child: Align(
         alignment: Alignment.bottomCenter,
@@ -94,6 +108,7 @@ class IndexedTiles extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
+      cacheExtent: 0,
       slivers: [
         SliverMasonryGrid(
           delegate: SliverChildListDelegate(
@@ -106,8 +121,8 @@ class IndexedTiles extends StatelessWidget {
             ],
           ),
           crossAxisCount: 4,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
+          // mainAxisSpacing: 8,
+          // crossAxisSpacing: 8,
         )
       ],
     );
