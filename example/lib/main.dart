@@ -62,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: IndexedTiles(
             children: [
               ...extents.mapIndexed((int index, int extent) {
-                if (index == 1) {
+                if (index % 17 == 1) {
                   return const VaryingSizeOverTime();
                 }
                 return Tile(extent: extent * 100.0);
