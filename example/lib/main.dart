@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -42,8 +43,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // extents = List<int>.generate(100, (int index) => rnd.nextInt(5) + 1);
-    extents = List<int>.generate(100, (int index) => (index % 4) + 1);
+    extents = List<int>.generate(10000, (int index) => rnd.nextInt(5) + 1);
+    // extents = List<int>.generate(100, (int index) => (index % 4) + 1);
+    // extents = [2, 2, 2, 3, 4, 4, 1, 1, 2, 1, 4, 4, 4, 4];
+    // extents = [2, 2, 2, 2, 4, 4, 3, 2, 2, 1, 4, 4, 4, 4];
   }
 
   @override
@@ -58,39 +61,14 @@ class _MyHomePageState extends State<MyHomePage> {
           height: 500,
           child: IndexedTiles(
             children: [
-              ...extents.map((int extent) => Tile(extent: extent * 100.0)),
+              ...extents.mapIndexed((int index, int extent) {
+                if (index == 1) {
+                  return const VaryingSizeOverTime();
+                }
+                return Tile(extent: extent * 100.0);
+              }),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class Tile extends StatelessWidget {
-  const Tile({
-    Key? key,
-    required this.extent,
-  }) : super(key: key);
-
-  final double extent;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: 1.0,
-        ),
-        color: Colors.red,
-      ),
-      height: extent,
-      child: Align(
-        alignment: Alignment.bottomCenter,
-        child: Padding(
-          padding: const EdgeInsets.all(2.0),
-          child: Text('$extent'),
         ),
       ),
     );
@@ -121,8 +99,8 @@ class IndexedTiles extends StatelessWidget {
             ],
           ),
           crossAxisCount: 4,
-          // mainAxisSpacing: 8,
-          // crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
         )
       ],
     );
@@ -156,6 +134,78 @@ class IndexedTile extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class VaryingSizeOverTime extends StatefulWidget {
+  const VaryingSizeOverTime({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  _VaryingSizeOverTimeState createState() => _VaryingSizeOverTimeState();
+}
+
+class _VaryingSizeOverTimeState extends State<VaryingSizeOverTime>
+    with SingleTickerProviderStateMixin {
+  late final controller = AnimationController(
+    duration: const Duration(seconds: 2),
+    vsync: this,
+    lowerBound: 100,
+    upperBound: 400,
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    controller.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<double>(
+        valueListenable: controller,
+        builder: (context, height, child) {
+          return Tile(
+            extent: height,
+          );
+        });
+  }
+}
+
+class Tile extends StatelessWidget {
+  const Tile({
+    Key? key,
+    required this.extent,
+  }) : super(key: key);
+
+  final double extent;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.black,
+          width: 1.0,
+        ),
+        color: Colors.red,
+      ),
+      height: extent,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Text('$extent'),
+        ),
+      ),
     );
   }
 }
