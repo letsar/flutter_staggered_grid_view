@@ -39,6 +39,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final rnd = Random();
   late List<int> extents;
+  int crossAxisCount = 4;
 
   @override
   void initState() {
@@ -55,21 +56,41 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Align(
-        alignment: Alignment.bottomCenter,
-        child: SizedBox(
-          height: 500,
-          child: IndexedTiles(
-            children: [
-              ...extents.mapIndexed((int index, int extent) {
-                if (index % 17 == 1) {
-                  return const VaryingSizeOverTime();
-                }
-                return Tile(extent: extent * 100.0);
-              }),
-            ],
+      body: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: Slider(
+                min: 1,
+                max: 6,
+                value: crossAxisCount.toDouble(),
+                divisions: 5,
+                onChanged: (double value) {
+                  setState(() {
+                    crossAxisCount = value.toInt();
+                  });
+                },
+              ),
+            ),
           ),
-        ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SizedBox(
+              height: 500,
+              child: IndexedTiles(
+                crossAxisCount: crossAxisCount,
+                children: [
+                  ...extents.mapIndexed((int index, int extent) {
+                    if (index == 1) {
+                      return const VaryingSizeOverTime();
+                    }
+                    return Tile(extent: extent * 100.0);
+                  }),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -78,15 +99,17 @@ class _MyHomePageState extends State<MyHomePage> {
 class IndexedTiles extends StatelessWidget {
   const IndexedTiles({
     Key? key,
+    required this.crossAxisCount,
     required this.children,
   }) : super(key: key);
 
+  final int crossAxisCount;
   final List<Widget> children;
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
-      cacheExtent: 0,
+      // cacheExtent: 0,
       slivers: [
         SliverMasonryGrid(
           delegate: SliverChildListDelegate(
@@ -98,7 +121,7 @@ class IndexedTiles extends StatelessWidget {
                 ),
             ],
           ),
-          crossAxisCount: 4,
+          crossAxisCount: crossAxisCount,
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
         )

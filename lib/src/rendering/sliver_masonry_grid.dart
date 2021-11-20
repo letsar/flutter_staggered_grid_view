@@ -107,26 +107,23 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     int count = leadingGarbage;
     RenderBox? child = firstChild!;
     while (count > 0 && child != null) {
-      _previousCrossAxisIndexes.add(childCrossAxisIndex(child)!);
-      _previousMainAxisExtents.add(paintExtentOf(child));
-      if (indexOf(child) == 1) {
-        print('RRL_X0: ${_previousCrossAxisIndexes.last}');
+      final crossAxisIndex = childCrossAxisIndex(child);
+      if (crossAxisIndex != null) {
+        _previousCrossAxisIndexes.add(crossAxisIndex);
+        _previousMainAxisExtents.add(paintExtentOf(child));
       }
       child = childAfter(child);
       count -= 1;
     }
-    // print('RRL_X1: ${indexOf(firstChild!)}: $_previousCrossAxisIndexes');
     super.collectGarbage(leadingGarbage, trailingGarbage);
   }
+
+  bool _needsReset = false;
 
   void _reset() {
     _previousCrossAxisIndexes.clear();
     _previousMainAxisExtents.clear();
-    if (firstChild != null) {
-      final firstIndex = indexOf(firstChild!);
-      final lastIndex = indexOf(lastChild!);
-      collectGarbage(lastIndex - firstIndex + 1, 0);
-    }
+    _needsReset = true;
   }
 
   @override
@@ -156,6 +153,15 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
   void performLayout() {
     childManager.didStartLayout();
     childManager.setDidUnderflow(false);
+
+    if (_needsReset) {
+      if (firstChild != null) {
+        final firstIndex = indexOf(firstChild!);
+        final lastIndex = indexOf(lastChild!);
+        collectGarbage(lastIndex - firstIndex + 1, 0);
+      }
+      _needsReset = false;
+    }
 
     // The stride is the cross extent of a cell + crossAxisSpacing.
     final stride =
