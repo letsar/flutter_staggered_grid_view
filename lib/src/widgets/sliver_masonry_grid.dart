@@ -5,15 +5,14 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
   const SliverMasonryGrid({
     Key? key,
     required SliverChildDelegate delegate,
-    required this.crossAxisCount,
+    required this.gridDelegate,
     this.mainAxisSpacing = 0,
     this.crossAxisSpacing = 0,
-  })  : assert(crossAxisCount >= 0),
-        assert(mainAxisSpacing >= 0),
+  })  : assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         super(key: key, delegate: delegate);
 
-  final int crossAxisCount;
+  final SliverMasonryGridDelegate gridDelegate;
   final double mainAxisSpacing;
   final double crossAxisSpacing;
 
@@ -23,7 +22,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
         context as SliverMultiBoxAdaptorElement;
     return RenderSliverMasonryGrid(
       childManager: element,
-      crossAxisCount: crossAxisCount,
+      gridDelegate: gridDelegate,
       mainAxisSpacing: mainAxisSpacing,
       crossAxisSpacing: crossAxisSpacing,
     );
@@ -35,7 +34,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
     RenderSliverMasonryGrid renderObject,
   ) {
     renderObject
-      ..crossAxisCount = crossAxisCount
+      ..gridDelegate = gridDelegate
       ..mainAxisSpacing = mainAxisSpacing
       ..crossAxisSpacing = crossAxisSpacing;
   }

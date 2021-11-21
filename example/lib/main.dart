@@ -123,7 +123,9 @@ class IndexedTiles extends StatelessWidget {
                   ),
               ],
             ),
-            crossAxisCount: crossAxisCount,
+            gridDelegate: SliverMasonryGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+            ),
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
           )
