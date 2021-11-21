@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter_staggered_grid_view/src/foundation/extensions.dart';
 
 /// Controls the layout of tiles in a [RenderSliverMasonryGrid].
 ///
@@ -47,7 +48,9 @@ class SliverMasonryGridDelegateWithFixedCrossAxisCount
     required this.crossAxisCount,
   }) : assert(crossAxisCount > 0);
 
+  /// {@template fsgv.global.crossAxisCount}
   /// The number of children in the cross axis.
+  /// {@endtemplate}
   final int crossAxisCount;
 
   @override
@@ -169,7 +172,9 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         _crossAxisSpacing = crossAxisSpacing,
         super(childManager: childManager);
 
+  /// {@template fsgv.masonry.gridDelegate}
   /// The delegate that controls the size and position of the children.
+  /// {@endtemplate}
   SliverMasonryGridDelegate get gridDelegate => _gridDelegate;
   SliverMasonryGridDelegate _gridDelegate;
   set gridDelegate(SliverMasonryGridDelegate value) {
@@ -187,7 +192,9 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     _gridDelegate = value;
   }
 
+  /// {@template fsgv.global.mainAxisSpacing}
   /// The number of pixels between each child along the main axis.
+  /// {@endtemplate}
   double get mainAxisSpacing => _mainAxisSpacing;
   double _mainAxisSpacing;
   set mainAxisSpacing(double value) {
@@ -198,7 +205,9 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     markNeedsLayout();
   }
 
+  /// {@template fsgv.global.crossAxisSpacing}
   /// The number of pixels between each child along the cross axis.
+  /// {@endtemplate}
   double get crossAxisSpacing => _crossAxisSpacing;
   double _crossAxisSpacing;
   set crossAxisSpacing(double value) {
@@ -704,18 +713,6 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     if (estimatedMaxScrollOffset == endScrollOffset)
       childManager.setDidUnderflow(true);
     childManager.didFinishLayout();
-  }
-}
-
-extension on List<double> {
-  int findSmallestIndexWithMinimumValue() {
-    int index = 0;
-    for (int i = 1; i < length; i++) {
-      if (this[i] < this[index]) {
-        index = i;
-      }
-    }
-    return index;
   }
 }
 

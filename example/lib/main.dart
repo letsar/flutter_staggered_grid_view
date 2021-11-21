@@ -19,24 +19,67 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const QuiltedPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({
+class QuiltedPage extends StatelessWidget {
+  const QuiltedPage({
     Key? key,
-    required this.title,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quilted'),
+      ),
+      body: Directionality(
+        textDirection: TextDirection.ltr,
+        child: GridView.custom(
+          gridDelegate: SliverQuiltedGridDelegate(
+            crossAxisCount: 4,
+            crossAxisSpacing: 4,
+            mainAxisSpacing: 4,
+            pattern: const [
+              QuiltedTile(2, 2),
+              QuiltedTile(1, 1),
+              QuiltedTile(1, 1),
+              QuiltedTile(1, 2),
+              QuiltedTile(1, 2),
+              QuiltedTile(2, 2),
+              QuiltedTile(1, 1),
+              QuiltedTile(1, 1),
+            ],
+          ),
+          childrenDelegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return IndexedTile(
+                index: index,
+                child: const Tile(),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MasonryPage extends StatefulWidget {
+  const MasonryPage({
+    Key? key,
+    this.title = 'Flutter Demo Home Page',
   }) : super(key: key);
 
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MasonryPage> createState() => _MasonryPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MasonryPageState extends State<MasonryPage> {
   final rnd = Random();
   late List<int> extents;
   int crossAxisCount = 4;
@@ -77,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
             alignment: Alignment.bottomCenter,
             child: SizedBox(
               height: 500,
-              child: IndexedTiles(
+              child: MasonryIndexedTiles(
                 crossAxisCount: crossAxisCount,
                 children: [
                   ...extents.mapIndexed((int index, int extent) {
@@ -96,8 +139,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class IndexedTiles extends StatelessWidget {
-  const IndexedTiles({
+class MasonryIndexedTiles extends StatelessWidget {
+  const MasonryIndexedTiles({
     Key? key,
     required this.crossAxisCount,
     required this.children,
@@ -211,10 +254,10 @@ class _VaryingSizeOverTimeState extends State<VaryingSizeOverTime>
 class Tile extends StatelessWidget {
   const Tile({
     Key? key,
-    required this.extent,
+    this.extent,
   }) : super(key: key);
 
-  final double extent;
+  final double? extent;
 
   @override
   Widget build(BuildContext context) {
