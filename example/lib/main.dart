@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const QuiltedPage(),
+      home: const StaggeredPage(),
     );
   }
 }
@@ -43,14 +43,14 @@ class QuiltedPage extends StatelessWidget {
             crossAxisSpacing: 4,
             mainAxisSpacing: 4,
             pattern: const [
-              QuiltedTile(2, 2),
-              QuiltedTile(1, 1),
-              QuiltedTile(1, 1),
-              QuiltedTile(1, 2),
-              QuiltedTile(1, 2),
-              QuiltedTile(2, 2),
-              QuiltedTile(1, 1),
-              QuiltedTile(1, 1),
+              QuiltedGridTile(2, 2),
+              QuiltedGridTile(1, 1),
+              QuiltedGridTile(1, 1),
+              QuiltedGridTile(1, 2),
+              QuiltedGridTile(1, 2),
+              QuiltedGridTile(2, 2),
+              QuiltedGridTile(1, 1),
+              QuiltedGridTile(1, 1),
             ],
           ),
           childrenDelegate: SliverChildBuilderDelegate(
@@ -61,6 +61,54 @@ class QuiltedPage extends StatelessWidget {
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class StaggeredPage extends StatelessWidget {
+  const StaggeredPage({
+    Key? key,
+  }) : super(key: key);
+
+  static const tiles = [
+    GridTile(2, 2),
+    GridTile(2, 1),
+    GridTile(1, 2),
+    GridTile(1, 1),
+    GridTile(2, 2),
+    GridTile(1, 2),
+    GridTile(1, 1),
+    GridTile(3, 1),
+    GridTile(1, 1),
+    GridTile(4, 1),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Staggered'),
+      ),
+      body: Directionality(
+        textDirection: TextDirection.ltr,
+        child: StaggeredGrid(
+          crossAxisCount: 4,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          children: [
+            ...tiles.mapIndexed((index, tile) {
+              return StaggeredGridTile.count(
+                crossAxisCellCount: tile.crossAxisCount,
+                mainAxisCellCount: tile.mainAxisCount,
+                child: IndexedTile(
+                  index: index,
+                  child: const Tile(),
+                ),
+              );
+            }),
+          ],
         ),
       ),
     );
@@ -279,4 +327,10 @@ class Tile extends StatelessWidget {
       ),
     );
   }
+}
+
+class GridTile {
+  const GridTile(this.crossAxisCount, this.mainAxisCount);
+  final int crossAxisCount;
+  final int mainAxisCount;
 }

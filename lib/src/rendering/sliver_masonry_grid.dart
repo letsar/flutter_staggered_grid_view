@@ -402,10 +402,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     // Each scroll offset should be less or equals to the scrollOffset.
     // For the moment the scroll offsets represents the target scroll offset of
     // the child before the firstChild.
-    final scrollOffsets = List.generate(
-      crossAxisCount,
-      (index) => double.infinity,
-    );
+    final scrollOffsets = List.filled(crossAxisCount, double.infinity);
 
     // Computes the SliverMasonryGridParentData for the firstChild.
     SliverMasonryGridParentData computeFirstChildParentData() {

@@ -5,8 +5,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/foundation/extensions.dart';
 
 @immutable
-class QuiltedTile {
-  const QuiltedTile(
+class QuiltedGridTile {
+  const QuiltedGridTile(
     this.mainAxisCount,
     this.crossAxisCount,
   )   : assert(mainAxisCount > 0),
@@ -19,7 +19,7 @@ class QuiltedTile {
 class SliverQuiltedGridDelegate extends SliverGridDelegate {
   SliverQuiltedGridDelegate({
     required this.crossAxisCount,
-    required List<QuiltedTile> pattern,
+    required List<QuiltedGridTile> pattern,
     this.mainAxisSpacing = 0,
     this.crossAxisSpacing = 0,
   })  : assert(crossAxisCount > 0),
@@ -71,7 +71,7 @@ class _QuiltedTilePattern {
     required this.mainAxisCellCount,
   }) : tileCount = tiles.length;
 
-  final List<QuiltedTile> tiles;
+  final List<QuiltedGridTile> tiles;
   final int tileCount;
   final List<int> crossAxisIndexes;
   final List<int> mainAxisIndexes;
@@ -104,7 +104,7 @@ class _QuiltedTilePattern {
     return maxTileIndexes[mainAxisIndex % mainAxisCellCount];
   }
 
-  QuiltedTile tileOf(int index) {
+  QuiltedGridTile tileOf(int index) {
     return tiles[index % tileCount];
   }
 }
@@ -219,14 +219,14 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
   }
 }
 
-extension ListOfQuiltedTileToPatternExtension on List<QuiltedTile> {
+extension ListOfQuiltedTileToPatternExtension on List<QuiltedGridTile> {
   _QuiltedTilePattern toPattern(int crossAxisCount) {
     final tileCount = length;
     final minTileIndexes = <int>[];
     final maxTileIndexes = <int>[];
-    final maxMainAxisCellCounts = List<int>.generate(tileCount, (index) => 0);
-    final mainAxisIndexes = List<int>.generate(tileCount, (index) => 0);
-    final crossAxisIndexes = List<int>.generate(tileCount, (index) => 0);
+    final maxMainAxisCellCounts = List<int>.filled(tileCount, 0);
+    final mainAxisIndexes = List<int>.filled(tileCount, 0);
+    final crossAxisIndexes = List<int>.filled(tileCount, 0);
 
     final offsets = List<int>.generate(crossAxisCount, (index) => 0);
     for (int i = 0; i < tileCount; i++) {
