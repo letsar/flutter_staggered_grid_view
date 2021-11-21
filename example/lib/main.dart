@@ -108,24 +108,27 @@ class IndexedTiles extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      // cacheExtent: 0,
-      slivers: [
-        SliverMasonryGrid(
-          delegate: SliverChildListDelegate(
-            [
-              for (int i = 0; i < children.length; i++)
-                IndexedTile(
-                  index: i,
-                  child: children[i],
-                ),
-            ],
-          ),
-          crossAxisCount: crossAxisCount,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-        )
-      ],
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: CustomScrollView(
+        // reverse: true,
+        slivers: [
+          SliverMasonryGrid(
+            delegate: SliverChildListDelegate(
+              [
+                for (int i = 0; i < children.length; i++)
+                  IndexedTile(
+                    index: i,
+                    child: children[i],
+                  ),
+              ],
+            ),
+            crossAxisCount: crossAxisCount,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+          )
+        ],
+      ),
     );
   }
 }
@@ -195,9 +198,9 @@ class _VaryingSizeOverTimeState extends State<VaryingSizeOverTime>
   Widget build(BuildContext context) {
     return ValueListenableBuilder<double>(
         valueListenable: controller,
-        builder: (context, height, child) {
+        builder: (context, extent, child) {
           return Tile(
-            extent: height,
+            extent: extent,
           );
         });
   }
