@@ -39,6 +39,10 @@ abstract class SliverMasonryGridDelegate {
 /// This delegate creates grids with equally sized and spaced tiles.
 class SliverMasonryGridDelegateWithFixedCrossAxisCount
     extends SliverMasonryGridDelegate {
+  /// Creates a delegate that makes grid layouts with a fixed number of tiles in
+  /// the cross axis.
+  ///
+  /// The [crossAxisCount] argument must be greater than zero.
   const SliverMasonryGridDelegateWithFixedCrossAxisCount({
     required this.crossAxisCount,
   }) : assert(crossAxisCount > 0);
@@ -62,8 +66,33 @@ class SliverMasonryGridDelegateWithFixedCrossAxisCount
   }
 }
 
+/// Creates grid layouts with tiles that each have a maximum cross-axis extent.
+///
+/// This delegate will select a cross-axis extent for the tiles that is as
+/// large as possible subject to the following conditions:
+///
+///  - The extent evenly divides the cross-axis extent of the grid.
+///  - The extent is at most [maxCrossAxisExtent].
+///
+/// For example, if the grid is vertical, the grid is 500.0 pixels wide, and
+/// [maxCrossAxisExtent] is 150.0, this delegate will create a grid with 4
+/// columns that are 125.0 pixels wide.
+///
+/// This delegate creates grids with equally sized and spaced tiles.
+///
+/// See also:
+///
+///  * [SliverMasonryGridDelegateWithFixedCrossAxisCount], which creates a
+///    layout with a fixed number of tiles in the cross axis.
+///  * [SliverMasonryGridDelegate], which creates arbitrary layouts.
+///  * [RenderSliverMasonryGrid], which can use this delegate to control the
+///    layout of its tiles.
 class SliverMasonryGridDelegateWithMaxCrossAxisExtent
     extends SliverMasonryGridDelegate {
+  /// Creates a delegate that makes grid layouts with tiles that have a maximum
+  /// cross-axis extent.
+  ///
+  /// The [maxCrossAxisExtent] argument must be greater than zero.
   const SliverMasonryGridDelegateWithMaxCrossAxisExtent({
     required this.maxCrossAxisExtent,
   }) : assert(maxCrossAxisExtent > 0);
@@ -113,7 +142,21 @@ class SliverMasonryGridParentData extends SliverMultiBoxAdaptorParentData {
   String toString() => 'crossAxisIndex=$crossAxisIndex; ${super.toString()}';
 }
 
+/// A sliver that places multiple box children in a two dimensional arrangement.
+///
+/// [RenderSliverMasonryGrid] places each child the nearest as possible at the
+/// start of the main axis and then at the start of the cross axis.
+/// For example, in a vertical list, with left-to-right text direction, a child
+/// will be placed as close as possible at the top of the grid, and then as
+/// close as possible to the left side of the grid.
+///
+/// The [gridDelegate] determines how many children can be placed in the cross
+/// axis.
 class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
+  /// Creates a sliver that places its children in a Masonry layout.
+  ///
+  /// The [mainAxisSpacing] and [crossAxisSpacing] arguments must be greater
+  /// than zero.
   RenderSliverMasonryGrid({
     required RenderSliverBoxChildManager childManager,
     required SliverMasonryGridDelegate gridDelegate,
@@ -126,6 +169,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         _crossAxisSpacing = crossAxisSpacing,
         super(childManager: childManager);
 
+  /// The delegate that controls the size and position of the children.
   SliverMasonryGridDelegate get gridDelegate => _gridDelegate;
   SliverMasonryGridDelegate _gridDelegate;
   set gridDelegate(SliverMasonryGridDelegate value) {
@@ -143,6 +187,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     _gridDelegate = value;
   }
 
+  /// The number of pixels between each child along the main axis.
   double get mainAxisSpacing => _mainAxisSpacing;
   double _mainAxisSpacing;
   set mainAxisSpacing(double value) {
@@ -153,6 +198,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     markNeedsLayout();
   }
 
+  /// The number of pixels between each child along the cross axis.
   double get crossAxisSpacing => _crossAxisSpacing;
   double _crossAxisSpacing;
   set crossAxisSpacing(double value) {
@@ -169,7 +215,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       child.parentData = SliverMasonryGridParentData();
   }
 
-  SliverMasonryGridParentData getParentData(RenderObject child) {
+  SliverMasonryGridParentData _getParentData(RenderObject child) {
     return child.parentData as SliverMasonryGridParentData;
   }
 
@@ -178,12 +224,12 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
 
   @override
   double childCrossAxisPosition(RenderBox child) {
-    final crossAxisIndex = childCrossAxisIndex(child)!;
+    final crossAxisIndex = _childCrossAxisIndex(child)!;
     return _getCrossAxisIndex(crossAxisIndex) * _stride;
   }
 
-  int? childCrossAxisIndex(RenderBox child) {
-    return getParentData(child).crossAxisIndex;
+  int? _childCrossAxisIndex(RenderBox child) {
+    return _getParentData(child).crossAxisIndex;
   }
 
   /// Contains the cross axis indexes of all children before the current
@@ -203,7 +249,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       layoutOffset: layoutOffset,
     );
     if (hasFirstChild) {
-      final parentData = getParentData(firstChild!);
+      final parentData = _getParentData(firstChild!);
       parentData.applyZero();
     }
     return hasFirstChild;
@@ -214,7 +260,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     int count = leadingGarbage;
     RenderBox? child = firstChild!;
     while (count > 0 && child != null) {
-      final crossAxisIndex = childCrossAxisIndex(child);
+      final crossAxisIndex = _childCrossAxisIndex(child);
       if (crossAxisIndex != null) {
         _previousCrossAxisIndexes.add(crossAxisIndex);
         _previousMainAxisExtents.add(paintExtentOf(child));
@@ -243,7 +289,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       parentUsesSize: parentUsesSize,
     );
     if (child != null) {
-      final parentData = getParentData(child);
+      final parentData = _getParentData(child);
       parentData.crossAxisIndex = _previousCrossAxisIndexes.isNotEmpty
           ? _previousCrossAxisIndexes.removeLast()
           : 0;
@@ -356,7 +402,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     SliverMasonryGridParentData computeFirstChildParentData() {
       // We already laid out this child once before, so we must have retain it
       // last extent and crossAxisIndex.
-      final firstChildParentData = getParentData(firstChild!);
+      final firstChildParentData = _getParentData(firstChild!);
       final mainAxisExtent =
           firstChildParentData.lastMainAxisExtent! + mainAxisSpacing;
       final crossAxisIndex = firstChildParentData.crossAxisIndex!;
@@ -387,7 +433,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
 
     // We populate our earliestScrollOffsets list.
     while (child != null && scrollOffsets.any((x) => x.isInfinite)) {
-      final index = childCrossAxisIndex(child)!;
+      final index = _childCrossAxisIndex(child)!;
       final scrollOffset = childScrollOffset(child)!;
       // We only need to set the scroll offsets of the earliest children.
       if (scrollOffsets[index] == double.infinity) {
@@ -407,7 +453,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
 
       if (earliestUsefulChild == null) {
         // There are no more child before the current firstChild.
-        final childParentData = getParentData(firstChild!);
+        final childParentData = _getParentData(firstChild!);
         childParentData.layoutOffset = 0;
 
         if (scrollOffset == 0) {
@@ -439,7 +485,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         geometry = SliverGeometry(
           scrollOffsetCorrection: -earliestScrollOffset,
         );
-        final childParentData = getParentData(firstChild!);
+        final childParentData = _getParentData(firstChild!);
         final compute = computeFirstChildParentData();
         childParentData.apply(compute);
         childParentData.layoutOffset = 0;
@@ -447,7 +493,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       }
 
       final firstChildParentData = computeFirstChildParentData();
-      final childParentData = getParentData(earliestUsefulChild);
+      final childParentData = _getParentData(earliestUsefulChild);
       childParentData.apply(firstChildParentData);
       // Don't forget to update the earliestScrollOffsets.
       scrollOffsets[firstChildParentData.crossAxisIndex!] =
@@ -465,7 +511,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       // We iterate from the firstChild in case the leading child has a 0
       // paint extent.
       while (indexOf(firstChild!) > 0) {
-        final childParentData = getParentData(firstChild!);
+        final childParentData = _getParentData(firstChild!);
         // We correct one child at a time. If there are more children before
         // the earliestUsefulChild, we will correct it once the scroll offset
         // reaches zero again.
@@ -519,7 +565,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     // for new children.
     // As earliestUsefulChild is already laid out, we start by updating the
     // scroll offsets for the next children.
-    scrollOffsets[childCrossAxisIndex(child)!] =
+    scrollOffsets[_childCrossAxisIndex(child)!] =
         childScrollOffset(child)! + paintExtentOf(child) + mainAxisSpacing;
 
     // We also make sure that any infinite scroll offset is set to 0 now.
@@ -562,7 +608,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       // We always put the next child at the smallest index with the minimum
       // value.
       final crossAxisIndex = scrollOffsets.findSmallestIndexWithMinimumValue();
-      final childParentData = getParentData(child!);
+      final childParentData = _getParentData(child!);
       childParentData.layoutOffset = scrollOffsets[crossAxisIndex];
       childParentData.crossAxisIndex = crossAxisIndex;
       scrollOffsets[crossAxisIndex] =

@@ -60,12 +60,14 @@ linter:
     - prefer_is_not_empty
     - prefer_single_quotes
     - prefer_typing_uninitialized_variables
+    - public_member_api_docs
     - recursive_getters
     - require_trailing_commas
     - slash_for_doc_comments
     - test_types_in_equals
     - throw_in_finally
     - type_init_formals
+    - type_annotate_public_apis
     - unawaited_futures
     - unnecessary_brace_in_string_interps
     - unnecessary_const
