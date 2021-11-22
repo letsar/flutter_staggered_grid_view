@@ -24,12 +24,12 @@ class RenderStaggeredGrid extends RenderBox
     required int crossAxisCount,
     required double mainAxisSpacing,
     required double crossAxisSpacing,
-    required Axis direction,
+    required AxisDirection axisDirection,
     required TextDirection textDirection,
   })  : assert(crossAxisCount > 0),
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
-        _direction = direction,
+        _axisDirection = axisDirection,
         _textDirection = textDirection,
         _crossAxisCount = crossAxisCount,
         _mainAxisSpacing = mainAxisSpacing,
@@ -69,15 +69,17 @@ class RenderStaggeredGrid extends RenderBox
     markNeedsLayout();
   }
 
-  Axis get direction => _direction;
-  Axis _direction;
-  set direction(Axis value) {
-    if (_direction == value) {
+  AxisDirection get axisDirection => _axisDirection;
+  AxisDirection _axisDirection;
+  set axisDirection(AxisDirection value) {
+    if (_axisDirection == value) {
       return;
     }
-    _direction = value;
+    _axisDirection = value;
     markNeedsLayout();
   }
+
+  Axis get mainAxis => axisDirectionToAxis(_axisDirection);
 
   TextDirection get textDirection => _textDirection;
   TextDirection _textDirection;
@@ -139,7 +141,7 @@ class RenderStaggeredGrid extends RenderBox
     required BoxConstraints constraints,
     required _ChildLayouter layoutChild,
   }) {
-    final crossAxisExtent = direction == Axis.vertical
+    final crossAxisExtent = mainAxis == Axis.vertical
         ? constraints.maxWidth
         : constraints.maxHeight;
     final stride = (crossAxisExtent + crossAxisSpacing) / crossAxisCount;
@@ -162,7 +164,11 @@ class RenderStaggeredGrid extends RenderBox
       final mainAxisExtent =
           mainAxisFixedExtent ?? stride * mainAxisCellCount - mainAxisSpacing;
 
-      final childSize = direction == Axis.vertical
+      // We set the real mainAxisExtent in case we need it if the axis direction
+      // is reversed.
+      childParentData.mainAxisExtent = mainAxisExtent;
+
+      final childSize = mainAxis == Axis.vertical
           ? Size(crossAxisExtent, mainAxisExtent)
           : Size(mainAxisExtent, crossAxisExtent);
       final childConstraints = BoxConstraints.tight(childSize);
@@ -171,7 +177,7 @@ class RenderStaggeredGrid extends RenderBox
       final origin = _findBestCandidate(offsets, crossAxisCellCount);
       final mainAxisOffset = origin.mainAxisOffset;
       final crossAxisOffset = origin.crossAxisIndex * stride;
-      final offset = direction == Axis.vertical
+      final offset = mainAxis == Axis.vertical
           ? Offset(crossAxisOffset, mainAxisOffset)
           : Offset(mainAxisOffset, crossAxisOffset);
 
@@ -186,8 +192,46 @@ class RenderStaggeredGrid extends RenderBox
       child = childAfter(child);
     }
 
-    final mainAxisExtent = offsets.reduce(math.max);
-    final size = direction == Axis.vertical
+    final mainAxisExtent = offsets.reduce(math.max) - mainAxisSpacing;
+    if (axisDirectionIsReversed(axisDirection)) {
+      // If the axis direction is reversed, we need to reverse the main axis
+      // offsets.
+      child = firstChild;
+      while (child != null) {
+        final childParentData = _getParentData(child);
+        final offset = childParentData.offset;
+        final crossAxisOffset = offset.getCrossAxisOffset(mainAxis);
+        final mainAxisOffset = mainAxisExtent -
+            offset.getMainAxisOffset(mainAxis) -
+            childParentData.mainAxisExtent!;
+        final newOffset = mainAxis == Axis.vertical
+            ? Offset(crossAxisOffset, mainAxisOffset)
+            : Offset(mainAxisOffset, crossAxisOffset);
+        childParentData.offset = newOffset;
+        child = childAfter(child);
+      }
+    }
+
+    if (mainAxis == Axis.vertical && textDirection == TextDirection.rtl) {
+      // If the direction is vertical && the text direction is right-to-left, we
+      // need to reverse the cross axis offsets.
+      child = firstChild;
+      while (child != null) {
+        final childParentData = _getParentData(child);
+        final crossAxisCellCount = childParentData.crossAxisCellCount ?? 1;
+        final crossAxisCellExtent =
+            stride * crossAxisCellCount - crossAxisSpacing;
+        final offset = childParentData.offset;
+        final crossAxisOffset =
+            crossAxisExtent - offset.dx - crossAxisCellExtent;
+        final mainAxisOffset = offset.dy;
+        final newOffset = Offset(crossAxisOffset, mainAxisOffset);
+        childParentData.offset = newOffset;
+        child = childAfter(child);
+      }
+    }
+
+    final size = mainAxis == Axis.vertical
         ? Size(crossAxisExtent, mainAxisExtent)
         : Size(mainAxisExtent, crossAxisExtent);
     return size;
@@ -275,4 +319,14 @@ void _layoutChild(RenderBox child, BoxConstraints constraints) {
 
 bool _lessOrNearEqual(double a, double b) {
   return a < b || (a - b).abs() < precisionErrorTolerance;
+}
+
+extension on Offset {
+  double getCrossAxisOffset(Axis direction) {
+    return direction == Axis.vertical ? dx : dy;
+  }
+
+  double getMainAxisOffset(Axis direction) {
+    return direction == Axis.vertical ? dy : dx;
+  }
 }

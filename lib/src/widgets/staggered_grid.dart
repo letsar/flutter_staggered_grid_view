@@ -7,7 +7,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
     required this.crossAxisCount,
     this.mainAxisSpacing = 0,
     this.crossAxisSpacing = 0,
-    this.direction = Axis.vertical,
+    this.axisDirection,
     List<Widget> children = const <Widget>[],
   })  : assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
@@ -22,7 +22,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
   /// {@macro fsgv.global.crossAxisSpacing}
   final double crossAxisSpacing;
 
-  final Axis direction;
+  final AxisDirection? axisDirection;
 
   @override
   RenderStaggeredGrid createRenderObject(BuildContext context) {
@@ -30,7 +30,9 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
       crossAxisCount: crossAxisCount,
       mainAxisSpacing: mainAxisSpacing,
       crossAxisSpacing: crossAxisSpacing,
-      direction: direction,
+      axisDirection: axisDirection ??
+          Scrollable.of(context)?.axisDirection ??
+          AxisDirection.down,
       textDirection: Directionality.of(context),
     );
   }
@@ -44,7 +46,9 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
       ..crossAxisCount = crossAxisCount
       ..mainAxisSpacing = mainAxisSpacing
       ..crossAxisSpacing = crossAxisSpacing
-      ..direction = direction
+      ..axisDirection = axisDirection ??
+          Scrollable.of(context)?.axisDirection ??
+          AxisDirection.down
       ..textDirection = Directionality.of(context);
   }
 }

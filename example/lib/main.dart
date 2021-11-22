@@ -91,24 +91,28 @@ class StaggeredPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Staggered'),
       ),
-      body: Directionality(
-        textDirection: TextDirection.ltr,
-        child: StaggeredGrid(
-          crossAxisCount: 4,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          children: [
-            ...tiles.mapIndexed((index, tile) {
-              return StaggeredGridTile.count(
-                crossAxisCellCount: tile.crossAxisCount,
-                mainAxisCellCount: tile.mainAxisCount,
-                child: IndexedTile(
-                  index: index,
-                  child: const Tile(),
-                ),
-              );
-            }),
-          ],
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        reverse: true,
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: StaggeredGrid(
+            crossAxisCount: 4,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+            children: [
+              ...tiles.mapIndexed((index, tile) {
+                return StaggeredGridTile.count(
+                  crossAxisCellCount: tile.crossAxisCount,
+                  mainAxisCellCount: tile.mainAxisCount,
+                  child: IndexedTile(
+                    index: index,
+                    child: const Tile(),
+                  ),
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );
