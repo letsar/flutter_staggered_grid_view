@@ -15,36 +15,135 @@ class StaggeredGridParentData extends ContainerBoxParentData<RenderBox> {
       'crossAxisCellCount=$crossAxisCellCount; mainAxisCellCount=$mainAxisCellCount; mainAxisExtent=$mainAxisExtent';
 }
 
+abstract class StaggeredGridDelegate {
+  const StaggeredGridDelegate();
+
+  int getCrossAxisCount(double crossAxisExtent, double crossAxisSpacing);
+
+  /// Override this method to return true when the children need to be
+  /// laid out.
+  ///
+  /// This should compare the fields of the current delegate and the given
+  /// `oldDelegate` and return true if the fields are such that the layout would
+  /// be different.
+  bool shouldRelayout(covariant StaggeredGridDelegate oldDelegate);
+}
+
+class StaggeredGridDelegateWithFixedCrossAxisCount
+    extends StaggeredGridDelegate {
+  /// Creates a delegate that makes grid layouts with a fixed number of tiles in
+  /// the cross axis.
+  ///
+  /// The [crossAxisCount] argument must be greater than zero.
+  const StaggeredGridDelegateWithFixedCrossAxisCount({
+    required this.crossAxisCount,
+  }) : assert(crossAxisCount > 0);
+
+  /// {@macro fsgv.global.crossAxisCount}
+  final int crossAxisCount;
+
+  @override
+  int getCrossAxisCount(double crossAxisExtent, double crossAxisSpacing) {
+    return crossAxisCount;
+  }
+
+  @override
+  bool shouldRelayout(
+    StaggeredGridDelegateWithFixedCrossAxisCount oldDelegate,
+  ) {
+    return oldDelegate.crossAxisCount != crossAxisCount;
+  }
+}
+
+/// Creates grid layouts with tiles that each have a maximum cross-axis extent.
+///
+/// This delegate will select a cross-axis extent for the tiles that is as
+/// large as possible subject to the following conditions:
+///
+///  - The extent evenly divides the cross-axis extent of the grid.
+///  - The extent is at most [maxCrossAxisExtent].
+///
+/// For example, if the grid is vertical, the grid is 500.0 pixels wide, and
+/// [maxCrossAxisExtent] is 150.0, this delegate will create a grid with 4
+/// columns that are 125.0 pixels wide.
+///
+/// This delegate creates grids with equally sized and spaced tiles.
+///
+/// See also:
+///
+///  * [SliverMasonryGridDelegateWithFixedCrossAxisCount], which creates a
+///    layout with a fixed number of tiles in the cross axis.
+///  * [SliverMasonryGridDelegate], which creates arbitrary layouts.
+///  * [RenderSliverMasonryGrid], which can use this delegate to control the
+///    layout of its tiles.
+class StaggeredGridDelegateWithMaxCrossAxisExtent
+    extends StaggeredGridDelegate {
+  /// Creates a delegate that makes grid layouts with tiles that have a maximum
+  /// cross-axis extent.
+  ///
+  /// The [maxCrossAxisExtent] argument must be greater than zero.
+  const StaggeredGridDelegateWithMaxCrossAxisExtent({
+    required this.maxCrossAxisExtent,
+  }) : assert(maxCrossAxisExtent > 0);
+
+  /// The maximum extent of tiles in the cross axis.
+  ///
+  /// This delegate will select a cross-axis extent for the tiles that is as
+  /// large as possible subject to the following conditions:
+  ///
+  ///  - The extent evenly divides the cross-axis extent of the grid.
+  ///  - The extent is at most [maxCrossAxisExtent].
+  ///
+  /// For example, if the grid is vertical, the grid is 500.0 pixels wide, and
+  /// [maxCrossAxisExtent] is 150.0, this delegate will create a grid with 4
+  /// columns that are 125.0 pixels wide.
+  final double maxCrossAxisExtent;
+
+  @override
+  int getCrossAxisCount(double crossAxisExtent, double crossAxisSpacing) {
+    return (crossAxisExtent / (maxCrossAxisExtent + crossAxisSpacing)).ceil();
+  }
+
+  @override
+  bool shouldRelayout(
+    StaggeredGridDelegateWithMaxCrossAxisExtent oldDelegate,
+  ) {
+    return oldDelegate.maxCrossAxisExtent != maxCrossAxisExtent;
+  }
+}
+
 class RenderStaggeredGrid extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, StaggeredGridParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, StaggeredGridParentData> {
   RenderStaggeredGrid({
     List<RenderBox>? children,
-    required int crossAxisCount,
+    required StaggeredGridDelegate delegate,
     required double mainAxisSpacing,
     required double crossAxisSpacing,
     required AxisDirection axisDirection,
     required TextDirection textDirection,
-  })  : assert(crossAxisCount > 0),
-        assert(mainAxisSpacing >= 0),
+  })  : assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         _axisDirection = axisDirection,
         _textDirection = textDirection,
-        _crossAxisCount = crossAxisCount,
+        _delegate = delegate,
         _mainAxisSpacing = mainAxisSpacing,
         _crossAxisSpacing = crossAxisSpacing {
     addAll(children);
   }
 
-  int get crossAxisCount => _crossAxisCount;
-  int _crossAxisCount;
-  set crossAxisCount(int value) {
-    if (_crossAxisCount == value) {
+  StaggeredGridDelegate get delegate => _delegate;
+  StaggeredGridDelegate _delegate;
+  set delegate(StaggeredGridDelegate newDelegate) {
+    if (_delegate == newDelegate) {
       return;
     }
-    _crossAxisCount = value;
-    markNeedsLayout();
+    if (newDelegate.runtimeType != _delegate.runtimeType ||
+        newDelegate.shouldRelayout(_delegate)) {
+      markNeedsLayout();
+    }
+    _delegate = newDelegate;
   }
 
   /// {@macro fsgv.global.mainAxisSpacing}
@@ -144,6 +243,8 @@ class RenderStaggeredGrid extends RenderBox
     final crossAxisExtent = mainAxis == Axis.vertical
         ? constraints.maxWidth
         : constraints.maxHeight;
+    final crossAxisCount =
+        delegate.getCrossAxisCount(crossAxisExtent, crossAxisSpacing);
     final stride = (crossAxisExtent + crossAxisSpacing) / crossAxisCount;
 
     final offsets = List.filled(crossAxisCount, 0.0);

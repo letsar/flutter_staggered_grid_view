@@ -1,43 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class TileRect {
-  TileRect({
-    required double mainAxisOffset,
-    required double crossAxisOffset,
-    required double mainAxisExtent,
-    required double crossAxisExtent,
-  }) : this._fromRect(
-          Rect.fromLTWH(
-            crossAxisOffset,
-            mainAxisOffset,
-            crossAxisExtent,
-            mainAxisExtent,
-          ),
-        );
-
-  const TileRect._fromRect(this._rect);
-
-  static const TileRect zero = TileRect._fromRect(Rect.zero);
-
-  final Rect _rect;
-  double get mainAxisOffset => _rect.top;
-  double get crossAxisOffset => _rect.left;
-  double get mainAxisExtent => _rect.height;
-  double get crossAxisExtent => _rect.width;
-  double get mainAxisEndOffset => _rect.bottom;
-
-  TileRect translate(double translation) {
-    return TileRect(
-      mainAxisOffset: mainAxisOffset + translation,
-      crossAxisOffset: crossAxisOffset,
-      mainAxisExtent: mainAxisExtent,
-      crossAxisExtent: crossAxisExtent,
-    );
-  }
-}
-
+/// Controls the layout of a grid which layout a pattern over and over.
 abstract class SliverPatternGridDelegate<T> extends SliverGridDelegate {
+  /// Creates a [SliverPatternGridDelegate].
   const SliverPatternGridDelegate({
     required this.tiles,
     this.mainAxisSpacing = 0,
@@ -52,12 +18,15 @@ abstract class SliverPatternGridDelegate<T> extends SliverGridDelegate {
   /// {@macro fsgv.global.crossAxisSpacing}
   final double crossAxisSpacing;
 
+  /// The tiles representing the pattern to be repeated.
   final List<T> tiles;
 
+  /// The number of tiles in the pattern.
   final int tileCount;
 
+  /// Returns the geometries of each tiles in the pattern.
   @protected
-  List<TileRect> getPattern(SliverConstraints constraints);
+  List<SliverGridGeometry> getPattern(SliverConstraints constraints);
 
   @override
   _SliverPatternGridLayout getLayout(SliverConstraints constraints) {
@@ -83,7 +52,7 @@ class _SliverPatternGridLayout extends SliverGridLayout {
     this.reverseCrossAxis = false,
   })  : tileCount = tileRects.length,
         patternMainAxisExtent =
-            tileRects.last.mainAxisEndOffset + mainAxisSpacing;
+            tileRects.last.trailingScrollOffset + mainAxisSpacing;
 
   /// Whether the children should be placed in the opposite order of increasing
   /// coordinates in the cross axis.
@@ -96,7 +65,7 @@ class _SliverPatternGridLayout extends SliverGridLayout {
   /// the [SliverConstraints.crossAxisDirection].
   final bool reverseCrossAxis;
   final double mainAxisSpacing;
-  final List<TileRect> tileRects;
+  final List<SliverGridGeometry> tileRects;
   final int tileCount;
   final double patternMainAxisExtent;
 
@@ -104,7 +73,7 @@ class _SliverPatternGridLayout extends SliverGridLayout {
   double computeMaxScrollOffset(int childCount) {
     final tileRect = tileRectAt(childCount);
     return (childCount ~/ tileCount) * patternMainAxisExtent +
-        tileRect.mainAxisEndOffset;
+        tileRect.trailingScrollOffset;
   }
 
   @override
@@ -113,12 +82,7 @@ class _SliverPatternGridLayout extends SliverGridLayout {
     final rect = tileRectAt(index);
     final realRect = rect.translate(startMainAxisOffset);
 
-    return SliverGridGeometry(
-      scrollOffset: realRect.mainAxisOffset,
-      crossAxisOffset: realRect.crossAxisOffset,
-      mainAxisExtent: realRect.mainAxisExtent,
-      crossAxisExtent: realRect.crossAxisExtent,
-    );
+    return realRect;
   }
 
   @override
@@ -150,15 +114,29 @@ class _SliverPatternGridLayout extends SliverGridLayout {
 
   /// Gets the main axis offset of the tile at the given global [index].
   double mainAxisOffset(int index) {
-    return tileRects[index % tileCount].mainAxisOffset;
+    return tileRects[index % tileCount].scrollOffset;
   }
 
-  bool _isRectVisibleAtMainAxisOffset(TileRect rect, double mainAxisOffset) {
-    return rect.mainAxisOffset <= mainAxisOffset &&
-        rect.mainAxisEndOffset >= (mainAxisOffset - mainAxisSpacing);
+  bool _isRectVisibleAtMainAxisOffset(
+    SliverGridGeometry rect,
+    double mainAxisOffset,
+  ) {
+    return rect.scrollOffset <= mainAxisOffset &&
+        rect.trailingScrollOffset >= (mainAxisOffset - mainAxisSpacing);
   }
 
-  TileRect tileRectAt(int index) {
+  SliverGridGeometry tileRectAt(int index) {
     return tileRects[index % tileCount];
+  }
+}
+
+extension on SliverGridGeometry {
+  SliverGridGeometry translate(double translation) {
+    return SliverGridGeometry(
+      scrollOffset: scrollOffset + translation,
+      crossAxisOffset: crossAxisOffset,
+      mainAxisExtent: mainAxisExtent,
+      crossAxisExtent: crossAxisExtent,
+    );
   }
 }

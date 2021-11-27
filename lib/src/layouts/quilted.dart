@@ -4,19 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/foundation/extensions.dart';
 
+/// A tile for [SliverQuiltedGridDelegate].
 @immutable
 class QuiltedGridTile {
+  /// Create a [QuiltedGridTile].
   const QuiltedGridTile(
     this.mainAxisCount,
     this.crossAxisCount,
   )   : assert(mainAxisCount > 0),
         assert(crossAxisCount > 0);
 
-  final int crossAxisCount;
+  /// The number of cells that tile takes in the main axis.
   final int mainAxisCount;
+
+  /// The number of cells that tile takes in the cross axis.
+  final int crossAxisCount;
 }
 
+/// Controls the layout of a quilted grid.
 class SliverQuiltedGridDelegate extends SliverGridDelegate {
+  /// Creates a [SliverQuiltedGridDelegate].
   SliverQuiltedGridDelegate({
     required this.crossAxisCount,
     required List<QuiltedGridTile> pattern,
@@ -27,6 +34,7 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
         assert(crossAxisSpacing >= 0),
         _pattern = pattern.toPattern(crossAxisCount);
 
+  /// {@macro fsgv.global.crossAxisCount}
   final int crossAxisCount;
 
   final _QuiltedTilePattern _pattern;
@@ -219,7 +227,7 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
   }
 }
 
-extension ListOfQuiltedTileToPatternExtension on List<QuiltedGridTile> {
+extension on List<QuiltedGridTile> {
   _QuiltedTilePattern toPattern(int crossAxisCount) {
     final tileCount = length;
     final minTileIndexes = <int>[];

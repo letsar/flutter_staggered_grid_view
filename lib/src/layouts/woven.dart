@@ -2,19 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/layouts/sliver_patterned_grid_delegate.dart';
 
+/// A tile of a woven pattern.
 @immutable
 class WovenGridTile {
+  /// Creates a [WovenGridTile].
   const WovenGridTile(
     this.crossAxisRatio,
     this.aspectRatio,
   )   : assert(crossAxisRatio > 0 && crossAxisRatio <= 1),
         assert(aspectRatio > 0);
 
-  final double aspectRatio;
+  /// The amount of extent this tile is taking in the cross axis, according to
+  /// the usable cross axis extent.
+  /// For exemple if [crossAxisRatio] is 0.5, and the usable cross axis extent
+  /// is 100. The the tile will have a cross axis extent of 50.
+  ///
+  /// Must be between 0 and 1.
   final double crossAxisRatio;
+
+  /// The ratio of the cross-axis to the main-axis extent of the tile.
+  ///
+  /// Must be greater than 0.
+  final double aspectRatio;
 }
 
+/// Controls the layout of tiles in a woven grid.
 class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
+  /// Creates a [SliverWovenGridDelegate].
   const SliverWovenGridDelegate({
     required List<WovenGridTile> tiles,
     double mainAxisSpacing = 0,
@@ -33,12 +47,22 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
   /// {@endtemplate}
   final double tileBottomSpace;
 
+  /// Indicates whether we should start to place the tile in the reverse cross
+  /// axis direction.
   final bool startCrossAxisDirectionReversed;
 
   @override
-  List<TileRect> getPattern(SliverConstraints constraints) {
+  List<SliverGridGeometry> getPattern(SliverConstraints constraints) {
     final maxCrossAxisExtent = constraints.crossAxisExtent;
-    final List<TileRect> tileRects = List.filled(tiles.length, TileRect.zero);
+    final List<SliverGridGeometry> tileRects = List.filled(
+      tiles.length,
+      const SliverGridGeometry(
+        scrollOffset: 0,
+        crossAxisOffset: 0,
+        mainAxisExtent: 0,
+        crossAxisExtent: 0,
+      ),
+    );
     int i = 0;
     double mainAxisOffset = 0;
     double crossAxisOffset =
@@ -70,8 +94,8 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
             (isHorizontal ? 0 : tileBottomSpace);
         crossAxisOffset =
             reversed ? crossAxisOffset - crossAxisExtent : crossAxisOffset;
-        final tileRect = TileRect(
-          mainAxisOffset: mainAxisOffset,
+        final tileRect = SliverGridGeometry(
+          scrollOffset: mainAxisOffset,
           crossAxisOffset: crossAxisOffset,
           mainAxisExtent: mainAxisExtent,
           crossAxisExtent: crossAxisExtent,

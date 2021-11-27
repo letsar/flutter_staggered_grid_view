@@ -682,7 +682,8 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       positionChild(child!);
       if (!foundFirstVisibleChild &&
           scrollOffsets.any(
-              (scrollOffset) => scrollOffset >= constraints.scrollOffset)) {
+            (scrollOffset) => scrollOffset >= constraints.scrollOffset,
+          )) {
         foundFirstVisibleChild = true;
         _lastFirstVisibleChildIndex = indexOf(child!);
       }
@@ -789,15 +790,5 @@ extension on SliverMasonryGridParentData {
   void apply(SliverMasonryGridParentData parentData) {
     layoutOffset = parentData.layoutOffset;
     crossAxisIndex = parentData.crossAxisIndex;
-  }
-}
-
-extension _ListExt<T> on List<T> {
-  void clearExceptFirst() {
-    if (isNotEmpty) {
-      final firstElement = first;
-      clear();
-      add(firstElement);
-    }
   }
 }

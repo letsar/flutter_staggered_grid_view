@@ -138,7 +138,7 @@ class StaggeredPage extends StatelessWidget {
         reverse: true,
         child: Directionality(
           textDirection: TextDirection.ltr,
-          child: StaggeredGrid(
+          child: StaggeredGrid.count(
             crossAxisCount: 4,
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
