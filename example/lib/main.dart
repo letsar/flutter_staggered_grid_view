@@ -19,7 +19,49 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const StaggeredPage(),
+      home: const WovenPage(),
+    );
+  }
+}
+
+class WovenPage extends StatelessWidget {
+  const WovenPage({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Woven'),
+      ),
+      body: Directionality(
+        textDirection: TextDirection.ltr,
+        child: GridView.custom(
+          scrollDirection: Axis.vertical,
+          gridDelegate: SliverWovenGridDelegate(
+            tiles: const [
+              WovenGridTile(0.5, 1),
+              WovenGridTile(0.5, 4 / 3),
+              WovenGridTile(1.0, 0.4),
+            ],
+            crossAxisSpacing: 96,
+            mainAxisSpacing: 48,
+            startCrossAxisDirectionReversed: true,
+            tileBottomSpace: 24,
+          ),
+          childrenDelegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return IndexedTile(
+                index: index,
+                child: const Tile(
+                  bottomSpace: 24,
+                ),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }
@@ -41,7 +83,7 @@ class QuiltedPage extends StatelessWidget {
           gridDelegate: SliverQuiltedGridDelegate(
             crossAxisCount: 4,
             crossAxisSpacing: 4,
-            mainAxisSpacing: 4,
+            mainAxisSpacing: 100,
             pattern: const [
               QuiltedGridTile(2, 2),
               QuiltedGridTile(1, 1),
@@ -153,8 +195,10 @@ class _MasonryPageState extends State<MasonryPage> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: Center(
+          Padding(
+            padding: const EdgeInsets.only(top: 60),
+            child: Align(
+              alignment: Alignment.bottomCenter,
               child: Slider(
                 min: 1,
                 max: 6,
@@ -168,21 +212,17 @@ class _MasonryPageState extends State<MasonryPage> {
               ),
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SizedBox(
-              height: 500,
-              child: MasonryIndexedTiles(
-                crossAxisCount: crossAxisCount,
-                children: [
-                  ...extents.mapIndexed((int index, int extent) {
-                    if (index == 1) {
-                      return const VaryingSizeOverTime();
-                    }
-                    return Tile(extent: extent * 100.0);
-                  }),
-                ],
-              ),
+          Expanded(
+            child: MasonryIndexedTiles(
+              crossAxisCount: crossAxisCount,
+              children: [
+                ...extents.mapIndexed((int index, int extent) {
+                  // if (index == 1) {
+                  //   return const VaryingSizeOverTime();
+                  // }
+                  return Tile(extent: extent * 100.0);
+                }),
+              ],
             ),
           ),
         ],
@@ -218,8 +258,11 @@ class MasonryIndexedTiles extends StatelessWidget {
                   ),
               ],
             ),
-            gridDelegate: SliverMasonryGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
+            // gridDelegate: SliverMasonryGridDelegateWithFixedCrossAxisCount(
+            //   crossAxisCount: crossAxisCount,
+            // ),
+            gridDelegate: SliverMasonryGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 100,
             ),
             mainAxisSpacing: 8,
             crossAxisSpacing: 8,
@@ -307,13 +350,15 @@ class Tile extends StatelessWidget {
   const Tile({
     Key? key,
     this.extent,
+    this.bottomSpace,
   }) : super(key: key);
 
   final double? extent;
+  final double? bottomSpace;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final child = Container(
       decoration: BoxDecoration(
         border: Border.all(
           color: Colors.black,
@@ -329,6 +374,20 @@ class Tile extends StatelessWidget {
           child: Text('$extent'),
         ),
       ),
+    );
+
+    if (bottomSpace == null) {
+      return child;
+    }
+
+    return Column(
+      children: [
+        Expanded(child: child),
+        Container(
+          height: bottomSpace,
+          color: Colors.green,
+        )
+      ],
     );
   }
 }

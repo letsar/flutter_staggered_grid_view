@@ -1,3 +1,5 @@
+// ignore_for_file: public_member_api_docs
+
 extension ListNumExtensions on List<num> {
   int findSmallestIndexWithMinimumValue() {
     int index = 0;
