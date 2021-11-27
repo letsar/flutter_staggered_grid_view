@@ -3,11 +3,15 @@ import 'dart:math' as math;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 
+/// Parent data structure used by [RenderStaggeredGrid].
 class StaggeredGridParentData extends ContainerBoxParentData<RenderBox> {
+  /// The number of cells in the cross axis taken by the child.
   int? crossAxisCellCount;
 
+  /// The number of cells in the main axis taken by the child.
   num? mainAxisCellCount;
 
+  /// The extent in the main axis of the child.
   double? mainAxisExtent;
 
   @override
@@ -15,9 +19,13 @@ class StaggeredGridParentData extends ContainerBoxParentData<RenderBox> {
       'crossAxisCellCount=$crossAxisCellCount; mainAxisCellCount=$mainAxisCellCount; mainAxisExtent=$mainAxisExtent';
 }
 
+/// Controls the layout of a StaggeredGrid.
 abstract class StaggeredGridDelegate {
+  /// Abstract const constructor. This constructor enables subclasses to provide
+  /// const constructors so that they can be used in const expressions.
   const StaggeredGridDelegate();
 
+  /// Returns the number of children in the cross axis.
   int getCrossAxisCount(double crossAxisExtent, double crossAxisSpacing);
 
   /// Override this method to return true when the children need to be
@@ -29,6 +37,11 @@ abstract class StaggeredGridDelegate {
   bool shouldRelayout(covariant StaggeredGridDelegate oldDelegate);
 }
 
+/// Creates grid layouts with a fixed number of tiles in the cross axis.
+///
+/// For example, if the grid is vertical, this delegate will create a layout
+/// with a fixed number of columns. If the grid is horizontal, this delegate
+/// will create a layout with a fixed number of rows.
 class StaggeredGridDelegateWithFixedCrossAxisCount
     extends StaggeredGridDelegate {
   /// Creates a delegate that makes grid layouts with a fixed number of tiles in
@@ -68,14 +81,6 @@ class StaggeredGridDelegateWithFixedCrossAxisCount
 /// columns that are 125.0 pixels wide.
 ///
 /// This delegate creates grids with equally sized and spaced tiles.
-///
-/// See also:
-///
-///  * [SliverMasonryGridDelegateWithFixedCrossAxisCount], which creates a
-///    layout with a fixed number of tiles in the cross axis.
-///  * [SliverMasonryGridDelegate], which creates arbitrary layouts.
-///  * [RenderSliverMasonryGrid], which can use this delegate to control the
-///    layout of its tiles.
 class StaggeredGridDelegateWithMaxCrossAxisExtent
     extends StaggeredGridDelegate {
   /// Creates a delegate that makes grid layouts with tiles that have a maximum
@@ -112,10 +117,13 @@ class StaggeredGridDelegateWithMaxCrossAxisExtent
   }
 }
 
+/// A sliver that places multiple box children with different sizes in a two
+/// dimensional arrangement.
 class RenderStaggeredGrid extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, StaggeredGridParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, StaggeredGridParentData> {
+  /// Creates a [RenderStaggeredGrid].
   RenderStaggeredGrid({
     List<RenderBox>? children,
     required StaggeredGridDelegate delegate,
@@ -133,6 +141,7 @@ class RenderStaggeredGrid extends RenderBox
     addAll(children);
   }
 
+  /// The delegate that controls the size and position of the children.
   StaggeredGridDelegate get delegate => _delegate;
   StaggeredGridDelegate _delegate;
   set delegate(StaggeredGridDelegate newDelegate) {
@@ -168,6 +177,12 @@ class RenderStaggeredGrid extends RenderBox
     markNeedsLayout();
   }
 
+  /// {@template fsgv.global.axisDirection}
+  /// The direction in which the children are laid out.
+  ///
+  /// For example, if the [axisDirection] is [AxisDirection.down], each child
+  /// will be laid out below the next, vertically.
+  /// {@endtemplate}
   AxisDirection get axisDirection => _axisDirection;
   AxisDirection _axisDirection;
   set axisDirection(AxisDirection value) {
@@ -178,8 +193,12 @@ class RenderStaggeredGrid extends RenderBox
     markNeedsLayout();
   }
 
+  /// The axis (horizontal or vertical) corresponding to the current
+  /// [axisDirection].
   Axis get mainAxis => axisDirectionToAxis(_axisDirection);
 
+  /// The direction in which the columns are ordered if the [mainAxis] is
+  /// [Axis.vertical].
   TextDirection get textDirection => _textDirection;
   TextDirection _textDirection;
   set textDirection(TextDirection value) {

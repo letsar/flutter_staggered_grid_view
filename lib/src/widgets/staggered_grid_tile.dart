@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/staggered_grid.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/staggered_grid.dart';
 
+/// Represents the size of a [StaggeredGrid]'s tile.
 class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
   const StaggeredGridTile._({
     Key? key,
@@ -14,6 +15,8 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
         assert(mainAxisExtent == null || mainAxisExtent > 0),
         super(key: key, child: child);
 
+  /// Creates a [StaggeredGrid]'s tile that takes a fixed number of cells along
+  /// the main axis.
   const StaggeredGridTile.count({
     Key? key,
     required int crossAxisCellCount,
@@ -27,6 +30,8 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
           child: child,
         );
 
+  /// Creates a [StaggeredGrid]'s tile that takes a specific amount of space
+  /// along the main axis.
   const StaggeredGridTile.extent({
     Key? key,
     required int crossAxisCellCount,
@@ -40,8 +45,13 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
           child: child,
         );
 
+  /// The number of cells that this tile takes along the cross axis.
   final int crossAxisCellCount;
+
+  /// The number of cells that this tile takes along the main axis.
   final num? mainAxisCellCount;
+
+  /// The amount of space that this tile takes along the main axis.
   final double? mainAxisExtent;
 
   @override
