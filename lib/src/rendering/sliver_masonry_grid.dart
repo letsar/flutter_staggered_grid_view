@@ -100,6 +100,7 @@ class SliverMasonryGridDelegateWithMaxCrossAxisExtent
     required this.maxCrossAxisExtent,
   }) : assert(maxCrossAxisExtent > 0);
 
+  /// {@template fsgv.global.maxCrossAxisExtent}
   /// The maximum extent of tiles in the cross axis.
   ///
   /// This delegate will select a cross-axis extent for the tiles that is as
@@ -111,6 +112,7 @@ class SliverMasonryGridDelegateWithMaxCrossAxisExtent
   /// For example, if the grid is vertical, the grid is 500.0 pixels wide, and
   /// [maxCrossAxisExtent] is 150.0, this delegate will create a grid with 4
   /// columns that are 125.0 pixels wide.
+  /// {@endtemplate}
   final double maxCrossAxisExtent;
 
   @override
@@ -328,7 +330,6 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     final double scrollOffset =
         constraints.scrollOffset + constraints.cacheOrigin;
 
-    print('RRL scrollOffset :$scrollOffset');
     assert(scrollOffset >= 0.0);
     final double remainingExtent = constraints.remainingCacheExtent;
     assert(remainingExtent >= 0.0);
@@ -536,7 +537,6 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
           // We ran out of children before reaching the scroll offset.
           // We must inform our parent that this sliver cannot fulfill
           // its contract and that we need a scroll offset correction.
-          print('RRL scrollOffsetCorrection 1: -$scrollOffset');
           geometry = SliverGeometry(
             scrollOffsetCorrection: -scrollOffset,
           );
@@ -550,7 +550,6 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       if (earliestScrollOffset < -precisionErrorTolerance) {
         // Let's assume there is no child before the first child. We will
         // correct it on the next layout if it is not.
-        print('RRL scrollOffsetCorrection 2: -$earliestScrollOffset');
         geometry = SliverGeometry(
           scrollOffsetCorrection: -earliestScrollOffset,
         );
@@ -595,7 +594,6 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         // We only need to correct if the leading child actually has a
         // paint extent.
         if (firstChildScrollOffset < -precisionErrorTolerance) {
-          print('RRL scrollOffsetCorrection 3: -$firstChildScrollOffset');
           geometry = SliverGeometry(
             scrollOffsetCorrection: -firstChildScrollOffset,
           );
@@ -732,7 +730,6 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     // At this point everything should be good to go, we just have to clean up
     // the garbage and report the geometry.
     collectGarbage(leadingGarbage, trailingGarbage);
-    print('RRL lastFirstVisibleChildIndex: $_lastFirstVisibleChildIndex');
 
     assert(debugAssertChildListIsNonEmptyAndContiguous());
     final endScrollOffset = scrollOffsets.reduce(math.max) - mainAxisSpacing;

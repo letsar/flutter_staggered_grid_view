@@ -39,11 +39,56 @@ class WovenPage extends StatelessWidget {
         textDirection: TextDirection.ltr,
         child: GridView.custom(
           scrollDirection: Axis.vertical,
-          gridDelegate: SliverWovenGridDelegate(
-            tiles: const [
-              WovenGridTile(0.5, 1),
-              WovenGridTile(0.5, 4 / 3),
-              WovenGridTile(1.0, 0.4),
+          gridDelegate: SliverWovenGridDelegate.count(
+            crossAxisCount: 4,
+            pattern: const [
+              WovenGridTile(1),
+              WovenGridTile(
+                5 / 7,
+                crossAxisRatio: 0.9,
+                alignment: AlignmentDirectional.centerEnd,
+              ),
+            ],
+            crossAxisSpacing: 24,
+            mainAxisSpacing: 24,
+            // tileBottomSpace: 24,
+          ),
+          childrenDelegate: SliverChildBuilderDelegate(
+            (context, index) {
+              return IndexedTile(
+                index: index,
+                child: const Tile(
+                    // bottomSpace: 24,
+                    ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ShiftedPage extends StatelessWidget {
+  const ShiftedPage({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Shifted'),
+      ),
+      body: Directionality(
+        textDirection: TextDirection.ltr,
+        child: GridView.custom(
+          scrollDirection: Axis.vertical,
+          gridDelegate: SliverShiftedGridDelegate(
+            pattern: const [
+              ShiftedGridTile(0.5, 1),
+              ShiftedGridTile(0.5, 3 / 4),
+              ShiftedGridTile(1.0, 10 / 4),
             ],
             crossAxisSpacing: 96,
             mainAxisSpacing: 48,
@@ -135,7 +180,6 @@ class StaggeredPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
-        reverse: true,
         child: Directionality(
           textDirection: TextDirection.ltr,
           child: StaggeredGrid.count(
@@ -261,7 +305,7 @@ class MasonryIndexedTiles extends StatelessWidget {
             // gridDelegate: SliverMasonryGridDelegateWithFixedCrossAxisCount(
             //   crossAxisCount: crossAxisCount,
             // ),
-            gridDelegate: SliverMasonryGridDelegateWithMaxCrossAxisExtent(
+            gridDelegate: const SliverMasonryGridDelegateWithMaxCrossAxisExtent(
               maxCrossAxisExtent: 100,
             ),
             mainAxisSpacing: 8,
