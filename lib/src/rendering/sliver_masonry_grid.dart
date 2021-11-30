@@ -494,18 +494,22 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
 
     RenderBox? child = firstChild;
 
+    // If a new child is inserted and does not have a valid crossAxisIndex, we
+    // have to set it.
+    if (child != null && indexOf(child) == 0) {
+      final firstChildParentData = _getParentData(child);
+      firstChildParentData.crossAxisIndex = 0;
+    }
+
     // We populate our earliestScrollOffsets list.
     while (child != null && scrollOffsets.any((x) => x.isInfinite)) {
-      final nullableCrossAxisIndex = _childCrossAxisIndex(child);
-      if (nullableCrossAxisIndex == null) {
-        // The child has not been positioned yet.
-        positionChild(child);
-      }
-      final index = _childCrossAxisIndex(child)!;
-      final scrollOffset = childScrollOffset(child)!;
-      // We only need to set the scroll offsets of the earliest children.
-      if (scrollOffsets[index] == double.infinity) {
-        scrollOffsets[index] = scrollOffset;
+      final index = _childCrossAxisIndex(child);
+      if (index != null) {
+        final scrollOffset = childScrollOffset(child)!;
+        // We only need to set the scroll offsets of the earliest children.
+        if (scrollOffsets[index] == double.infinity) {
+          scrollOffsets[index] = scrollOffset;
+        }
       }
       child = childAfter(child);
     }

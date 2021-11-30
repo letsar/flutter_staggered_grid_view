@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const WovenPage(),
+      home: const QuiltedPage(),
     );
   }
 }
@@ -69,8 +69,8 @@ class WovenPage extends StatelessWidget {
   }
 }
 
-class ShiftedPage extends StatelessWidget {
-  const ShiftedPage({
+class StairedPage extends StatelessWidget {
+  const StairedPage({
     Key? key,
   }) : super(key: key);
 
@@ -78,17 +78,17 @@ class ShiftedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shifted'),
+        title: const Text('Staired'),
       ),
       body: Directionality(
         textDirection: TextDirection.ltr,
         child: GridView.custom(
           scrollDirection: Axis.vertical,
-          gridDelegate: SliverShiftedGridDelegate(
+          gridDelegate: SliverStairedGridDelegate(
             pattern: const [
-              ShiftedGridTile(0.5, 1),
-              ShiftedGridTile(0.5, 3 / 4),
-              ShiftedGridTile(1.0, 10 / 4),
+              StairedGridTile(0.5, 1),
+              StairedGridTile(0.5, 3 / 4),
+              StairedGridTile(1.0, 10 / 4),
             ],
             crossAxisSpacing: 96,
             mainAxisSpacing: 48,
@@ -128,16 +128,13 @@ class QuiltedPage extends StatelessWidget {
           gridDelegate: SliverQuiltedGridDelegate(
             crossAxisCount: 4,
             crossAxisSpacing: 4,
-            mainAxisSpacing: 100,
+            mainAxisSpacing: 4,
+            repeatPattern: QuiltedGridRepeatPattern.inverted,
             pattern: const [
               QuiltedGridTile(2, 2),
               QuiltedGridTile(1, 1),
               QuiltedGridTile(1, 1),
               QuiltedGridTile(1, 2),
-              QuiltedGridTile(1, 2),
-              QuiltedGridTile(2, 2),
-              QuiltedGridTile(1, 1),
-              QuiltedGridTile(1, 1),
             ],
           ),
           childrenDelegate: SliverChildBuilderDelegate(

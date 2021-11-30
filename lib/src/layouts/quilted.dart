@@ -19,6 +19,11 @@ class QuiltedGridTile {
 
   /// The number of cells that tile takes in the cross axis.
   final int crossAxisCount;
+
+  @override
+  String toString() {
+    return 'QuiltedGridTile($mainAxisCount, $crossAxisCount)';
+  }
 }
 
 /// Controls the layout of a quilted grid.
@@ -27,17 +32,21 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
   SliverQuiltedGridDelegate({
     required this.crossAxisCount,
     required List<QuiltedGridTile> pattern,
+    this.repeatPattern = QuiltedGridRepeatPattern.same,
     this.mainAxisSpacing = 0,
     this.crossAxisSpacing = 0,
   })  : assert(crossAxisCount > 0),
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
-        _pattern = pattern.toPattern(crossAxisCount);
+        assert(pattern.isNotEmpty),
+        _pattern = pattern.toPattern(crossAxisCount, repeatPattern);
 
   /// {@macro fsgv.global.crossAxisCount}
   final int crossAxisCount;
 
   final _QuiltedTilePattern _pattern;
+
+  final QuiltedGridRepeatPattern repeatPattern;
 
   /// {@macro fsgv.global.mainAxisSpacing}
   final double mainAxisSpacing;
@@ -227,50 +236,191 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
   }
 }
 
+abstract class QuiltedGridRepeatPattern {
+  const QuiltedGridRepeatPattern();
+
+  static const QuiltedGridRepeatPattern same = _QuiltedGridRepeatSamePattern();
+  static const QuiltedGridRepeatPattern inverted =
+      _QuiltedGridRepeatInvertedPattern();
+  static const QuiltedGridRepeatPattern mirrored =
+      _QuiltedGridRepeatMirroredPattern();
+
+  List<int> repeatedIndexes(List<int> indexes, int crossAxisCount);
+
+  int repeatedTileCount(int tileCount);
+}
+
+class _QuiltedGridRepeatSamePattern extends QuiltedGridRepeatPattern {
+  const _QuiltedGridRepeatSamePattern();
+
+  @override
+  List<int> repeatedIndexes(List<int> indexes, int crossAxisCount) {
+    return [];
+  }
+
+  @override
+  int repeatedTileCount(int tileCount) => 0;
+}
+
+class _QuiltedGridRepeatInvertedPattern extends QuiltedGridRepeatPattern {
+  const _QuiltedGridRepeatInvertedPattern();
+
+  @override
+  List<int> repeatedIndexes(List<int> indexes, int crossAxisCount) {
+    // We iterate through the indexes in reverse order to get the index of the
+    // tiles in inversed order.
+    final result = <int>[];
+    final added = <int>{};
+    for (int i = indexes.length - 1; i >= 0; i--) {
+      final index = indexes[i];
+      if (index != -1 && !added.contains(index)) {
+        result.add(index);
+        added.add(index);
+      }
+    }
+
+    return result;
+  }
+
+  @override
+  int repeatedTileCount(int tileCount) => tileCount;
+}
+
+class _QuiltedGridRepeatMirroredPattern extends QuiltedGridRepeatPattern {
+  const _QuiltedGridRepeatMirroredPattern();
+
+  @override
+  List<int> repeatedIndexes(List<int> indexes, int crossAxisCount) {
+    // We iterate through the indexes in reverse order to get the index of the
+    // tiles in inversed order.
+    final result = <int>[];
+    final added = <int>{};
+
+    final mainAxisCount = indexes.length ~/ crossAxisCount;
+
+    for (int i = mainAxisCount - 1; i >= 0; i--) {
+      for (int j = 0; j < crossAxisCount; j++) {
+        final index = indexes[i * crossAxisCount + j];
+        if (index != -1 && !added.contains(index)) {
+          result.add(index);
+          added.add(index);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  @override
+  int repeatedTileCount(int tileCount) => tileCount;
+}
+
 extension on List<QuiltedGridTile> {
-  _QuiltedTilePattern toPattern(int crossAxisCount) {
-    final tileCount = length;
+  List<QuiltedGridTile> mirrored(int crossAxisCount) {
+    final maxMainAxisCount = map((x) => x.mainAxisCount).reduce(math.max);
+    // The index of the tile occupied by each cell.
+    final indexes = List.filled(maxMainAxisCount * crossAxisCount, -1);
+    for (int i = 0; i < length; i++) {
+      final tile = this[i];
+      for (int x = 0; x < tile.crossAxisCount; x++) {
+        for (int y = 0; y < tile.mainAxisCount; y++) {
+          indexes[y * crossAxisCount + x] = i;
+        }
+      }
+    }
+
+    // We iterate through the indexes in reverse order to get the index of the
+    // tiles in mirror order.
+    final result = List.filled(length, const QuiltedGridTile(1, 1));
+    final added = <int>{};
+    int j = 0;
+    for (int i = indexes.length - 1; i >= 0; i--) {
+      final index = indexes[i];
+      if (index != -1 && !added.contains(index)) {
+        result[j++] = this[index];
+        added.add(index);
+      }
+    }
+
+    return [
+      ...this,
+      ...result,
+    ];
+  }
+
+  _QuiltedTilePattern toPattern(
+    int crossAxisCount,
+    QuiltedGridRepeatPattern repeatPattern,
+  ) {
+    final tileCount = length + repeatPattern.repeatedTileCount(length);
     final minTileIndexes = <int>[];
     final maxTileIndexes = <int>[];
     final maxMainAxisCellCounts = List<int>.filled(tileCount, 0);
     final mainAxisIndexes = List<int>.filled(tileCount, 0);
     final crossAxisIndexes = List<int>.filled(tileCount, 0);
+    final maxMainAxisCount = map((x) => x.mainAxisCount).reduce(math.max);
+    // The index of the tile occupied by each cell.
+    final indexes = List.filled(maxMainAxisCount * crossAxisCount, -1);
 
     final offsets = List<int>.generate(crossAxisCount, (index) => 0);
-    for (int i = 0; i < tileCount; i++) {
-      final tile = this[i];
-      final crossAxisIndex = offsets.findSmallestIndexWithMinimumValue();
-      final mainAxisIndex = offsets[crossAxisIndex];
-      mainAxisIndexes[i] = mainAxisIndex;
-      crossAxisIndexes[i] = crossAxisIndex;
+    void position(List<QuiltedGridTile> tiles, List<int>? indexes, int start) {
+      for (int i = 0; i < tiles.length; i++) {
+        final tile = tiles[i];
+        final fullIndex = start + i;
+        final crossAxisIndex = offsets.findSmallestIndexWithMinimumValue();
+        final mainAxisIndex = offsets[crossAxisIndex];
+        mainAxisIndexes[fullIndex] = mainAxisIndex;
+        crossAxisIndexes[fullIndex] = crossAxisIndex;
 
-      // We update the offsets.
-      final crossAxisCount = tile.crossAxisCount;
-      final mainAxisCount = tile.mainAxisCount;
-      for (int j = 0; j < crossAxisCount; j++) {
-        offsets[crossAxisIndex + j] += mainAxisCount;
-      }
+        // We update the offsets.
+        final tileCrossAxisCount = tile.crossAxisCount;
+        final tileMainAxisCount = tile.mainAxisCount;
+        for (int j = 0; j < tileCrossAxisCount; j++) {
+          offsets[crossAxisIndex + j] += tileMainAxisCount;
 
-      // We update the min and max tile indexes.
-      for (int j = 0; j < mainAxisCount; j++) {
-        final index = mainAxisIndex + j;
-        if (minTileIndexes.length == index) {
-          minTileIndexes.add(i);
-        } else {
-          minTileIndexes[index] = math.min(minTileIndexes[index], i);
+          if (indexes != null) {
+            for (int k = 0; k < tileMainAxisCount; k++) {
+              final cellIndex =
+                  (crossAxisIndex + j) + (mainAxisIndex + k) * crossAxisCount;
+              indexes[cellIndex] = i;
+            }
+          }
         }
-        if (maxTileIndexes.length == index) {
-          maxTileIndexes.add(i);
-        } else {
-          maxTileIndexes[index] = math.max(maxTileIndexes[index], i);
-        }
-      }
 
-      maxMainAxisCellCounts[i] = offsets.reduce(math.max);
+        // We update the min and max tile indexes.
+        for (int j = 0; j < tileMainAxisCount; j++) {
+          final index = mainAxisIndex + j;
+          if (minTileIndexes.length == index) {
+            minTileIndexes.add(fullIndex);
+          } else {
+            minTileIndexes[index] = math.min(minTileIndexes[index], fullIndex);
+          }
+          if (maxTileIndexes.length == index) {
+            maxTileIndexes.add(fullIndex);
+          } else {
+            maxTileIndexes[index] = math.max(maxTileIndexes[index], fullIndex);
+          }
+        }
+
+        maxMainAxisCellCounts[fullIndex] = offsets.reduce(math.max);
+      }
+    }
+
+    position(this, indexes, 0);
+    final repeatedIndexes = repeatPattern.repeatedIndexes(
+      indexes,
+      crossAxisCount,
+    );
+    final tiles = toList();
+    if (repeatedIndexes.isNotEmpty) {
+      final repeatedTiles =
+          repeatedIndexes.map((index) => this[index]).toList();
+      position(repeatedTiles, null, length);
+      tiles.addAll(repeatedTiles);
     }
 
     return _QuiltedTilePattern(
-      tiles: this,
+      tiles: tiles,
       mainAxisIndexes: mainAxisIndexes,
       crossAxisIndexes: crossAxisIndexes,
       maxMainAxisCellCounts: maxMainAxisCellCounts,

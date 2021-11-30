@@ -28,6 +28,11 @@ class WovenGridTile {
 
   /// The alignment of the tile within the available space.
   final AlignmentDirectional alignment;
+
+  @override
+  String toString() {
+    return 'WovenGridTile($aspectRatio${crossAxisRatio > 1 ? ', $crossAxisRatio' : ''}${alignment != AlignmentDirectional.center ? ', $alignment' : ''})';
+  }
 }
 
 /// Controls the layout of tiles in a woven grid.

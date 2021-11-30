@@ -3,11 +3,11 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/foundation/constants.dart';
 import 'package:flutter_staggered_grid_view/src/layouts/sliver_patterned_grid_delegate.dart';
 
-/// A tile of a shifted pattern.
+/// A tile of a staired pattern.
 @immutable
-class ShiftedGridTile {
-  /// Creates a [ShiftedGridTile].
-  const ShiftedGridTile(
+class StairedGridTile {
+  /// Creates a [StairedGridTile].
+  const StairedGridTile(
     this.crossAxisRatio,
     this.aspectRatio,
   )   : assert(crossAxisRatio > 0 && crossAxisRatio <= 1),
@@ -25,14 +25,19 @@ class ShiftedGridTile {
   ///
   /// Must be greater than 0.
   final double aspectRatio;
+
+  @override
+  String toString() {
+    return 'StairedGridTile($crossAxisRatio, $aspectRatio)';
+  }
 }
 
-/// Controls the layout of tiles in a shifted grid.
-class SliverShiftedGridDelegate
-    extends SliverPatternGridDelegate<ShiftedGridTile> {
-  /// Creates a [SliverShiftedGridDelegate].
-  const SliverShiftedGridDelegate({
-    required List<ShiftedGridTile> pattern,
+/// Controls the layout of tiles in a staired grid.
+class SliverStairedGridDelegate
+    extends SliverPatternGridDelegate<StairedGridTile> {
+  /// Creates a [SliverStairedGridDelegate].
+  const SliverStairedGridDelegate({
+    required List<StairedGridTile> pattern,
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
     this.tileBottomSpace = 0,
@@ -117,7 +122,7 @@ class SliverShiftedGridDelegate
   }
 
   @override
-  bool shouldRelayout(SliverShiftedGridDelegate oldDelegate) {
+  bool shouldRelayout(SliverStairedGridDelegate oldDelegate) {
     return super.shouldRelayout(oldDelegate) ||
         oldDelegate.tileBottomSpace != tileBottomSpace ||
         oldDelegate.startCrossAxisDirectionReversed !=
