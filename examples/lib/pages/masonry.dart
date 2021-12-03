@@ -8,10 +8,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 class MasonryPage extends StatefulWidget {
   const MasonryPage({
     Key? key,
-    this.title = 'Flutter Demo Home Page',
   }) : super(key: key);
-
-  final String title;
 
   @override
   State<MasonryPage> createState() => _MasonryPageState();
@@ -34,8 +31,8 @@ class _MasonryPageState extends State<MasonryPage> {
       title: 'Masonry',
       child: MasonryGridView.count(
         crossAxisCount: crossAxisCount,
-        crossAxisSpacing: 4,
         mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
         itemBuilder: (context, index) {
           final height = extents[index] * 100;
           return ImageTile(

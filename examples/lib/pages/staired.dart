@@ -22,10 +22,10 @@ class StairedPage extends StatelessWidget {
         child: GridView.custom(
           scrollDirection: Axis.vertical,
           gridDelegate: SliverStairedGridDelegate(
-            pattern: pattern,
-            crossAxisSpacing: 48,
             mainAxisSpacing: 24,
+            crossAxisSpacing: 48,
             startCrossAxisDirectionReversed: true,
+            pattern: pattern,
           ),
           childrenDelegate: SliverChildBuilderDelegate(
             (context, index) {

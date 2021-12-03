@@ -7,35 +7,27 @@ class WovenPage extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  static const pattern = const [
-    WovenGridTile(1),
-    WovenGridTile(
-      5 / 7,
-      crossAxisRatio: 0.9,
-      alignment: AlignmentDirectional.centerEnd,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Woven',
+      topPadding: 8,
       child: GridView.custom(
         gridDelegate: SliverWovenGridDelegate.count(
           crossAxisCount: 2,
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          pattern: pattern,
+          pattern: [
+            WovenGridTile(1),
+            WovenGridTile(
+              5 / 7,
+              crossAxisRatio: 0.9,
+              alignment: AlignmentDirectional.centerEnd,
+            ),
+          ],
         ),
         childrenDelegate: SliverChildBuilderDelegate(
-          (context, index) {
-            final tile = pattern[index % pattern.length];
-            return ImageTile(
-              index: index,
-              width: (200 * tile.aspectRatio).ceil(),
-              height: 200,
-            );
-          },
+          (context, index) => Tile(index: index),
         ),
       ),
     );

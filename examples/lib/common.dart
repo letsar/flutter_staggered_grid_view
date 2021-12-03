@@ -4,11 +4,13 @@ class AppScaffold extends StatelessWidget {
   const AppScaffold({
     Key? key,
     required this.title,
+    this.topPadding = 0,
     required this.child,
   }) : super(key: key);
 
   final String title;
   final Widget child;
+  final double topPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,10 @@ class AppScaffold extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: child,
+      body: Padding(
+        padding: EdgeInsets.only(top: topPadding),
+        child: child,
+      ),
     );
   }
 }
@@ -36,13 +41,7 @@ class Tile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final child = Container(
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: 1.0,
-        ),
-        color: Colors.red,
-      ),
+      color: const Color(0xFF34568B),
       height: extent,
       child: Center(
         child: CircleAvatar(

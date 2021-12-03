@@ -44,8 +44,9 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
   /// {@macro fsgv.global.crossAxisCount}
   final int crossAxisCount;
 
-  final _QuiltedTilePattern _pattern;
-
+  /// Describes how the pattern is repeating.
+  ///
+  /// The default value is [QuiltedGridRepeatPattern.same].
   final QuiltedGridRepeatPattern repeatPattern;
 
   /// {@macro fsgv.global.mainAxisSpacing}
@@ -53,6 +54,8 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
 
   /// {@macro fsgv.global.crossAxisSpacing}
   final double crossAxisSpacing;
+
+  final _QuiltedTilePattern _pattern;
 
   @override
   _SliverQuiltedGridLayout getLayout(SliverConstraints constraints) {
@@ -236,17 +239,47 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
   }
 }
 
+/// Defines how a pattern is repeating.
 abstract class QuiltedGridRepeatPattern {
+  /// Abstract const constructor. This constructor enables subclasses to provide
+  /// const constructors so that they can be used in const expressions.
   const QuiltedGridRepeatPattern();
 
+  /// The same pattern is repeating over and over.
   static const QuiltedGridRepeatPattern same = _QuiltedGridRepeatSamePattern();
+
+  /// Every two blocks, the pattern is inverted (by central inversion).
+  ///
+  /// For example, the following pattern:
+  ///
+  /// A A C D
+  /// A A E E
+  ///
+  /// Will be inverted to:
+  ///
+  /// E E A A
+  /// D C A A
   static const QuiltedGridRepeatPattern inverted =
       _QuiltedGridRepeatInvertedPattern();
+
+  /// Every two blocks, the pattern is mirrored (by axial symmetry).
+  ///
+  /// For example, the following pattern:
+  ///
+  /// A A C D
+  /// A A E E
+  ///
+  /// Will be mirrored to:
+  ///
+  /// A A E E
+  /// A A C D
   static const QuiltedGridRepeatPattern mirrored =
       _QuiltedGridRepeatMirroredPattern();
 
+  /// Returns the indexes in the repeating pattern order.
   List<int> repeatedIndexes(List<int> indexes, int crossAxisCount);
 
+  /// Returns the number of tiles in the repeating pattern.
   int repeatedTileCount(int tileCount);
 }
 
@@ -316,38 +349,6 @@ class _QuiltedGridRepeatMirroredPattern extends QuiltedGridRepeatPattern {
 }
 
 extension on List<QuiltedGridTile> {
-  List<QuiltedGridTile> mirrored(int crossAxisCount) {
-    final maxMainAxisCount = map((x) => x.mainAxisCount).reduce(math.max);
-    // The index of the tile occupied by each cell.
-    final indexes = List.filled(maxMainAxisCount * crossAxisCount, -1);
-    for (int i = 0; i < length; i++) {
-      final tile = this[i];
-      for (int x = 0; x < tile.crossAxisCount; x++) {
-        for (int y = 0; y < tile.mainAxisCount; y++) {
-          indexes[y * crossAxisCount + x] = i;
-        }
-      }
-    }
-
-    // We iterate through the indexes in reverse order to get the index of the
-    // tiles in mirror order.
-    final result = List.filled(length, const QuiltedGridTile(1, 1));
-    final added = <int>{};
-    int j = 0;
-    for (int i = indexes.length - 1; i >= 0; i--) {
-      final index = indexes[i];
-      if (index != -1 && !added.contains(index)) {
-        result[j++] = this[index];
-        added.add(index);
-      }
-    }
-
-    return [
-      ...this,
-      ...result,
-    ];
-  }
-
   _QuiltedTilePattern toPattern(
     int crossAxisCount,
     QuiltedGridRepeatPattern repeatPattern,

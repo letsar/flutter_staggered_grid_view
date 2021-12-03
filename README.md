@@ -44,7 +44,43 @@ This layout is intended for a small number of items.
 - Top-most and then left-most
 
 #### **Example**
+Below you'll find the code to create this grid layout:
+
+![Staggered example](/docs/images/staggered_example.png)
+
 ```dart
+StaggeredGrid.count(
+  crossAxisCount: 4,
+  mainAxisSpacing: 4,
+  crossAxisSpacing: 4,
+  children: const [
+    StaggeredGridTile.count(
+      crossAxisCellCount: 2,
+      mainAxisCellCount: 2,
+      child: Tile(index: 0),
+    ),
+    StaggeredGridTile.count(
+      crossAxisCellCount: 2,
+      mainAxisCellCount: 1,
+      child: Tile(index: 1),
+    ),
+    StaggeredGridTile.count(
+      crossAxisCellCount: 1,
+      mainAxisCellCount: 1,
+      child: Tile(index: 2),
+    ),
+    StaggeredGridTile.count(
+      crossAxisCellCount: 1,
+      mainAxisCellCount: 1,
+      child: Tile(index: 3),
+    ),
+    StaggeredGridTile.count(
+      crossAxisCellCount: 4,
+      mainAxisCellCount: 2,
+      child: Tile(index: 4),
+    ),
+  ],
+);
 ```
 
 ### **Masonry**
@@ -60,6 +96,25 @@ This layout facilitates the browsing of uncropped peer content. Container height
 
 #### **Placement algorithm**
 - Top-most and then left-most
+
+#### **Example**
+Below you'll find the code to create this grid layout:
+
+![Masonry example](/docs/images/masonry_example.png)
+
+```dart
+MasonryGridView.count(
+  crossAxisCount: 4,
+  mainAxisSpacing: 4,
+  crossAxisSpacing: 4,
+  itemBuilder: (context, index) {
+    return Tile(
+      index: index,
+      extent: (index % 5 + 1) * 100,
+    );
+  },
+);
+```
 
 ### **Quilted**
 ![Quilted Grid Layout](/docs/images/quilted.png)
@@ -77,6 +132,31 @@ This layout emphasizes certain items over others in a collection. It creates hie
 
 #### **Placement algorithm**
 - Top-most and then left-most
+
+#### **Example**
+Below you'll find the code to create this grid layout:
+
+![Quilted example](/docs/images/quilted_example.png)
+
+```dart
+GridView.custom(
+  gridDelegate: SliverQuiltedGridDelegate(
+    crossAxisCount: 4,
+    mainAxisSpacing: 4,
+    crossAxisSpacing: 4,
+    repeatPattern: QuiltedGridRepeatPattern.inverted,
+    pattern: [
+      QuiltedGridTile(2, 2),
+      QuiltedGridTile(1, 1),
+      QuiltedGridTile(1, 1),
+      QuiltedGridTile(1, 2),
+    ],
+  ),
+  childrenDelegate: SliverChildBuilderDelegate(
+    (context, index) => Tile(index: index),
+  ),
+);
+```
 
 ### **Woven**
 ![Woven Grid Layout](/docs/images/woven.png)
@@ -97,6 +177,32 @@ This layout facilitates the browsing of peer content. The items are displayed in
 #### **Placement algorithm**
 - Top-most and then left-most
 
+#### **Example**
+Below you'll find the code to create this grid layout:
+
+![Woven example](/docs/images/woven_example.png)
+
+```dart
+GridView.custom(
+  gridDelegate: SliverWovenGridDelegate.count(
+    crossAxisCount: 2,
+    mainAxisSpacing: 8,
+    crossAxisSpacing: 8,
+    pattern: [
+      WovenGridTile(1),
+      WovenGridTile(
+        5 / 7,
+        crossAxisRatio: 0.9,
+        alignment: AlignmentDirectional.centerEnd,
+      ),
+    ],
+  ),
+  childrenDelegate: SliverChildBuilderDelegate(
+    (context, index) => Tile(index: index),
+  ),
+);
+```
+
 
 ### **Staired**
 ![Staired Grid Layout](/docs/images/staired.png)
@@ -115,9 +221,42 @@ This layout uses alternating container sizes and ratios to create a rhythmic eff
 #### **Placement algorithm**
 - In a 'z' sequence
 
+#### **Example**
+Below you'll find the code to create this grid layout:
+
+![Staired example](/docs/images/staired_example.png)
+
+```dart
+GridView.custom(
+  gridDelegate: SliverStairedGridDelegate(
+    crossAxisSpacing: 48,
+    mainAxisSpacing: 24,
+    startCrossAxisDirectionReversed: true,
+    pattern: [
+      StairedGridTile(0.5, 1),
+      StairedGridTile(0.5, 3 / 4),
+      StairedGridTile(1.0, 10 / 4),
+    ],
+  ),
+  childrenDelegate: SliverChildBuilderDelegate(
+    (context, index) => Tile(index: index),
+  ),
+);
+```
+
 ## Sponsoring
 
 I'm working on my packages on my free-time, but I don't have as much time as I would. If this package or any other package I created is helping you, please consider to sponsor me so that I can take time to read the issues, fix bugs, merge pull requests and add features to these packages.
+
+## Sponsors
+
+I want to thank [Tommy][first_sponsor] for sponsoring this package. Thanks to him, I took the time to investigate in the previous performance issues and refactor this library to make it how is it today.
+
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/Tom3652"><img src="https://avatars.githubusercontent.com/u/32631467?v=4" width="100px;" alt=""/><br /><sub><b>Tom3652</b></sub></a><br /></td>
+  </tr>
+</table>
 
 ## Contributions
 
@@ -138,3 +277,4 @@ If you fixed a bug or implemented a feature, please send a [pull request][pr].
 [issue]: https://github.com/letsar/flutter_staggered_grid_view/issues
 [pr]: https://github.com/letsar/flutter_staggered_grid_view/pulls
 [flutter_documentation]: https://docs.flutter.dev/
+[first_sponsor]: https://github.com/Tom3652

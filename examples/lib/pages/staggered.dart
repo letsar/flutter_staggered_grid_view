@@ -26,27 +26,23 @@ class StaggeredPage extends StatelessWidget {
     return AppScaffold(
       title: 'Staggered',
       child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: StaggeredGrid.count(
-            crossAxisCount: 4,
-            mainAxisSpacing: 4,
-            crossAxisSpacing: 4,
-            children: [
-              ...tiles.mapIndexed((index, tile) {
-                return StaggeredGridTile.count(
-                  crossAxisCellCount: tile.crossAxisCount,
-                  mainAxisCellCount: tile.mainAxisCount,
-                  child: ImageTile(
-                    index: index,
-                    width: tile.crossAxisCount * 100,
-                    height: tile.mainAxisCount * 100,
-                  ),
-                );
-              }),
-            ],
-          ),
+        child: StaggeredGrid.count(
+          crossAxisCount: 4,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+          children: [
+            ...tiles.mapIndexed((index, tile) {
+              return StaggeredGridTile.count(
+                crossAxisCellCount: tile.crossAxisCount,
+                mainAxisCellCount: tile.mainAxisCount,
+                child: ImageTile(
+                  index: index,
+                  width: tile.crossAxisCount * 100,
+                  height: tile.mainAxisCount * 100,
+                ),
+              );
+            }),
+          ],
         ),
       ),
     );
