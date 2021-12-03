@@ -45,7 +45,7 @@ class SliverStairedGridDelegate
   })  : assert(tileBottomSpace >= 0),
         super.count(
           pattern: pattern,
-          crossAxisCount: 0,
+          crossAxisCount: 1,
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
         );

@@ -30,7 +30,7 @@ The explanation of the layout will always considered a top-to-bottom and left-to
 ### **Staggered**
 ![Staggered Grid Layout](/docs/images/staggered.png)
 
-This layout is intended for a small number of items where their sizes is known in advance.
+This layout is intended for a small number of items.
 
 #### **Grid properties**
 - Evenly divided in *n* columns
@@ -44,6 +44,8 @@ This layout is intended for a small number of items where their sizes is known i
 - Top-most and then left-most
 
 #### **Example**
+```dart
+```
 
 ### **Masonry**
 ![Masonry Grid Layout](/docs/images/masonry.png)

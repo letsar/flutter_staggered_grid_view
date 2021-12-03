@@ -390,6 +390,8 @@ class MasonryGridView extends BoxScrollView {
     return SliverMasonryGrid(
       delegate: childrenDelegate,
       gridDelegate: gridDelegate,
+      mainAxisSpacing: mainAxisSpacing,
+      crossAxisSpacing: crossAxisSpacing,
     );
   }
 }
