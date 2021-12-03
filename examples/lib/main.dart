@@ -1,9 +1,9 @@
-import 'package:example/common.dart';
-import 'package:example/pages/masonry.dart';
-import 'package:example/pages/quilted.dart';
-import 'package:example/pages/staggered.dart';
-import 'package:example/pages/staired.dart';
-import 'package:example/pages/woven.dart';
+import 'package:examples/common.dart';
+import 'package:examples/pages/masonry.dart';
+import 'package:examples/pages/quilted.dart';
+import 'package:examples/pages/staggered.dart';
+import 'package:examples/pages/staired.dart';
+import 'package:examples/pages/woven.dart';
 import 'package:flutter/material.dart';
 
 void main() {

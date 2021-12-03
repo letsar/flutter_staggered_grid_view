@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:example/common.dart';
+import 'package:examples/common.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
