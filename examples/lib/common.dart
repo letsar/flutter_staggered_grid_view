@@ -84,14 +84,11 @@ class ImageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 8,
-      child: Image.network(
-        'https://picsum.photos/$width/$height?random=$index',
-        width: width.toDouble(),
-        height: height.toDouble(),
-        fit: BoxFit.cover,
-      ),
+    return Image.network(
+      'https://picsum.photos/$width/$height?random=$index',
+      width: width.toDouble(),
+      height: height.toDouble(),
+      fit: BoxFit.cover,
     );
   }
 }

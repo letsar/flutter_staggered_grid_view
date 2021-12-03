@@ -101,7 +101,7 @@ class MenuEntry extends StatelessWidget {
           children: [
             Image.asset(
               'assets/$imageName.png',
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
             ),
             Positioned.fill(
               child: FractionallySizedBox(
