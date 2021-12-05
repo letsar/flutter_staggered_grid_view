@@ -14,6 +14,8 @@ class StaggeredGridParentData extends ContainerBoxParentData<RenderBox> {
   /// The extent in the main axis of the child.
   double? mainAxisExtent;
 
+  double? _realMainAxisExtent;
+
   @override
   String toString() =>
       'crossAxisCellCount=$crossAxisCellCount; mainAxisCellCount=$mainAxisCellCount; mainAxisExtent=$mainAxisExtent';
@@ -266,27 +268,33 @@ class RenderStaggeredGrid extends RenderBox
         delegate.getCrossAxisCount(crossAxisExtent, crossAxisSpacing);
     final stride = (crossAxisExtent + crossAxisSpacing) / crossAxisCount;
 
+    int computeCrossAxisCellCount(
+      StaggeredGridParentData childParentData,
+      int crossAxisCount,
+    ) {
+      return math.min(
+        childParentData.crossAxisCellCount ?? 1,
+        crossAxisCount,
+      );
+    }
+
     final offsets = List.filled(crossAxisCount, 0.0);
     RenderBox? child = firstChild;
     while (child != null) {
       final childParentData = _getParentData(child);
-      final crossAxisCellCount = childParentData.crossAxisCellCount ?? 1;
+      final crossAxisCellCount = computeCrossAxisCellCount(
+        childParentData,
+        crossAxisCount,
+      );
       final mainAxisCellCount = childParentData.mainAxisCellCount ?? 1;
       final mainAxisFixedExtent = childParentData.mainAxisExtent;
-
-      assert(
-        crossAxisCellCount <= crossAxisCount,
-        'The `crossAxisCellCount` of a StaggeredGridTile is cannot be greater '
-        'than the `crossAxisCount` of the StaggeredGrid.'
-        '$crossAxisCellCount > $crossAxisCount',
-      );
       final crossAxisExtent = stride * crossAxisCellCount - crossAxisSpacing;
       final mainAxisExtent =
           mainAxisFixedExtent ?? stride * mainAxisCellCount - mainAxisSpacing;
 
       // We set the real mainAxisExtent in case we need it if the axis direction
       // is reversed.
-      childParentData.mainAxisExtent = mainAxisExtent;
+      childParentData._realMainAxisExtent = mainAxisExtent;
 
       final childSize = mainAxis == Axis.vertical
           ? Size(crossAxisExtent, mainAxisExtent)
@@ -323,7 +331,7 @@ class RenderStaggeredGrid extends RenderBox
         final crossAxisOffset = offset.getCrossAxisOffset(mainAxis);
         final mainAxisOffset = mainAxisExtent -
             offset.getMainAxisOffset(mainAxis) -
-            childParentData.mainAxisExtent!;
+            childParentData._realMainAxisExtent!;
         final newOffset = mainAxis == Axis.vertical
             ? Offset(crossAxisOffset, mainAxisOffset)
             : Offset(mainAxisOffset, crossAxisOffset);
@@ -338,7 +346,10 @@ class RenderStaggeredGrid extends RenderBox
       child = firstChild;
       while (child != null) {
         final childParentData = _getParentData(child);
-        final crossAxisCellCount = childParentData.crossAxisCellCount ?? 1;
+        final crossAxisCellCount = computeCrossAxisCellCount(
+          childParentData,
+          crossAxisCount,
+        );
         final crossAxisCellExtent =
             stride * crossAxisCellCount - crossAxisSpacing;
         final offset = childParentData.offset;
