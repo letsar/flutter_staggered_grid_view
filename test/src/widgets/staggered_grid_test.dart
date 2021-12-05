@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/staggered_grid.dart';
+import 'package:flutter_staggered_grid_view/src/widgets/staggered_grid_tile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../common.dart';
