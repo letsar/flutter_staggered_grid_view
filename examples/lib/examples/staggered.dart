@@ -11,7 +11,6 @@ class StaggeredPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Staggered',
-      topPadding: 8,
       child: SingleChildScrollView(
         child: StaggeredGrid.count(
           crossAxisCount: 4,

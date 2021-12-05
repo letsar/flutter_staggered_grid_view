@@ -12,7 +12,6 @@ class MasonryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Masonry',
-      topPadding: 8,
       child: MasonryGridView.count(
         crossAxisCount: 4,
         mainAxisSpacing: 4,

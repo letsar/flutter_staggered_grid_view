@@ -11,7 +11,6 @@ class WovenPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Woven',
-      topPadding: 8,
       child: GridView.custom(
         gridDelegate: SliverWovenGridDelegate.count(
           crossAxisCount: 2,

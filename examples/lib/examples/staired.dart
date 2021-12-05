@@ -11,7 +11,6 @@ class StairedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Staired',
-      topPadding: 8,
       child: GridView.custom(
         gridDelegate: SliverStairedGridDelegate(
           crossAxisSpacing: 48,

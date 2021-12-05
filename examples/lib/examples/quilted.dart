@@ -11,7 +11,6 @@ class QuiltedPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Quilted',
-      topPadding: 8,
       child: GridView.custom(
         gridDelegate: SliverQuiltedGridDelegate(
           crossAxisCount: 4,

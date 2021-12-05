@@ -71,6 +71,7 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
   /// {@macro fsgv.global.tileBottomSpace}
   final double tileBottomSpace;
 
+  /// The direction in which the columns are ordered if the scroll is vertical.
   final TextDirection textDirection;
 
   @override
@@ -88,9 +89,10 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
     final crossAxisStride = crossAxisExtent + crossAxisSpacing;
     final patternCount = pattern.length;
     // The minimum aspect ratio give us the main axis extent of a run.
-    final minAspectRatio = pattern.map((t) => t.aspectRatio).reduce(math.min);
-    final mainAxisExtent =
-        crossAxisExtent / minAspectRatio + (isHorizontal ? 0 : tileBottomSpace);
+    final maxMainAxisExtentRatio =
+        pattern.map((t) => t.crossAxisRatio / t.aspectRatio).reduce(math.max);
+    final mainAxisExtent = crossAxisExtent * maxMainAxisExtentRatio +
+        (isHorizontal ? 0 : tileBottomSpace);
 
     // We always provide 2 runs where the layout follow this pattern:
     // A B A || A B A B || A B C
@@ -108,7 +110,7 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
       final tilePattern = pattern[tilePatternIndex];
       final tileCrossAxisExtent = crossAxisExtent * tilePattern.crossAxisRatio +
           (isHorizontal ? tileBottomSpace : 0);
-      final tileMainAxisExtent = crossAxisExtent / tilePattern.aspectRatio +
+      final tileMainAxisExtent = tileCrossAxisExtent / tilePattern.aspectRatio +
           (isHorizontal ? 0 : tileBottomSpace);
       final effectiveTextDirection = i < crossAxisCount
           ? textDirection
