@@ -1,2 +1,4 @@
 docs/
 examples/
+build/
+*.iml
