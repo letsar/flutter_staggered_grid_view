@@ -1,3 +1,8 @@
+## 0.5.0-dev.1
+### Changed
+* Complete rewriting of the package.
+It comes now with 5 differents grid layouts (Staggered, Masonry, Quilted, Woven, Staired).
+
 ## 0.4.1
 ### Changed
 * Add option to disable keepAlives
