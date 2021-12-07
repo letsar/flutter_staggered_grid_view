@@ -28,7 +28,7 @@ This package contains various grid layouts. In the following section, you'll dis
 The explanation of the layout will always considered a top-to-bottom and left-to-right directions to simplify the description. However it is possible to change these directions in the code.
 
 ### **Staggered**
-![Staggered Grid Layout](/docs/images/staggered.png)
+![Staggered Grid Layout][staggered_preview]
 
 This layout is intended for a small number of items.
 
@@ -46,7 +46,7 @@ This layout is intended for a small number of items.
 #### **Example**
 Below you'll find the code to create this grid layout:
 
-![Staggered example](/docs/images/staggered_example.png)
+![Staggered example][staggered_example]
 
 ```dart
 StaggeredGrid.count(
@@ -84,7 +84,7 @@ StaggeredGrid.count(
 ```
 
 ### **Masonry**
-![Masonry Grid Layout](/docs/images/masonry.png)
+![Masonry Grid Layout][masonry_preview]
 
 This layout facilitates the browsing of uncropped peer content. Container heights are sized based on the widget size.
 
@@ -100,7 +100,7 @@ This layout facilitates the browsing of uncropped peer content. Container height
 #### **Example**
 Below you'll find the code to create this grid layout:
 
-![Masonry example](/docs/images/masonry_example.png)
+![Masonry example][masonry_example]
 
 ```dart
 MasonryGridView.count(
@@ -117,7 +117,7 @@ MasonryGridView.count(
 ```
 
 ### **Quilted**
-![Quilted Grid Layout](/docs/images/quilted.png)
+![Quilted Grid Layout][quilted_preview]
 
 This layout emphasizes certain items over others in a collection. It creates hierarchy using varied container sizes and ratios.
 
@@ -136,7 +136,7 @@ This layout emphasizes certain items over others in a collection. It creates hie
 #### **Example**
 Below you'll find the code to create this grid layout:
 
-![Quilted example](/docs/images/quilted_example.png)
+![Quilted example][quilted_example]
 
 ```dart
 GridView.custom(
@@ -159,7 +159,7 @@ GridView.custom(
 ```
 
 ### **Woven**
-![Woven Grid Layout](/docs/images/woven.png)
+![Woven Grid Layout][woven_preview]
 
 This layout facilitates the browsing of peer content. The items are displayed in containers of varying ratios to create a rhythmic layout.
 
@@ -180,7 +180,7 @@ This layout facilitates the browsing of peer content. The items are displayed in
 #### **Example**
 Below you'll find the code to create this grid layout:
 
-![Woven example](/docs/images/woven_example.png)
+![Woven example][woven_example]
 
 ```dart
 GridView.custom(
@@ -205,7 +205,7 @@ GridView.custom(
 
 
 ### **Staired**
-![Staired Grid Layout](/docs/images/staired.png)
+![Staired Grid Layout][staired_preview]
 
 This layout uses alternating container sizes and ratios to create a rhythmic effect. It's another kind of woven grid layout.
 
@@ -224,7 +224,7 @@ This layout uses alternating container sizes and ratios to create a rhythmic eff
 #### **Example**
 Below you'll find the code to create this grid layout:
 
-![Staired example](/docs/images/staired_example.png)
+![Staired example][staired_example]
 
 ```dart
 GridView.custom(
@@ -278,3 +278,13 @@ If you fixed a bug or implemented a feature, please send a [pull request][pr].
 [pr]: https://github.com/letsar/flutter_staggered_grid_view/pulls
 [flutter_documentation]: https://docs.flutter.dev/
 [first_sponsor]: https://github.com/Tom3652
+[staggered_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/staggered.png
+[masonry_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/masonry.png
+[quilted_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/quilted.png
+[woven_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/woven.png
+[staired_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/staired.png
+[staggered_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/staggered_example.png
+[masonry_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/masonry_example.png
+[quilted_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/quilted_example.png
+[woven_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/woven_example.png
+[staired_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/staired_example.png
