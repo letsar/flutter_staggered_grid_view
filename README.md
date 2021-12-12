@@ -25,12 +25,13 @@ For help getting started with Flutter, view the online [documentation][flutter_d
 ## Layouts
 
 This package contains various grid layouts. In the following section, you'll discover each one of them.
-The explanation of the layout will always considered a top-to-bottom and left-to-right directions to simplify the description. However it is possible to change these directions in the code.
+The explanation of the layout will always considered a top-to-bottom and left-to-right directions to simplify the description. However it is possible to change these directions in the code. 
 
 ### **Staggered**
 ![Staggered Grid Layout][staggered_preview]
 
-This layout is intended for a small number of items.
+This layout is intended for a small number of items. 
+I didn't find, for the moment, a performant algorithm which would work in a `Sliver` context, that's why this is not a GridView and therefore there are no `SliverStaggeredGrid`.
 
 #### **Grid properties**
 - Evenly divided in *n* columns
@@ -88,6 +89,8 @@ StaggeredGrid.count(
 
 This layout facilitates the browsing of uncropped peer content. Container heights are sized based on the widget size.
 
+This is a complete separate grid and not a `SliverGridDelegate` for performance reasons. The `SliverGrid` is great but it needs to have a layout which does not depends on the size of its children. Otherwise we have to compute the size to all children before the end of the cache, which is really not performant for a masonry layout.
+
 #### **Grid properties**
 - Evenly divided in *n* columns
 
@@ -120,6 +123,8 @@ MasonryGridView.count(
 ![Quilted Grid Layout][quilted_preview]
 
 This layout emphasizes certain items over others in a collection. It creates hierarchy using varied container sizes and ratios.
+
+**This is a specific delegate for the built-in `GridView` (or `SliverGrid`) widget. That's why the example below will create such a layout with a `GridView`.**
 
 #### **Grid properties**
 - Evenly divided in *n* columns
@@ -162,6 +167,8 @@ GridView.custom(
 ![Woven Grid Layout][woven_preview]
 
 This layout facilitates the browsing of peer content. The items are displayed in containers of varying ratios to create a rhythmic layout.
+
+**This is a specific delegate for the built-in `GridView` (or `SliverGrid`) widget. That's why the example below will create such a layout with a `GridView`.**
 
 #### **Grid properties**
 - Evenly divided in *n* columns
@@ -208,6 +215,8 @@ GridView.custom(
 ![Staired Grid Layout][staired_preview]
 
 This layout uses alternating container sizes and ratios to create a rhythmic effect. It's another kind of woven grid layout.
+
+**This is a specific delegate for the built-in `GridView` (or `SliverGrid`) widget. That's why the example below will create such a layout with a `GridView`.**
 
 #### **Grid properties**
 - A pattern defines the size of the tiles
