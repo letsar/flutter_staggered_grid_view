@@ -359,12 +359,12 @@ extension on List<QuiltedGridTile> {
     final maxMainAxisCellCounts = List<int>.filled(tileCount, 0);
     final mainAxisIndexes = List<int>.filled(tileCount, 0);
     final crossAxisIndexes = List<int>.filled(tileCount, 0);
-    final maxMainAxisCount = map((x) => x.mainAxisCount).reduce(math.max);
     // The index of the tile occupied by each cell.
-    final indexes = List.filled(maxMainAxisCount * crossAxisCount, -1);
+    final indexes = <int, int>{};
 
     final offsets = List<int>.generate(crossAxisCount, (index) => 0);
-    void position(List<QuiltedGridTile> tiles, List<int>? indexes, int start) {
+    void position(
+        List<QuiltedGridTile> tiles, Map<int, int>? indexes, int start) {
       for (int i = 0; i < tiles.length; i++) {
         final tile = tiles[i];
         final fullIndex = start + i;
@@ -408,8 +408,12 @@ extension on List<QuiltedGridTile> {
     }
 
     position(this, indexes, 0);
+    final indexList = List<int>.filled(indexes.length, -1);
+    for (final index in indexes.keys) {
+      indexList[index] = indexes[index]!;
+    }
     final repeatedIndexes = repeatPattern.repeatedIndexes(
-      indexes,
+      indexList,
       crossAxisCount,
     );
     final tiles = toList();

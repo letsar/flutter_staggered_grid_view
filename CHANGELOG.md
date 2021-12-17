@@ -1,3 +1,7 @@
+## 0.5.0-dev.2
+### Fixed
+* Issue with Quilted pattern.
+
 ## 0.5.0-dev.1
 ### Changed
 * Complete rewriting of the package.
