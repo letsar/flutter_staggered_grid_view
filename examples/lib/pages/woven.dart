@@ -7,7 +7,7 @@ class WovenPage extends StatelessWidget {
     Key? key,
   }) : super(key: key);
 
-  static const pattern = const [
+  static const pattern = [
     WovenGridTile(1),
     WovenGridTile(
       5 / 7,

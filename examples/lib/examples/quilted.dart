@@ -17,7 +17,7 @@ class QuiltedPage extends StatelessWidget {
           mainAxisSpacing: 4,
           crossAxisSpacing: 4,
           repeatPattern: QuiltedGridRepeatPattern.inverted,
-          pattern: [
+          pattern: const [
             QuiltedGridTile(2, 2),
             QuiltedGridTile(1, 1),
             QuiltedGridTile(1, 1),

@@ -16,7 +16,7 @@ class WovenPage extends StatelessWidget {
           crossAxisCount: 2,
           mainAxisSpacing: 8,
           crossAxisSpacing: 8,
-          pattern: [
+          pattern: const [
             WovenGridTile(1),
             WovenGridTile(
               5 / 7,

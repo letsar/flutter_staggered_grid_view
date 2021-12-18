@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
+  flutter_lints: any
   flutter_staggered_grid_view:
     path: ../
 

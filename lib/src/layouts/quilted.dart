@@ -364,7 +364,10 @@ extension on List<QuiltedGridTile> {
 
     final offsets = List<int>.generate(crossAxisCount, (index) => 0);
     void position(
-        List<QuiltedGridTile> tiles, Map<int, int>? indexes, int start) {
+      List<QuiltedGridTile> tiles,
+      Map<int, int>? indexes,
+      int start,
+    ) {
       for (int i = 0; i < tiles.length; i++) {
         final tile = tiles[i];
         final fullIndex = start + i;

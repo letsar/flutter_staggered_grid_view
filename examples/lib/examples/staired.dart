@@ -16,7 +16,7 @@ class StairedPage extends StatelessWidget {
           crossAxisSpacing: 48,
           mainAxisSpacing: 24,
           startCrossAxisDirectionReversed: true,
-          pattern: [
+          pattern: const [
             StairedGridTile(0.5, 1),
             StairedGridTile(0.5, 3 / 4),
             StairedGridTile(1.0, 10 / 4),
