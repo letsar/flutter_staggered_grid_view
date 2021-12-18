@@ -44,7 +44,6 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
     this.tileBottomSpace = 0,
-    this.textDirection = TextDirection.ltr,
   })  : assert(pattern.length <= crossAxisCount),
         super.count(
           pattern: pattern,
@@ -60,7 +59,6 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
     this.tileBottomSpace = 0,
-    this.textDirection = TextDirection.ltr,
   }) : super.extent(
           pattern: pattern,
           maxCrossAxisExtent: maxCrossAxisExtent,
@@ -70,9 +68,6 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
 
   /// {@macro fsgv.global.tileBottomSpace}
   final double tileBottomSpace;
-
-  /// The direction in which the columns are ordered if the scroll is vertical.
-  final TextDirection textDirection;
 
   @override
   SliverPatternGridGeometries getGeometries(
@@ -112,11 +107,8 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
           (isHorizontal ? tileBottomSpace : 0);
       final tileMainAxisExtent = tileCrossAxisExtent / tilePattern.aspectRatio +
           (isHorizontal ? 0 : tileBottomSpace);
-      final effectiveTextDirection = i < crossAxisCount
-          ? textDirection
-          : textDirection == TextDirection.ltr
-              ? TextDirection.rtl
-              : TextDirection.ltr;
+      final effectiveTextDirection =
+          i < crossAxisCount ? TextDirection.ltr : TextDirection.rtl;
       final effectiveAlignment =
           tilePattern.alignment.resolve(effectiveTextDirection);
       final rect = effectiveAlignment.inscribe(
@@ -145,7 +137,6 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
   bool shouldRelayout(SliverWovenGridDelegate oldDelegate) {
     return super.shouldRelayout(oldDelegate) ||
         oldDelegate.tileBottomSpace != tileBottomSpace ||
-        oldDelegate.crossAxisCount != crossAxisCount ||
-        oldDelegate.textDirection != textDirection;
+        oldDelegate.crossAxisCount != crossAxisCount;
   }
 }

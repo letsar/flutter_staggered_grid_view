@@ -1,3 +1,7 @@
+## 0.5.0-dev.3
+### Fixed
+* Issue with Woven pattern and text direction.
+
 ## 0.5.0-dev.2
 ### Fixed
 * Issue with Quilted pattern.

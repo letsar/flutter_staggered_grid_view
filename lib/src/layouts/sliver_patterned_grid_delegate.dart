@@ -2,13 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 @immutable
+
+/// Represents the geometries of each tile of a pattern.
 class SliverPatternGridGeometries {
+  /// Creates a [SliverPatternGridGeometries].
   const SliverPatternGridGeometries({
     required this.tiles,
     required this.bounds,
   }) : assert(tiles.length == bounds.length);
 
+  /// The visible geometries of each tile.
   final List<SliverGridGeometry> tiles;
+
+  /// The available space of each tile.
   final List<SliverGridGeometry> bounds;
 }
 
@@ -86,6 +92,7 @@ abstract class SliverPatternGridDelegate<T> extends SliverGridDelegate {
     final geometries = getGeometries(constraints, crossAxisCount);
     return _SliverPatternGridLayout(
       mainAxisSpacing: mainAxisSpacing,
+      crossAxisExtent: constraints.crossAxisExtent,
       reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
       tiles: geometries.tiles,
       bounds: geometries.bounds,
@@ -105,22 +112,15 @@ class _SliverPatternGridLayout extends SliverGridLayout {
     required this.mainAxisSpacing,
     required this.tiles,
     required this.bounds,
+    required this.crossAxisExtent,
     this.reverseCrossAxis = false,
   })  : tileCount = tiles.length,
         patternMainAxisExtent =
             bounds.last.trailingScrollOffset + mainAxisSpacing;
 
-  /// Whether the children should be placed in the opposite order of increasing
-  /// coordinates in the cross axis.
-  ///
-  /// For example, if the cross axis is horizontal, the children are placed from
-  /// left to right when [reverseCrossAxis] is false and from right to left when
-  /// [reverseCrossAxis] is true.
-  ///
-  /// Typically set to the return value of [axisDirectionIsReversed] applied to
-  /// the [SliverConstraints.crossAxisDirection].
-  final bool reverseCrossAxis;
   final double mainAxisSpacing;
+  final double crossAxisExtent;
+  final bool reverseCrossAxis;
   final List<SliverGridGeometry> tiles;
   final List<SliverGridGeometry> bounds;
   final int tileCount;
@@ -138,6 +138,17 @@ class _SliverPatternGridLayout extends SliverGridLayout {
     final startMainAxisOffset = (index ~/ tileCount) * patternMainAxisExtent;
     final rect = tileRectAt(index);
     final realRect = rect.translate(startMainAxisOffset);
+
+    if (reverseCrossAxis) {
+      return SliverGridGeometry(
+        scrollOffset: realRect.scrollOffset,
+        crossAxisOffset: crossAxisExtent -
+            realRect.crossAxisOffset -
+            realRect.crossAxisExtent,
+        mainAxisExtent: realRect.mainAxisExtent,
+        crossAxisExtent: realRect.crossAxisExtent,
+      );
+    }
 
     return realRect;
   }
@@ -168,11 +179,6 @@ class _SliverPatternGridLayout extends SliverGridLayout {
 
     return 0;
   }
-
-  // /// Gets the main axis offset of the tile at the given global [index].
-  // double mainAxisOffset(int index) {
-  //   return tileRects[index % tileCount].scrollOffset;
-  // }
 
   bool _isRectVisibleAtMainAxisOffset(
     SliverGridGeometry rect,
