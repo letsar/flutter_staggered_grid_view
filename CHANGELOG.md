@@ -1,3 +1,7 @@
+## 0.5.0-dev.4
+### Fixed
+* Issue with Woven pattern layout flow in second run.
+
 ## 0.5.0-dev.3
 ### Fixed
 * Issue with Woven pattern and text direction.

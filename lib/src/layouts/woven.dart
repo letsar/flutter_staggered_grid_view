@@ -90,8 +90,8 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
         (isHorizontal ? 0 : tileBottomSpace);
 
     // We always provide 2 runs where the layout follow this pattern:
-    // A B A || A B A B || A B C
-    // B A B || B A B A || C B A
+    // A B A || A B A B || A B C || A B C A
+    // B A B || B A B A || C B A || B A C B
 
     final count = crossAxisCount * 2;
     final tiles = List.filled(count, kZeroGeometry);
@@ -101,7 +101,7 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
           i < crossAxisCount ? 0.0 : mainAxisExtent + mainAxisSpacing;
       final tilePatternIndex = i < crossAxisCount
           ? i % patternCount
-          : (crossAxisCount - 1 - i) % patternCount;
+          : (count - 1 - (i % crossAxisCount)) % patternCount;
       final tilePattern = pattern[tilePatternIndex];
       final tileCrossAxisExtent = crossAxisExtent * tilePattern.crossAxisRatio +
           (isHorizontal ? tileBottomSpace : 0);
