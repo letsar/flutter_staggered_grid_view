@@ -1,3 +1,7 @@
+## 0.5.0-dev.6
+### Fixed
+* Remove extra space on fixed woven grid
+
 ## 0.5.0-dev.5
 ### Fixed
 * Remove extra space on fixed quilted grid (#216)
