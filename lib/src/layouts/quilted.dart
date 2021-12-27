@@ -35,6 +35,7 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
     this.repeatPattern = QuiltedGridRepeatPattern.same,
     this.mainAxisSpacing = 0,
     this.crossAxisSpacing = 0,
+    this.removeLastTileExtraSpace = false,
   })  : assert(crossAxisCount > 0),
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
@@ -57,6 +58,13 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
 
   final _QuiltedTilePattern _pattern;
 
+  /// remove extra space at the end of the last tile
+  ///
+  /// it can be useful when you have a fixed number of items
+  ///
+  /// The default value is `false`.
+  final bool removeLastTileExtraSpace;
+
   @override
   _SliverQuiltedGridLayout getLayout(SliverConstraints constraints) {
     final crossAxisExtent = constraints.crossAxisExtent;
@@ -69,6 +77,7 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
       mainAxisSpacing: mainAxisSpacing,
       pattern: _pattern,
       reverseCrossAxis: axisDirectionIsReversed(constraints.crossAxisDirection),
+      removeLastTileExtraSpace: removeLastTileExtraSpace,
     );
   }
 
@@ -139,6 +148,7 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
     required this.crossAxisSpacing,
     required this.pattern,
     required this.reverseCrossAxis,
+    required this.removeLastTileExtraSpace,
   })  : assert(cellExtent > 0),
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
@@ -158,6 +168,8 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
   final double crossAxisStride;
 
   final _QuiltedTilePattern pattern;
+
+  final bool removeLastTileExtraSpace;
 
   /// Whether the children should be placed in the opposite order of increasing
   /// coordinates in the cross axis.
@@ -185,7 +197,11 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
     final nbCellsInMainAxis =
         mainAxisCellCountBeforeLastPattern + remainingMainAxisCellCount;
 
-    return nbCellsInMainAxis * mainAxisStride - mainAxisSpacing;
+    // We remove one cells if we want to remove the last tile extra space.
+    final finalNbCellsInMainAxis =
+        removeLastTileExtraSpace ? nbCellsInMainAxis - 1 : nbCellsInMainAxis;
+
+    return finalNbCellsInMainAxis * mainAxisStride;
   }
 
   @override
