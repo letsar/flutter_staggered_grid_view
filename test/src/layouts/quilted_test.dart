@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -235,5 +236,40 @@ void main() {
     _expectTopLeft(6, const Offset(0, s3 + 4));
     _expectTopLeft(7, const Offset(s1 + 4, s3 + 4));
     _expectTopLeft(8, const Offset(s2 + 4, s3 + 4));
+  });
+
+  test('computeMaxScrollOffset should be right', () {
+    final delegate = SliverQuiltedGridDelegate(
+      crossAxisCount: 4,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      repeatPattern: QuiltedGridRepeatPattern.same,
+      pattern: const [
+        QuiltedGridTile(2, 2),
+        QuiltedGridTile(1, 1),
+        QuiltedGridTile(1, 1),
+        QuiltedGridTile(1, 2),
+      ],
+    );
+
+    final layout = delegate.getLayout(
+      const SliverConstraints(
+        axisDirection: AxisDirection.down,
+        cacheOrigin: 0,
+        crossAxisDirection: AxisDirection.right,
+        crossAxisExtent: 412,
+        growthDirection: GrowthDirection.forward,
+        scrollOffset: 0,
+        overlap: 0,
+        viewportMainAxisExtent: 400,
+        precedingScrollExtent: 0,
+        remainingCacheExtent: 400,
+        remainingPaintExtent: 400,
+        userScrollDirection: ScrollDirection.idle,
+      ),
+    );
+
+    expect(layout.computeMaxScrollOffset(12), 620);
+    expect(layout.computeMaxScrollOffset(16), 828);
   });
 }

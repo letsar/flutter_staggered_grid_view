@@ -174,12 +174,16 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
   double computeMaxScrollOffset(int childCount) {
     // First we compute the number cells occupied in the main axis by the filled
     // patterns.
+
     final mainAxisCellCountBeforeLastPattern =
         (childCount ~/ pattern.tileCount) * pattern.mainAxisCellCount;
 
+    final remainingChildCount = childCount % pattern.tileCount;
+
     // Then we get the number of main axis cells in the last pattern.
-    final remainingMainAxisCellCount =
-        pattern.maxMainAxisCellCountOf(childCount);
+    final remainingMainAxisCellCount = remainingChildCount == 0
+        ? 0
+        : pattern.maxMainAxisCellCountOf(remainingChildCount - 1);
 
     // We compute the total number of cells in the main axis.
     final nbCellsInMainAxis =
