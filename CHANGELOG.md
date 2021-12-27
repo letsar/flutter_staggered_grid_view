@@ -1,3 +1,7 @@
+## 0.5.0-dev.5
+### Fixed
+* Remove extra space on fixed quilted grid (#216)
+
 ## 0.5.0-dev.4
 ### Fixed
 * Issue with Woven pattern layout flow in second run.
