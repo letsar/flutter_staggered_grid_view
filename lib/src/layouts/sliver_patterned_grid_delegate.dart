@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
@@ -128,9 +130,26 @@ class _SliverPatternGridLayout extends SliverGridLayout {
 
   @override
   double computeMaxScrollOffset(int childCount) {
-    final tileRect = tileRectAt(childCount);
-    return (childCount ~/ tileCount) * patternMainAxisExtent +
-        tileRect.trailingScrollOffset;
+    if (childCount == 0) {
+      return 0;
+    }
+
+    final lastFilledPatternTrailingScrollOffset =
+        (childCount ~/ tileCount) * patternMainAxisExtent;
+
+    if (childCount % tileCount == 0) {
+      return lastFilledPatternTrailingScrollOffset - mainAxisSpacing;
+    }
+
+    // We have to get the max scroll offset for the run where the tile with
+    // index, childCount - 1, is.
+    // TODO(romain): Can be optimized.
+    final maxIndex = (childCount - 1) % tileCount;
+    final maxRemainingScrollOffset = tiles
+        .take(maxIndex + 1)
+        .map((x) => x.trailingScrollOffset)
+        .reduce(math.max);
+    return lastFilledPatternTrailingScrollOffset + maxRemainingScrollOffset;
   }
 
   @override

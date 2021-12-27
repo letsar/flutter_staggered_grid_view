@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/src/layouts/woven.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -133,5 +134,42 @@ void main() {
     _expectTopLeft(5, const Offset(104, 154 + 25));
     _expectTopLeft(6, const Offset(208 + 5, 154 + 15));
     _expectTopLeft(7, const Offset(312 + 5, 154));
+  });
+
+  test('computeMaxScrollOffset should be right', () {
+    final delegate = SliverWovenGridDelegate.count(
+      crossAxisCount: 3,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
+      pattern: const [
+        WovenGridTile(1),
+        WovenGridTile(
+          5 / 7,
+          crossAxisRatio: 0.9,
+          alignment: AlignmentDirectional.centerEnd,
+        ),
+      ],
+    );
+
+    final layout = delegate.getLayout(
+      const SliverConstraints(
+        axisDirection: AxisDirection.down,
+        cacheOrigin: 0,
+        crossAxisDirection: AxisDirection.right,
+        crossAxisExtent: 412,
+        growthDirection: GrowthDirection.forward,
+        scrollOffset: 0,
+        overlap: 0,
+        viewportMainAxisExtent: 400,
+        precedingScrollExtent: 0,
+        remainingCacheExtent: 400,
+        remainingPaintExtent: 400,
+        userScrollDirection: ScrollDirection.idle,
+      ),
+    );
+
+    expect(layout.computeMaxScrollOffset(13), 846.4399999999999);
+    expect(layout.computeMaxScrollOffset(14), 863.5999999999999);
+    expect(layout.computeMaxScrollOffset(16), 1037.92);
   });
 }
