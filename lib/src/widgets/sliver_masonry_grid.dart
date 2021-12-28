@@ -38,7 +38,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
     Key? key,
     required int crossAxisCount,
     required IndexedWidgetBuilder itemBuilder,
-    required int childCount,
+    int? childCount,
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
   }) : this(
@@ -66,7 +66,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
     Key? key,
     required double maxCrossAxisExtent,
     required IndexedWidgetBuilder itemBuilder,
-    required int childCount,
+    int? childCount,
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
   }) : this(

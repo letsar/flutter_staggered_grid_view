@@ -1,14 +1,18 @@
+## 0.5.0-dev.8
+### Changed
+* Make the `childCount` parameter of `SliverMasonryGrid` constructors, nullable and not required.
+
 ## 0.5.0-dev.7
 ### Fixed
-* Remove position issue with staired pattern
+* Remove position issue with staired pattern.
 
 ## 0.5.0-dev.6
 ### Fixed
-* Remove extra space on fixed woven grid
+* Remove extra space on fixed woven grid.
 
 ## 0.5.0-dev.5
 ### Fixed
-* Remove extra space on fixed quilted grid (#216)
+* Remove extra space on fixed quilted grid (#216).
 
 ## 0.5.0-dev.4
 ### Fixed
