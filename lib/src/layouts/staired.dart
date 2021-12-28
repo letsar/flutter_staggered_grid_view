@@ -81,6 +81,10 @@ class SliverStairedGridDelegate
         crossAxisRatioSum += pattern[i].crossAxisRatio;
         i++;
       }
+      if (crossAxisRatioSum > 1) {
+        // The last ratio is too high. We remove it from this run.
+        i--;
+      }
       final tileBottomSpaceSum = tileBottomSpace * (i - startIndex);
       final isHorizontal = constraints.axis == Axis.horizontal;
       final usableCrossAxisExtent = ((startIndex == 0
@@ -92,7 +96,6 @@ class SliverStairedGridDelegate
           .clamp(0, maxCrossAxisExtent);
 
       double targetMainAxisOffset = 0;
-      final startMainAxisOffset = mainAxisOffset;
       for (int j = startIndex; j < i; j++) {
         final tile = pattern[j];
         final crossAxisExtent = usableCrossAxisExtent * tile.crossAxisRatio +
@@ -118,8 +121,8 @@ class SliverStairedGridDelegate
           targetMainAxisOffset = endMainAxisOffset;
         }
       }
-      mainAxisOffset =
-          startMainAxisOffset + targetMainAxisOffset + mainAxisSpacing;
+
+      mainAxisOffset = targetMainAxisOffset + mainAxisSpacing;
       reversed = !reversed;
       crossAxisOffset =
           reversed ? maxCrossAxisExtent - crossAxisSpacing : crossAxisSpacing;

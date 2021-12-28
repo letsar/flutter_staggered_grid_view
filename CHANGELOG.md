@@ -1,3 +1,7 @@
+## 0.5.0-dev.7
+### Fixed
+* Remove position issue with staired pattern
+
 ## 0.5.0-dev.6
 ### Fixed
 * Remove extra space on fixed woven grid
