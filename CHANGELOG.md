@@ -1,3 +1,7 @@
+## 0.5.0
+### Changed
+* Stable release 
+
 ## 0.5.0-dev.8
 ### Changed
 * Make the `childCount` parameter of `SliverMasonryGrid` constructors, nullable and not required.
