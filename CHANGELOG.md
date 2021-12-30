@@ -1,3 +1,7 @@
+## 0.5.1
+### Added
+* StaggeredTile.fit constructor.
+
 ## 0.5.0
 ### Changed
 * Stable release 

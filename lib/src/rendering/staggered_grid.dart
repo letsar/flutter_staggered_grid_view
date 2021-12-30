@@ -286,21 +286,34 @@ class RenderStaggeredGrid extends RenderBox
         childParentData,
         crossAxisCount,
       );
-      final mainAxisCellCount = childParentData.mainAxisCellCount ?? 1;
-      final mainAxisFixedExtent = childParentData.mainAxisExtent;
       final crossAxisExtent = stride * crossAxisCellCount - crossAxisSpacing;
-      final mainAxisExtent =
-          mainAxisFixedExtent ?? stride * mainAxisCellCount - mainAxisSpacing;
+      final shouldFitContent = childParentData.mainAxisExtent == null &&
+          childParentData.mainAxisCellCount == null;
+      double mainAxisExtent = 0;
+      if (shouldFitContent) {
+        final childConstraints = mainAxis == Axis.vertical
+            ? BoxConstraints.tightFor(width: crossAxisExtent)
+            : BoxConstraints.tightFor(height: crossAxisExtent);
+        layoutChild(child, childConstraints, parentUsesSize: true);
+        final childSize = child.size;
+        mainAxisExtent =
+            mainAxis == Axis.vertical ? childSize.height : childSize.width;
+      } else {
+        final mainAxisCellCount = childParentData.mainAxisCellCount ?? 1;
+        final mainAxisFixedExtent = childParentData.mainAxisExtent;
+        mainAxisExtent =
+            mainAxisFixedExtent ?? stride * mainAxisCellCount - mainAxisSpacing;
 
-      // We set the real mainAxisExtent in case we need it if the axis direction
-      // is reversed.
-      childParentData._realMainAxisExtent = mainAxisExtent;
+        // We set the real mainAxisExtent in case we need it if the axis direction
+        // is reversed.
+        childParentData._realMainAxisExtent = mainAxisExtent;
 
-      final childSize = mainAxis == Axis.vertical
-          ? Size(crossAxisExtent, mainAxisExtent)
-          : Size(mainAxisExtent, crossAxisExtent);
-      final childConstraints = BoxConstraints.tight(childSize);
-      layoutChild(child, childConstraints);
+        final childSize = mainAxis == Axis.vertical
+            ? Size(crossAxisExtent, mainAxisExtent)
+            : Size(mainAxisExtent, crossAxisExtent);
+        final childConstraints = BoxConstraints.tight(childSize);
+        layoutChild(child, childConstraints);
+      }
 
       final origin = _findBestCandidate(offsets, crossAxisCellCount);
       final mainAxisOffset = origin.mainAxisOffset;
@@ -437,15 +450,24 @@ _TileOrigin _findBestCandidate(List<double> offsets, int crossAxisCount) {
 
 typedef _ChildLayouter = void Function(
   RenderBox child,
-  BoxConstraints constraints,
-);
+  BoxConstraints constraints, {
+  bool parentUsesSize,
+});
 
-void _dryLayoutChild(RenderBox child, BoxConstraints constraints) {
+void _dryLayoutChild(
+  RenderBox child,
+  BoxConstraints constraints, {
+  bool parentUsesSize = false,
+}) {
   child.getDryLayout(constraints);
 }
 
-void _layoutChild(RenderBox child, BoxConstraints constraints) {
-  child.layout(constraints, parentUsesSize: false);
+void _layoutChild(
+  RenderBox child,
+  BoxConstraints constraints, {
+  bool parentUsesSize = false,
+}) {
+  child.layout(constraints, parentUsesSize: parentUsesSize);
 }
 
 bool _lessOrNearEqual(double a, double b) {

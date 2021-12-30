@@ -45,6 +45,20 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
           child: child,
         );
 
+  /// Creates a [StaggeredGrid]'s tile that fits its main axis extent to its
+  /// [child]'s content
+  const StaggeredGridTile.fit({
+    Key? key,
+    required int crossAxisCellCount,
+    required Widget child,
+  }) : this._(
+          key: key,
+          crossAxisCellCount: crossAxisCellCount,
+          mainAxisCellCount: null,
+          mainAxisExtent: null,
+          child: child,
+        );
+
   /// The number of cells that this tile takes along the cross axis.
   final int crossAxisCellCount;
 
