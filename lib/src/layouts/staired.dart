@@ -82,7 +82,7 @@ class SliverStairedGridDelegate
         i++;
       }
       if (crossAxisRatioSum > 1) {
-        // The last ratio is too high. We remove it from this run.
+        // The last ratio is too high. We remove it from this track.
         i--;
       }
       final tileBottomSpaceSum = tileBottomSpace * (i - startIndex);

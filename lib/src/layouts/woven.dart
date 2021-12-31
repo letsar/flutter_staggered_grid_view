@@ -83,13 +83,13 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
             crossAxisSpacing;
     final crossAxisStride = crossAxisExtent + crossAxisSpacing;
     final patternCount = pattern.length;
-    // The minimum aspect ratio give us the main axis extent of a run.
+    // The minimum aspect ratio give us the main axis extent of a track.
     final maxMainAxisExtentRatio =
         pattern.map((t) => t.crossAxisRatio / t.aspectRatio).reduce(math.max);
     final mainAxisExtent = crossAxisExtent * maxMainAxisExtentRatio +
         (isHorizontal ? 0 : tileBottomSpace);
 
-    // We always provide 2 runs where the layout follow this pattern:
+    // We always provide 2 tracks where the layout follow this pattern:
     // A B A || A B A B || A B C || A B C A
     // B A B || B A B A || C B A || B A C B
 
