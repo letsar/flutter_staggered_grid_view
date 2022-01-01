@@ -1,3 +1,9 @@
+## 0.6.0
+### Added
+* SliverAlignedGrid and AlignedGridView widgets.
+### Changed
+* Renamed SliverMasonryGridDelegate to SliverSimpleGridDelegate.
+
 ## 0.5.1
 ### Added
 * StaggeredTile.fit constructor.

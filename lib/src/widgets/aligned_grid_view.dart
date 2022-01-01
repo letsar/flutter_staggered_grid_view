@@ -215,8 +215,7 @@ class AlignedGridView extends BoxScrollView {
   /// A delegate that controls the layout of the children within the
   /// [AlignedGridView].
   ///
-  /// The [AlignedGridView], [AlignedGridView.builder], and
-  /// [AlignedGridView.custom] constructors let you specify this delegate
+  /// The [AlignedGridView.custom] constructor let you specify this delegate
   /// explicitly. The other constructors create a [gridDelegate] implicitly.
   final SliverSimpleGridDelegate gridDelegate;
 

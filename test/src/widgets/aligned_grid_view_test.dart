@@ -23,6 +23,50 @@ void main() {
     );
   });
 
+  testWidgets('Should  only layout the number of requested items',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: AlignedGridView.count(
+          dragStartBehavior: DragStartBehavior.down,
+          crossAxisCount: 4,
+          itemBuilder: (contex, index) {
+            return Tile(
+              index: index,
+              height: 100,
+            );
+          },
+          itemCount: 4,
+        ),
+      ),
+    );
+
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('4'), findsNothing);
+
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: AlignedGridView.count(
+          dragStartBehavior: DragStartBehavior.down,
+          crossAxisCount: 4,
+          itemBuilder: (contex, index) {
+            return Tile(
+              index: index,
+              height: 100,
+            );
+          },
+          itemCount: 5,
+        ),
+      ),
+    );
+
+    expect(find.text('0'), findsOneWidget);
+    expect(find.text('4'), findsOneWidget);
+    expect(find.text('5'), findsNothing);
+  });
+
   testWidgets('AlignedGridView.count control test',
       (WidgetTester tester) async {
     // Screen size is 800x600 in the test environment.

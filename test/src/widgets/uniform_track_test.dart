@@ -14,7 +14,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: UniformTrack(
             division: 4,
-            direction: Axis.horizontal,
+            direction: AxisDirection.right,
             children: const [
               Tile(index: 0, height: 100),
               Tile(index: 1, height: 200),
@@ -42,7 +42,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: UniformTrack(
             division: 4,
-            direction: Axis.vertical,
+            direction: AxisDirection.down,
             children: const [
               Tile(index: 0, width: 100),
               Tile(index: 1, width: 200),
@@ -69,7 +69,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: UniformTrack(
             division: 4,
-            direction: Axis.horizontal,
+            direction: AxisDirection.right,
             children: const [
               Tile(index: 0, height: 100),
               Tile(index: 1, height: 200),
@@ -96,7 +96,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: UniformTrack(
             division: 4,
-            direction: Axis.vertical,
+            direction: AxisDirection.down,
             children: const [
               Tile(index: 0, width: 100),
               Tile(index: 1, width: 200),
@@ -124,7 +124,7 @@ void main() {
           child: UniformTrack(
             division: 4,
             spacing: 4,
-            direction: Axis.horizontal,
+            direction: AxisDirection.right,
             children: const [
               Tile(index: 0, height: 100),
               Tile(index: 1, height: 200),
@@ -153,7 +153,7 @@ void main() {
           child: UniformTrack(
             division: 4,
             spacing: 4,
-            direction: Axis.vertical,
+            direction: AxisDirection.down,
             children: const [
               Tile(index: 0, width: 100),
               Tile(index: 1, width: 200),
@@ -182,7 +182,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: UniformTrack(
             division: 4,
-            direction: Axis.horizontal,
+            direction: AxisDirection.right,
             children: const [
               Tile(index: 0, height: 100),
               Tile(index: 1, height: 200),
@@ -214,7 +214,7 @@ void main() {
           textDirection: TextDirection.ltr,
           child: UniformTrack(
             division: 4,
-            direction: Axis.vertical,
+            direction: AxisDirection.down,
             children: const [
               Tile(index: 0, width: 100),
               Tile(index: 1, width: 200),

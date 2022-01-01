@@ -129,12 +129,16 @@ class SliverAlignedGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localItemCount = itemCount;
     return SliverLayoutBuilder(
       builder: (context, constraints) {
         final crossAxisCount = gridDelegate.getCrossAxisCount(
           constraints,
           crossAxisSpacing,
         );
+        final listItemCount = localItemCount == null
+            ? null
+            : ((localItemCount + crossAxisCount - 1) ~/ crossAxisCount) * 2 - 1;
         return SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {
@@ -145,7 +149,7 @@ class SliverAlignedGrid extends StatelessWidget {
               final startIndex = (index ~/ 2) * crossAxisCount;
               final children = [
                 for (int i = 0; i < crossAxisCount; i++)
-                  itemBuilder(context, startIndex + i)
+                  _buildItem(context, startIndex + i, itemCount),
               ].whereNotNull();
 
               if (children.isEmpty) {
@@ -153,16 +157,25 @@ class SliverAlignedGrid extends StatelessWidget {
               }
 
               return UniformTrack(
+                direction: constraints.crossAxisDirection,
                 division: crossAxisCount,
                 spacing: crossAxisSpacing,
                 children: [...children],
               );
             },
-            childCount: itemCount,
+            childCount: listItemCount,
           ),
         );
       },
     );
+  }
+
+  Widget? _buildItem(BuildContext context, int index, int? childCount) {
+    if (index < 0 || (childCount != null && index >= childCount)) {
+      return null;
+    }
+
+    return itemBuilder(context, index);
   }
 }
 

@@ -14,11 +14,13 @@ class RenderUniformTrack extends RenderBox
     List<RenderBox>? children,
     double spacing = 0,
     required int division,
-    Axis direction = Axis.horizontal,
+    required AxisDirection direction,
   })  : assert(spacing >= 0),
         assert(division > 0),
         _spacing = spacing,
         _direction = direction,
+        _isHorizontal = axisDirectionToAxis(direction) == Axis.horizontal,
+        _isDirectionReversed = axisDirectionIsReversed(direction),
         _division = division {
     addAll(children);
   }
@@ -34,15 +36,20 @@ class RenderUniformTrack extends RenderBox
     markNeedsLayout();
   }
 
-  Axis get direction => _direction;
-  Axis _direction;
-  set direction(Axis value) {
+  AxisDirection get direction => _direction;
+  AxisDirection _direction;
+  set direction(AxisDirection value) {
     if (_direction == value) {
       return;
     }
     _direction = value;
+    _isHorizontal = axisDirectionToAxis(value) == Axis.horizontal;
+    _isDirectionReversed = axisDirectionIsReversed(value);
     markNeedsLayout();
   }
+
+  bool _isHorizontal;
+  bool _isDirectionReversed;
 
   int get division => _division;
   int _division;
@@ -54,8 +61,6 @@ class RenderUniformTrack extends RenderBox
     _division = value;
     markNeedsLayout();
   }
-
-  bool get _isHorizontal => direction == Axis.horizontal;
 
   @override
   void setupParentData(RenderBox child) {
@@ -138,12 +143,19 @@ class RenderUniformTrack extends RenderBox
     RenderBox? child = firstChild;
     final stride = childMainAxisExtent + spacing;
     int index = 0;
+
+    double getMainAxisPosition(int index) {
+      final effectiveIndex =
+          _isDirectionReversed ? division - index - 1 : index;
+      return effectiveIndex * stride;
+    }
+
     while (child != null) {
       if (getChildCrossAxisExtent(child) != maxChildCrossAxisExtent) {
         child.layout(secondPassChildConstraints, parentUsesSize: true);
       }
       final childParentData = _getParentData(child);
-      final childMainAxisPosition = index * stride;
+      final childMainAxisPosition = getMainAxisPosition(index);
       childParentData.offset = _isHorizontal
           ? Offset(childMainAxisPosition, 0)
           : Offset(0, childMainAxisPosition);

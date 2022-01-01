@@ -8,7 +8,7 @@ class UniformTrack extends MultiChildRenderObjectWidget {
     Key? key,
     required this.division,
     this.spacing = 0,
-    this.direction,
+    required this.direction,
     required List<Widget> children,
   })  : assert(spacing >= 0),
         assert(division > 0),
@@ -17,13 +17,12 @@ class UniformTrack extends MultiChildRenderObjectWidget {
 
   final double spacing;
   final int division;
-  final Axis? direction;
+  final AxisDirection direction;
 
   @override
   RenderUniformTrack createRenderObject(BuildContext context) {
     return RenderUniformTrack(
-      direction: direction ??
-          flipAxis(axisDirectionToAxis(Scrollable.of(context)!.axisDirection)),
+      direction: direction,
       division: division,
       spacing: spacing,
     );
@@ -35,8 +34,7 @@ class UniformTrack extends MultiChildRenderObjectWidget {
     covariant RenderUniformTrack renderObject,
   ) {
     renderObject
-      ..direction = direction ??
-          flipAxis(axisDirectionToAxis(Scrollable.of(context)!.axisDirection))
+      ..direction = direction
       ..division = division
       ..spacing = spacing;
   }
