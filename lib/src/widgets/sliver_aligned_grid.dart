@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_simple_grid_delegate.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/uniform_track.dart';
@@ -150,7 +149,7 @@ class SliverAlignedGrid extends StatelessWidget {
               final children = [
                 for (int i = 0; i < crossAxisCount; i++)
                   _buildItem(context, startIndex + i, itemCount),
-              ].whereNotNull();
+              ].whereType<Widget>();
 
               if (children.isEmpty) {
                 return null;
