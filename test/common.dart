@@ -4,11 +4,13 @@ class Tile extends StatelessWidget {
   const Tile({
     Key? key,
     required this.index,
-    this.extent,
+    this.height,
+    this.width,
     this.onTap,
   }) : super(key: key);
 
-  final double? extent;
+  final double? height;
+  final double? width;
   final int index;
   final VoidCallback? onTap;
 
@@ -18,7 +20,8 @@ class Tile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         color: Colors.red,
-        height: extent,
+        height: height,
+        width: width,
         child: Text('$index'),
       ),
     );

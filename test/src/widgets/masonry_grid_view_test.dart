@@ -40,7 +40,7 @@ void main() {
             return Tile(
               key: ValueKey(index),
               index: index,
-              extent: ((index % 4) + 1) * 100,
+              height: ((index % 4) + 1) * 100,
               onTap: () => log.add('$index'),
             );
           },
@@ -87,7 +87,7 @@ void main() {
             return Tile(
               key: ValueKey(index),
               index: index,
-              extent: ((index % 4) + 1) * 100,
+              height: ((index % 4) + 1) * 100,
               onTap: () => log.add('$index'),
             );
           },

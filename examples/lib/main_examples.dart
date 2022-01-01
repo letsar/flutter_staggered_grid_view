@@ -1,4 +1,5 @@
 import 'package:examples/common.dart';
+import 'package:examples/examples/aligned.dart';
 import 'package:examples/examples/masonry.dart';
 import 'package:examples/examples/quilted.dart';
 import 'package:examples/examples/staggered.dart';
@@ -65,6 +66,11 @@ class HomePage extends StatelessWidget {
             title: 'Staired',
             imageName: 'staired',
             destination: StairedPage(),
+          ),
+          MenuEntry(
+            title: 'Aligned',
+            imageName: 'aligned',
+            destination: AlignedPage(),
           ),
         ],
       ),
