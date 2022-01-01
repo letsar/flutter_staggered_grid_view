@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+const _defaultColor = Color(0xFF34568B);
+
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
     Key? key,
@@ -31,17 +33,19 @@ class Tile extends StatelessWidget {
     Key? key,
     required this.index,
     this.extent,
+    this.backgroundColor,
     this.bottomSpace,
   }) : super(key: key);
 
   final int index;
   final double? extent;
   final double? bottomSpace;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     final child = Container(
-      color: const Color(0xFF34568B),
+      color: backgroundColor ?? _defaultColor,
       height: extent,
       child: Center(
         child: CircleAvatar(
@@ -89,6 +93,47 @@ class ImageTile extends StatelessWidget {
       width: width.toDouble(),
       height: height.toDouble(),
       fit: BoxFit.cover,
+    );
+  }
+}
+
+class InteractiveTile extends StatefulWidget {
+  const InteractiveTile({
+    Key? key,
+    required this.index,
+    this.extent,
+    this.bottomSpace,
+  }) : super(key: key);
+
+  final int index;
+  final double? extent;
+  final double? bottomSpace;
+
+  @override
+  _InteractiveTileState createState() => _InteractiveTileState();
+}
+
+class _InteractiveTileState extends State<InteractiveTile> {
+  Color color = _defaultColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          if (color == _defaultColor) {
+            color = Colors.red;
+          } else {
+            color = _defaultColor;
+          }
+        });
+      },
+      child: Tile(
+        index: widget.index,
+        extent: widget.extent,
+        backgroundColor: color,
+        bottomSpace: widget.bottomSpace,
+      ),
     );
   }
 }

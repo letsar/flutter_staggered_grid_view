@@ -141,7 +141,7 @@ class _SliverPatternGridLayout extends SliverGridLayout {
       return lastFilledPatternTrailingScrollOffset - mainAxisSpacing;
     }
 
-    // We have to get the max scroll offset for the run where the tile with
+    // We have to get the max scroll offset for the track where the tile with
     // index, childCount - 1, is.
     // TODO(romain): Can be optimized.
     final maxIndex = (childCount - 1) % tileCount;

@@ -210,7 +210,6 @@ GridView.custom(
 );
 ```
 
-
 ### **Staired**
 ![Staired Grid Layout][staired_preview]
 
@@ -253,6 +252,41 @@ GridView.custom(
 );
 ```
 
+### **Aligned**
+![Aligned Grid Layout][aligned_preview]
+
+This layout is also called CSS Grid. This is a common grid layout on the web, where each item within a track has the maximum cross axis extent of its siblings.
+
+#### **Grid properties**
+- Evenly divided in *n* columns
+- The rows can have differents heights
+
+#### **Tile properties**
+- Must occupy 1 column only
+- Each tile has the same height as the tallest one of the row.
+
+#### **Placement algorithm**
+- Top-most and then left-most
+
+#### **Example**
+Below you'll find the code to create this grid layout:
+
+![Aligned example][aligned_example]
+
+```dart
+AlignedGridView.count(
+  crossAxisCount: 4,
+  mainAxisSpacing: 4,
+  crossAxisSpacing: 4,
+  itemBuilder: (context, index) {
+    return Tile(
+      index: index,
+      extent: (index % 7 + 1) * 30,
+    );
+  },
+);
+```
+
 ## Sponsoring
 
 I'm working on my packages on my free-time, but I don't have as much time as I would. If this package or any other package I created is helping you, please consider to sponsor me so that I can take time to read the issues, fix bugs, merge pull requests and add features to these packages.
@@ -292,8 +326,10 @@ If you fixed a bug or implemented a feature, please send a [pull request][pr].
 [quilted_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/quilted.png
 [woven_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/woven.png
 [staired_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/staired.png
+[aligned_preview]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/aligned.png
 [staggered_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/staggered_example.png
 [masonry_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/masonry_example.png
 [quilted_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/quilted_example.png
 [woven_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/woven_example.png
 [staired_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/staired_example.png
+[aligned_example]: https://raw.githubusercontent.com/letsar/flutter_staggered_grid_view/master/docs/images/aligned_example.png

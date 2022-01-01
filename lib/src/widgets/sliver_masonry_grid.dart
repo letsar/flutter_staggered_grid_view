@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_masonry_grid.dart';
+import 'package:flutter_staggered_grid_view/src/rendering/sliver_simple_grid_delegate.dart';
 
 /// A sliver that places multiple box children in a two dimensional arrangement.
 ///
@@ -29,7 +30,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
   /// Creates a sliver that places multiple box children in a Masonry
   /// arrangement with a fixed number of tiles in the cross axis.
   ///
-  /// Uses a [SliverMasonryGridDelegateWithFixedCrossAxisCount] as the
+  /// Uses a [SliverSimpleGridDelegateWithFixedCrossAxisCount] as the
   /// [gridDelegate] and a [SliverChildBuilderDelegate] as the [delegate].
   ///
   /// The [crossAxisCount], [mainAxisSpacing] and [crossAxisSpacing] arguments
@@ -47,7 +48,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
             itemBuilder,
             childCount: childCount,
           ),
-          gridDelegate: SliverMasonryGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
           ),
           mainAxisSpacing: mainAxisSpacing,
@@ -57,7 +58,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
   /// Creates a sliver that places multiple box children in a Masonry
   /// arrangement with tiles that each have a maximum cross-axis extent.
   ///
-  /// Uses a [SliverMasonryGridDelegateWithMaxCrossAxisExtent] as the
+  /// Uses a [SliverSimpleGridDelegateWithMaxCrossAxisExtent] as the
   /// [gridDelegate] and a [SliverChildBuilderDelegate] as the [delegate].
   ///
   /// The [maxCrossAxisExtent], [mainAxisSpacing] and [crossAxisSpacing]
@@ -75,15 +76,15 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
             itemBuilder,
             childCount: childCount,
           ),
-          gridDelegate: SliverMasonryGridDelegateWithMaxCrossAxisExtent(
+          gridDelegate: SliverSimpleGridDelegateWithMaxCrossAxisExtent(
             maxCrossAxisExtent: maxCrossAxisExtent,
           ),
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
         );
 
-  /// {@macro fsgv.masonry.gridDelegate}
-  final SliverMasonryGridDelegate gridDelegate;
+  /// {@macro fsgv.global.gridDelegate}
+  final SliverSimpleGridDelegate gridDelegate;
 
   /// {@macro fsgv.global.mainAxisSpacing}
   final double mainAxisSpacing;

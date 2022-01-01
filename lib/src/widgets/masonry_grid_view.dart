@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_staggered_grid_view/src/rendering/sliver_masonry_grid.dart';
+import 'package:flutter_staggered_grid_view/src/rendering/sliver_simple_grid_delegate.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/sliver_masonry_grid.dart';
 
 /// A scrollable, 2D array of widgets placed according to the masonry layout.
@@ -11,13 +11,13 @@ import 'package:flutter_staggered_grid_view/src/widgets/sliver_masonry_grid.dart
 /// The most commonly used grid layouts are [MasonryGridView.count], which
 /// creates a layout with a fixed number of tiles in the cross axis, and
 /// [MasonryGridView.extent], which creates a layout with tiles that have a
-/// maximum cross-axis extent. A custom [SliverMasonryGridDelegate] can produce
+/// maximum cross-axis extent. A custom [SliverSimpleGridDelegate] can produce
 /// an arbitrary 2D arrangement of children.
 ///
 /// To create a grid with a large (or infinite) number of children, use the
 /// [MasonryGridView.builder] constructor with either a
-/// [SliverMasonryGridDelegateWithFixedCrossAxisCount] or a
-/// [SliverMasonryGridDelegateWithMaxCrossAxisExtent] for the [gridDelegate].
+/// [SliverSimpleGridDelegateWithFixedCrossAxisCount] or a
+/// [SliverSimpleGridDelegateWithMaxCrossAxisExtent] for the [gridDelegate].
 ///
 /// To use a custom [SliverChildDelegate], use [MasonryGridView.custom].
 ///
@@ -74,7 +74,7 @@ import 'package:flutter_staggered_grid_view/src/widgets/sliver_masonry_grid.dart
 /// zero [padding] property.
 class MasonryGridView extends BoxScrollView {
   /// Creates a scrollable, 2D array of widgets with a custom
-  /// [SliverMasonryGridDelegate].
+  /// [SliverSimpleGridDelegate].
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
   /// [SliverChildListDelegate.addAutomaticKeepAlives] property. The
@@ -190,7 +190,7 @@ class MasonryGridView extends BoxScrollView {
         );
 
   /// Creates a scrollable, 2D array of widgets with both a custom
-  /// [SliverMasonryGridDelegate] and a custom [SliverChildDelegate].
+  /// [SliverSimpleGridDelegate] and a custom [SliverChildDelegate].
   ///
   /// To use an [IndexedWidgetBuilder] callback to build children, either use
   /// a [SliverChildBuilderDelegate] or use [MasonryGridView.builder],
@@ -235,7 +235,7 @@ class MasonryGridView extends BoxScrollView {
   /// Creates a scrollable, 2D array of widgets with a fixed number of tiles in
   /// the cross axis.
   ///
-  /// Uses a [SliverMasonryGridDelegateWithFixedCrossAxisCount] as the
+  /// Uses a [SliverSimpleGridDelegateWithFixedCrossAxisCount] as the
   /// [gridDelegate].
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
@@ -271,7 +271,7 @@ class MasonryGridView extends BoxScrollView {
         ScrollViewKeyboardDismissBehavior.manual,
     String? restorationId,
     Clip clipBehavior = Clip.hardEdge,
-  })  : gridDelegate = SliverMasonryGridDelegateWithFixedCrossAxisCount(
+  })  : gridDelegate = SliverSimpleGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: crossAxisCount,
         ),
         childrenDelegate = SliverChildBuilderDelegate(
@@ -301,7 +301,7 @@ class MasonryGridView extends BoxScrollView {
   /// Creates a scrollable, 2D array of widgets with tiles that each have a
   /// maximum cross-axis extent.
   ///
-  /// Uses a [SliverMasonryGridDelegateWithMaxCrossAxisExtent] as the
+  /// Uses a [SliverSimpleGridDelegateWithMaxCrossAxisExtent] as the
   /// [gridDelegate].
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
@@ -337,7 +337,7 @@ class MasonryGridView extends BoxScrollView {
         ScrollViewKeyboardDismissBehavior.manual,
     String? restorationId,
     Clip clipBehavior = Clip.hardEdge,
-  })  : gridDelegate = SliverMasonryGridDelegateWithMaxCrossAxisExtent(
+  })  : gridDelegate = SliverSimpleGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: maxCrossAxisExtent,
         ),
         childrenDelegate = SliverChildBuilderDelegate(
@@ -370,7 +370,7 @@ class MasonryGridView extends BoxScrollView {
   /// The [MasonryGridView], [MasonryGridView.builder], and
   /// [MasonryGridView.custom] constructors let you specify this delegate
   /// explicitly. The other constructors create a [gridDelegate] implicitly.
-  final SliverMasonryGridDelegate gridDelegate;
+  final SliverSimpleGridDelegate gridDelegate;
 
   /// {@macro fsgv.global.mainAxisSpacing}
   final double mainAxisSpacing;
