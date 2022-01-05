@@ -7,6 +7,7 @@ export 'src/rendering/sliver_masonry_grid.dart';
 export 'src/rendering/sliver_simple_grid_delegate.dart';
 export 'src/widgets/aligned_grid_view.dart';
 export 'src/widgets/masonry_grid_view.dart';
+export 'src/widgets/new_sliver_aligned_grid.dart';
 export 'src/widgets/sliver_aligned_grid.dart';
 export 'src/widgets/sliver_masonry_grid.dart';
 export 'src/widgets/staggered_grid.dart';

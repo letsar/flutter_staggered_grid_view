@@ -1,6 +1,7 @@
 import 'package:examples/common.dart';
 import 'package:examples/examples/aligned.dart';
 import 'package:examples/examples/masonry.dart';
+import 'package:examples/examples/new_aligned.dart.dart';
 import 'package:examples/examples/quilted.dart';
 import 'package:examples/examples/staggered.dart';
 import 'package:examples/examples/staired.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Staggered Grid View Demo',
+      showPerformanceOverlay: true,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -71,6 +73,11 @@ class HomePage extends StatelessWidget {
             title: 'Aligned',
             imageName: 'aligned',
             destination: AlignedPage(),
+          ),
+          MenuEntry(
+            title: 'New Aligned',
+            imageName: 'aligned',
+            destination: NewAlignedPage(),
           ),
         ],
       ),
