@@ -93,9 +93,14 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
   final double crossAxisSpacing;
 
   @override
+  SliverMultiBoxAdaptorElement createElement() {
+    return SliverMultiBoxAdaptorElement(this, replaceMovedChildren: true);
+  }
+
+  @override
   RenderSliverMasonryGrid createRenderObject(BuildContext context) {
-    final SliverMultiBoxAdaptorElement element =
-        context as SliverMultiBoxAdaptorElement;
+    final element = context as SliverMultiBoxAdaptorElement;
+
     return RenderSliverMasonryGrid(
       childManager: element,
       gridDelegate: gridDelegate,

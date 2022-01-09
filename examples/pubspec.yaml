@@ -13,6 +13,7 @@ dependencies:
   flutter_lints: any
   flutter_staggered_grid_view:
     path: ../
+  cached_network_image: ^3.2.0
 
 dev_dependencies:
   flutter_test:

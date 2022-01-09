@@ -1,28 +1,21 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 
-/// Parent data structure used by [RenderSliverGridList].
-class SliverGridListParentData extends SliverMultiBoxAdaptorParentData {
-  /// The offset of the child in the non-scrolling axis.
-  ///
-  /// If the scroll axis is vertical, this offset is from the left-most edge of
-  /// the parent to the left-most edge of the child. If the scroll axis is
-  /// horizontal, this offset is from the top-most edge of the parent to the
-  /// top-most edge of the child.
-  double? crossAxisOffset;
-
-  @override
-  String toString() => 'crossAxisOffset=$crossAxisOffset; ${super.toString()}';
-}
-
+/// A Sliver that layouts its children in a grid with tracks that can have
+/// different main axis extents.
 abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
+  /// Creates a [RenderSliverGridList].
   RenderSliverGridList({
     required RenderSliverBoxChildManager childManager,
     double mainAxisSpacing = 0,
+    double crossAxisSpacing = 0,
   })  : assert(mainAxisSpacing >= 0),
+        assert(crossAxisSpacing >= 0),
         _mainAxisSpacing = mainAxisSpacing,
+        _crossAxisSpacing = crossAxisSpacing,
         super(childManager: childManager);
 
+  /// {@macro fsgv.global.mainAxisSpacing}
   double get mainAxisSpacing => _mainAxisSpacing;
   double _mainAxisSpacing;
   set mainAxisSpacing(double value) {
@@ -34,25 +27,56 @@ abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
     markNeedsLayout();
   }
 
+  /// {@macro fsgv.global.crossAxisSpacing}
+  double get crossAxisSpacing => _crossAxisSpacing;
+  double _crossAxisSpacing;
+  set crossAxisSpacing(double value) {
+    if (_crossAxisSpacing == value) {
+      return;
+    }
+    _crossAxisSpacing = value;
+    markNeedsLayout();
+  }
+
   @override
   void setupParentData(RenderObject child) {
-    if (child.parentData is! SliverGridListParentData) {
-      child.parentData = SliverGridListParentData();
+    if (child.parentData is! SliverGridParentData) {
+      child.parentData = SliverGridParentData();
     }
   }
 
+  /// Returns the parent data of the given [child].
   @protected
-  SliverGridListParentData getParentData(RenderBox child) {
-    return child.parentData as SliverGridListParentData;
+  SliverGridParentData getParentData(RenderBox child) {
+    return child.parentData as SliverGridParentData;
   }
 
+  /// Indicates whether the layout needs to know the children sizes.
+  @protected
+  bool get useChildSize => false;
+
+  /// Gets the main axis extent of the given [child].
+  @protected
+  double mainAxisExtentOf(RenderBox child);
+
+  /// Computes the default constraints to pass to each child.
+  @protected
   BoxConstraints computeChildConstraints();
 
+  /// Fill the current track by adding new children as necessary or insert a new
+  /// track before this one if necessary.
+  @protected
   RenderBox? insertAndLayoutLeadingTrack(BoxConstraints constraints);
 
   /// Layouts the track with the given [leadingChild] and returns its trailing
   /// child.
+  @protected
   RenderBox layoutTrack(RenderBox leadingChild, double layoutOffset);
+
+  /// Called at the beginning of the performLayout method. This is a good place
+  /// for subclasses to initialize field based on the constraints.
+  @protected
+  void startLayout();
 
   @override
   double childCrossAxisPosition(RenderBox child) {
@@ -64,6 +88,7 @@ abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
   void performLayout() {
     childManager.didStartLayout();
     childManager.setDidUnderflow(false);
+    startLayout();
     final scrollOffset = constraints.scrollOffset + constraints.cacheOrigin;
     assert(scrollOffset >= 0.0);
     final remainingExtent = constraints.remainingCacheExtent;
@@ -170,8 +195,9 @@ abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
         }
       }
 
-      final firstChildScrollOffset =
-          earliestScrollOffset - paintExtentOf(firstChild!) - mainAxisSpacing;
+      final firstChildScrollOffset = earliestScrollOffset -
+          mainAxisExtentOf(firstChild!) -
+          mainAxisSpacing;
       // firstChildScrollOffset may contain double precision error
       if (firstChildScrollOffset < -precisionErrorTolerance) {
         // Let's assume there is no child before the first child. We will
@@ -210,8 +236,9 @@ abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
         // reaches zero again.
         earliestUsefulChild = insertAndLayoutLeadingTrack(childConstraints);
         assert(earliestUsefulChild != null);
-        final firstChildScrollOffset =
-            earliestScrollOffset - paintExtentOf(firstChild!) - mainAxisSpacing;
+        final firstChildScrollOffset = earliestScrollOffset -
+            mainAxisExtentOf(firstChild!) -
+            mainAxisSpacing;
         final childParentData = getParentData(firstChild!);
         childParentData.layoutOffset = 0.0;
         // We only need to correct if the leading child actually has a
@@ -251,7 +278,8 @@ abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
     bool inLayoutRange = true;
     RenderBox? child = trailingChildWithLayout;
     int index = indexOf(child!);
-    double endScrollOffset = childScrollOffset(child)! + paintExtentOf(child);
+    double endScrollOffset =
+        childScrollOffset(child)! + mainAxisExtentOf(child);
     bool advance() {
       // Returns true if we advanced, false if we have no more children
       assert(child != null);
@@ -269,7 +297,7 @@ abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
           child = insertAndLayoutChild(
             childConstraints,
             after: trailingChildWithLayout,
-            parentUsesSize: true,
+            parentUsesSize: useChildSize,
           );
           if (child == null) {
             // We have run out of children.
@@ -285,7 +313,7 @@ abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
         trailingChildWithLayout = child;
       }
 
-      endScrollOffset = childScrollOffset(child!)! + paintExtentOf(child!);
+      endScrollOffset = childScrollOffset(child!)! + mainAxisExtentOf(child!);
       return true;
     }
 
@@ -301,7 +329,7 @@ abstract class RenderSliverGridList extends RenderSliverMultiBoxAdaptor {
           // we want to make sure we keep the last child around so we know the end scroll offset
           collectGarbage(childCount - 1, 0);
           final extent =
-              childScrollOffset(lastChild!)! + paintExtentOf(lastChild!);
+              childScrollOffset(lastChild!)! + mainAxisExtentOf(lastChild!);
           geometry = SliverGeometry(
             scrollExtent: extent,
             maxPaintExtent: extent,

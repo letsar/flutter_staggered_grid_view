@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 const _defaultColor = Color(0xFF34568B);
@@ -88,8 +89,8 @@ class ImageTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.network(
-      'https://picsum.photos/$width/$height?random=$index',
+    return CachedNetworkImage(
+      imageUrl: 'https://picsum.photos/$width/$height?random=$index',
       width: width.toDouble(),
       height: height.toDouble(),
       fit: BoxFit.cover,

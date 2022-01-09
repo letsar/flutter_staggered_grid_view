@@ -2,51 +2,70 @@ import 'dart:math' as math;
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_grid_list.dart';
+import 'package:flutter_staggered_grid_view/src/rendering/sliver_simple_grid_delegate.dart';
 
+/// A Sliver that layouts its children in a grid with tracks that can have
+/// different main axis extents.
 class RenderSliverAlignedGrid extends RenderSliverGridList {
+  /// Creates a [RenderSliverAlignedGrid].
   RenderSliverAlignedGrid({
     required RenderSliverBoxChildManager childManager,
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
-    required int crossAxisCount,
-  })  : assert(crossAxisSpacing >= 0),
-        assert(crossAxisCount > 0),
-        _crossAxisCount = crossAxisCount,
-        _crossAxisSpacing = crossAxisSpacing,
-        super(childManager: childManager, mainAxisSpacing: mainAxisSpacing);
+    required SliverSimpleGridDelegate gridDelegate,
+  })  : _gridDelegate = gridDelegate,
+        super(
+          childManager: childManager,
+          mainAxisSpacing: mainAxisSpacing,
+          crossAxisSpacing: crossAxisSpacing,
+        );
 
-  double get crossAxisSpacing => _crossAxisSpacing;
-  double _crossAxisSpacing;
-  set crossAxisSpacing(double value) {
-    if (_crossAxisSpacing == value) {
+  /// {@macro fsgv.global.gridDelegate}
+  SliverSimpleGridDelegate get gridDelegate => _gridDelegate;
+  SliverSimpleGridDelegate _gridDelegate;
+  set gridDelegate(SliverSimpleGridDelegate value) {
+    if (_gridDelegate == value) {
       return;
     }
-    _crossAxisSpacing = value;
-    markNeedsLayout();
-  }
 
-  int get crossAxisCount => _crossAxisCount;
-  int _crossAxisCount;
-  set crossAxisCount(int value) {
-    if (_crossAxisCount == value) {
-      return;
+    if (value.runtimeType != _gridDelegate.runtimeType ||
+        value.shouldRelayout(_gridDelegate)) {
+      markNeedsLayout();
     }
-    _crossAxisCount = value;
-    markNeedsLayout();
+
+    _gridDelegate = value;
   }
 
   int _crossAxisIndexOf(RenderBox child) {
-    return indexOf(child) % crossAxisCount;
+    return indexOf(child) % _crossAxisCount;
   }
 
   int _trackIndexOf(RenderBox child) {
-    return indexOf(child) ~/ crossAxisCount;
+    return indexOf(child) ~/ _crossAxisCount;
+  }
+
+  int _crossAxisCount = 1;
+
+  @override
+  double mainAxisExtentOf(RenderBox child) {
+    return paintExtentOf(child);
+  }
+
+  @override
+  bool get useChildSize => true;
+
+  @override
+  void startLayout() {
+    _crossAxisCount = _gridDelegate.getCrossAxisCount(
+      constraints,
+      crossAxisSpacing,
+    );
   }
 
   @override
   BoxConstraints computeChildConstraints() {
     final childCrossAxisExtent =
-        ((constraints.crossAxisExtent + crossAxisSpacing) / crossAxisCount) -
+        ((constraints.crossAxisExtent + crossAxisSpacing) / _crossAxisCount) -
             crossAxisSpacing;
     return constraints.asBoxConstraints(
       crossAxisExtent: childCrossAxisExtent,
@@ -66,7 +85,7 @@ class RenderSliverAlignedGrid extends RenderSliverGridList {
 
     final crossAxisExtent = constraints.crossAxisExtent;
     final childCrossAxisExtent =
-        ((crossAxisExtent + crossAxisSpacing) / crossAxisCount) -
+        ((crossAxisExtent + crossAxisSpacing) / _crossAxisCount) -
             crossAxisSpacing;
     final secondPassChildConstraints = constraints.asBoxConstraints(
       minExtent: trackMainAxisExtent,
@@ -80,7 +99,7 @@ class RenderSliverAlignedGrid extends RenderSliverGridList {
 
     double getCrossAxisPosition(int crossAxisIndex) {
       final effectiveIndex = isDirectionReversed
-          ? crossAxisCount - crossAxisIndex - 1
+          ? _crossAxisCount - crossAxisIndex - 1
           : crossAxisIndex;
       return effectiveIndex * stride;
     }
@@ -132,7 +151,7 @@ class RenderSliverAlignedGrid extends RenderSliverGridList {
   double _computeMaxMainAxisExtent(RenderBox leadingChild) {
     final crossAxisExtent = constraints.crossAxisExtent;
     final childCrossAxisExtent =
-        ((crossAxisExtent + crossAxisSpacing) / crossAxisCount) -
+        ((crossAxisExtent + crossAxisSpacing) / _crossAxisCount) -
             crossAxisSpacing;
     final childConstraints = constraints.asBoxConstraints(
       crossAxisExtent: childCrossAxisExtent,
@@ -157,6 +176,7 @@ class RenderSliverAlignedGrid extends RenderSliverGridList {
     void Function(RenderBox) visitor,
   ) {
     final trackIndex = _trackIndexOf(leadingChild);
+    final childConstraints = computeChildConstraints();
     RenderBox? child = leadingChild;
     RenderBox previousChild = leadingChild;
     while (child != null && _trackIndexOf(child) == trackIndex) {
@@ -165,7 +185,7 @@ class RenderSliverAlignedGrid extends RenderSliverGridList {
       child = childAfter(child);
       if (child == null || indexOf(child) != indexOf(previousChild) + 1) {
         child = insertAndLayoutChild(
-          computeChildConstraints(),
+          childConstraints,
           after: previousChild,
           parentUsesSize: true,
         );
