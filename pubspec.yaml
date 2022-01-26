@@ -1,6 +1,6 @@
 name: flutter_staggered_grid_view
 description: Provides a collection of Flutter grids layouts (staggered, masonry, quilted, woven, etc.).
-version: 0.6.0
+version: 0.6.1
 homepage: https://github.com/letsar/flutter_staggered_grid_view
 
 environment:

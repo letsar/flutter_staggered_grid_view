@@ -1,3 +1,7 @@
+## 0.6.1
+### Fixed
+* Issue when childCount is 0 with Quilted layout.
+
 ## 0.6.0
 ### Added
 * SliverAlignedGrid and AlignedGridView widgets.
