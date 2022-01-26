@@ -175,6 +175,10 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
     // First we compute the number cells occupied in the main axis by the filled
     // patterns.
 
+    if (childCount == 0) {
+      return 0;
+    }
+
     final mainAxisCellCountBeforeLastPattern =
         (childCount ~/ pattern.tileCount) * pattern.mainAxisCellCount;
 
