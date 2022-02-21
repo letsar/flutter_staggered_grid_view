@@ -1,6 +1,7 @@
 library flutter_staggered_grid_view;
 
 export 'src/layouts/quilted.dart';
+export 'src/layouts/reorderable_staggered_layout.dart';
 export 'src/layouts/staired.dart';
 export 'src/layouts/woven.dart';
 export 'src/rendering/sliver_masonry_grid.dart';
