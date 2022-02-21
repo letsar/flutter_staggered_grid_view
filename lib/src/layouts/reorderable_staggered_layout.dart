@@ -35,7 +35,6 @@ class ReorderableStaggeredLayout extends StatefulWidget {
     this.scrollDirection = Axis.vertical,
     this.padding,
     this.crossAxisCount = 3,
-    this.isGrid = false,
     this.reverse = false,
     this.longPressToDrag = true,
     this.mainAxisSpacing = 0.0,
@@ -49,7 +48,7 @@ class ReorderableStaggeredLayout extends StatefulWidget {
   final Widget? header;
 
   /// The widgets to display.
-  final List<StaggeredGridTile> children;
+  final List<Widget> children;
 
   /// The [Axis] along which the list scrolls.
   ///
@@ -93,9 +92,6 @@ class ReorderableStaggeredLayout extends StatefulWidget {
   final int crossAxisCount;
 
   /// Used when we are building a GridView
-  final bool isGrid;
-
-  /// Used when we are building a GridView
   final bool longPressToDrag;
 
   /// Used when we are building a GridView
@@ -108,8 +104,7 @@ class ReorderableStaggeredLayout extends StatefulWidget {
   final IndexedFeedBackWidgetBuilder? feedBackWidgetBuilder;
 
   @override
-  _ReorderableStaggeredLayoutState createState() =>
-      _ReorderableStaggeredLayoutState();
+  _ReorderableStaggeredLayoutState createState() => _ReorderableStaggeredLayoutState();
 }
 
 /// This top-level state manages an Overlay that contains the list and
@@ -121,8 +116,7 @@ class ReorderableStaggeredLayout extends StatefulWidget {
 /// and so we cache a single OverlayEntry for use as the list layer.
 /// That overlay entry then builds a _ReorderableListContent which may
 /// insert Draggables into the Overlay above itself.
-class _ReorderableStaggeredLayoutState
-    extends State<ReorderableStaggeredLayout> {
+class _ReorderableStaggeredLayoutState extends State<ReorderableStaggeredLayout> {
   @override
   Widget build(BuildContext context) {
     return Overlay(
@@ -140,7 +134,6 @@ class _ReorderableStaggeredLayoutState
               padding: widget.padding,
               reverse: widget.reverse,
               crossAxisCount: widget.crossAxisCount,
-              isGrid: widget.isGrid,
               longPressToDrag: widget.longPressToDrag,
               mainAxisSpacing: widget.mainAxisSpacing,
               crossAxisSpacing: widget.crossAxisSpacing,
@@ -165,7 +158,6 @@ class _ReorderableListContent extends StatefulWidget {
     required this.onReorder,
     required this.reverse,
     required this.crossAxisCount,
-    required this.isGrid,
     required this.longPressToDrag,
     required this.mainAxisSpacing,
     required this.crossAxisSpacing,
@@ -173,14 +165,13 @@ class _ReorderableListContent extends StatefulWidget {
   });
 
   final Widget? header;
-  final List<StaggeredGridTile> children;
+  final List<Widget> children;
   final ScrollController? scrollController;
   final Axis scrollDirection;
   final EdgeInsets? padding;
   final ReorderCallback onReorder;
   final bool reverse;
   final int crossAxisCount;
-  final bool isGrid;
   final bool longPressToDrag;
   final double mainAxisSpacing;
   final double crossAxisSpacing;
@@ -347,7 +338,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
   /// Wraps children in Row or Column, so that the children flow in
   /// the widget's scrollDirection.
   Widget _buildContainerForScrollDirection({required List<Widget> children}) {
-    if (widget.isGrid)
+    if (children.first is StaggeredGridTile)
       return StaggeredGrid.count(
         crossAxisCount: widget.crossAxisCount,
         children: children,
@@ -478,11 +469,11 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
 
       BoxConstraints newConstraints = constraints;
 
-      if (widget.isGrid &&
+      if (widget.children.first is StaggeredGridTile &&
           _dragging == null &&
           index < widget.children.length) {
-        // final StaggeredTile tile = widget.staggeredTiles![index];
-        final StaggeredGridTile tile = widget.children[index];
+        final StaggeredGridTile tile =
+            widget.children[index] as StaggeredGridTile;
 
         final double usableCrossAxisExtent = constraints.biggest.width;
         final double cellExtent = usableCrossAxisExtent / widget.crossAxisCount;
@@ -604,7 +595,9 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
 
       // We open up a space under where the dragging widget currently is to
       // show it can be dropped.
-      if (_currentIndex == index && _dragging != null && !widget.isGrid) {
+      if (_currentIndex == index &&
+          _dragging != null &&
+          widget.children.first is! StaggeredGridTile) {
         return _buildContainerForScrollDirection(
           children: <Widget>[
             SizeTransition(
@@ -618,7 +611,9 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
       }
       // We close up the space under where the dragging widget previously was
       // with the ghostController animation.
-      if (_ghostIndex == index && _dragging != null && !widget.isGrid) {
+      if (_ghostIndex == index &&
+          _dragging != null &&
+          widget.children.first is! StaggeredGridTile) {
         return _buildContainerForScrollDirection(
           children: <Widget>[
             SizeTransition(
@@ -631,7 +626,9 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
         );
       }
 
-      if (_ghostIndex == index && _dragging != null && widget.isGrid) {
+      if (_ghostIndex == index &&
+          _dragging != null &&
+          widget.children.first is StaggeredGridTile) {
         return Opacity(
           opacity: .5,
           child: child,
