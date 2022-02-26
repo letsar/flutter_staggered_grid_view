@@ -8,10 +8,8 @@ Provides a collection of Flutter grids layouts.
 
 In the `pubspec.yaml` of your flutter project, add the following dependency:
 
-```yaml
-dependencies:
-  ...
-  flutter_staggered_grid_view: <latest_version>
+```console
+$ flutter pub add flutter_staggered_grid_view
 ```
 
 In your library add the following import:
