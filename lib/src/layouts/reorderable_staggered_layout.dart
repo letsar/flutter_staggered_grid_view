@@ -465,7 +465,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
         child: MergeSemantics(
           child: Semantics(
             customSemanticsActions: semanticsActions,
-            child: (toWrap is StaggeredGridTile) ? toWrap.child : toWrap,
+            child: toWrap.child,
           ),
         ),
       );
@@ -483,11 +483,10 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
 
       BoxConstraints newConstraints = constraints;
 
-      if (widget.children.first is StaggeredGridTile &&
-          _dragging == null &&
+      if (_dragging == null &&
           index < widget.children.length) {
         final StaggeredGridTile tile =
-            widget.children[index] as StaggeredGridTile;
+            widget.children[index];
 
         final double usableCrossAxisExtent = constraints.biggest.width;
         final double cellExtent = usableCrossAxisExtent / widget.crossAxisCount;
@@ -610,8 +609,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
       // We open up a space under where the dragging widget currently is to
       // show it can be dropped.
       if (_currentIndex == index &&
-          _dragging != null &&
-          widget.children.first is! StaggeredGridTile) {
+          _dragging != null) {
         return _buildContainerForScrollDirection(
           children: <Widget>[
             SizeTransition(
@@ -626,8 +624,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
       // We close up the space under where the dragging widget previously was
       // with the ghostController animation.
       if (_ghostIndex == index &&
-          _dragging != null &&
-          widget.children.first is! StaggeredGridTile) {
+          _dragging != null) {
         return _buildContainerForScrollDirection(
           children: <Widget>[
             SizeTransition(
@@ -641,8 +638,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
       }
 
       if (_ghostIndex == index &&
-          _dragging != null &&
-          widget.children.first is StaggeredGridTile) {
+          _dragging != null) {
         return Opacity(
           opacity: .5,
           child: child,
@@ -672,13 +668,13 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
 
     // We wrap the drag target in a Builder so that we can scroll to its specific context.
 
-    if (toWrap is StaggeredGridTile && toWrap.mainAxisCellCount != null) {
+    if (toWrap.mainAxisCellCount != null) {
       return StaggeredGridTile.count(
         crossAxisCellCount: toWrap.crossAxisCellCount,
         mainAxisCellCount: toWrap.mainAxisCellCount!,
         child: target,
       );
-    } else if (toWrap is StaggeredGridTile && toWrap.mainAxisExtent != null) {
+    } else if (toWrap.mainAxisExtent != null) {
       return StaggeredGridTile.extent(
         crossAxisCellCount: toWrap.crossAxisCellCount,
         mainAxisExtent: toWrap.mainAxisExtent!,
@@ -686,8 +682,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
       );
     } else {
       return StaggeredGridTile.fit(
-        crossAxisCellCount:
-            (toWrap is StaggeredGridTile) ? toWrap.crossAxisCellCount : 1,
+        crossAxisCellCount: toWrap.crossAxisCellCount,
         child: target,
       );
     }
@@ -725,6 +720,7 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
           reverse: widget.reverse,
           child: _buildContainerForScrollDirection(
             children: <Widget>[
+              //TODO: Check if neccessary with current changes
               // if (widget.reverse)
               //   _wrap(finalDropArea, widget.children.length, constraints),
               if (widget.header != null) widget.header!,
