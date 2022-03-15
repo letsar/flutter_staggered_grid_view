@@ -10,6 +10,7 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
     required this.mainAxisCellCount,
     required this.mainAxisExtent,
     required Widget child,
+    this.disableDrag = false,
   })  : assert(crossAxisCellCount > 0),
         assert(mainAxisCellCount == null || mainAxisCellCount > 0),
         assert(mainAxisExtent == null || mainAxisExtent > 0),
@@ -22,12 +23,14 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
     required int crossAxisCellCount,
     required num mainAxisCellCount,
     required Widget child,
+    bool disableDrag = false,
   }) : this._(
           key: key,
           crossAxisCellCount: crossAxisCellCount,
           mainAxisCellCount: mainAxisCellCount,
           mainAxisExtent: null,
           child: child,
+          disableDrag: disableDrag,
         );
 
   /// Creates a [StaggeredGrid]'s tile that takes a specific amount of space
@@ -37,12 +40,14 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
     required int crossAxisCellCount,
     required double mainAxisExtent,
     required Widget child,
+    bool disableDrag = false,
   }) : this._(
           key: key,
           crossAxisCellCount: crossAxisCellCount,
           mainAxisCellCount: null,
           mainAxisExtent: mainAxisExtent,
           child: child,
+    disableDrag: disableDrag,
         );
 
   /// Creates a [StaggeredGrid]'s tile that fits its main axis extent to its
@@ -51,12 +56,14 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
     Key? key,
     required int crossAxisCellCount,
     required Widget child,
+    bool disableDrag = false,
   }) : this._(
           key: key,
           crossAxisCellCount: crossAxisCellCount,
           mainAxisCellCount: null,
           mainAxisExtent: null,
           child: child,
+    disableDrag: disableDrag,
         );
 
   /// The number of cells that this tile takes along the cross axis.
@@ -67,6 +74,9 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
 
   /// The amount of space that this tile takes along the main axis.
   final double? mainAxisExtent;
+
+  /// Disables the possibility to drag the item
+  final bool disableDrag;
 
   @override
   void applyParentData(RenderObject renderObject) {

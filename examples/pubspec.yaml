@@ -1,4 +1,4 @@
-name: flutter_staggered_grid_view_example
+name: examples
 description: Example for collection of Flutter grids layouts (staggered, masonry, quilted, woven, etc.).
 publish_to: 'none' 
 version: 1.0.0+1

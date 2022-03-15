@@ -48,7 +48,7 @@ class ReorderableStaggeredLayout extends StatefulWidget {
   final Widget? header;
 
   /// The widgets to display.
-  final List<Widget> children;
+  final List<StaggeredGridTile> children;
 
   /// The [Axis] along which the list scrolls.
   ///
@@ -165,7 +165,7 @@ class _ReorderableListContent extends StatefulWidget {
   });
 
   final Widget? header;
-  final List<Widget> children;
+  final List<StaggeredGridTile> children;
   final ScrollController? scrollController;
   final Axis scrollDirection;
   final EdgeInsets? padding;
@@ -338,13 +338,24 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
   /// Wraps children in Row or Column, so that the children flow in
   /// the widget's scrollDirection.
   Widget _buildContainerForScrollDirection({required List<Widget> children}) {
-    if (children.first is StaggeredGridTile)
-      return StaggeredGrid.count(
-        crossAxisCount: widget.crossAxisCount,
-        children: children,
-        mainAxisSpacing: widget.mainAxisSpacing,
-        crossAxisSpacing: widget.crossAxisSpacing,
-      );
+    if (widget.header != null) {
+      if (children[1] is StaggeredGridTile)
+        return StaggeredGrid.count(
+          crossAxisCount: widget.crossAxisCount,
+          children: children,
+          mainAxisSpacing: widget.mainAxisSpacing,
+          crossAxisSpacing: widget.crossAxisSpacing,
+        );
+    } else {
+      if (children.first is StaggeredGridTile)
+        return StaggeredGrid.count(
+          crossAxisCount: widget.crossAxisCount,
+          children: children,
+          mainAxisSpacing: widget.mainAxisSpacing,
+          crossAxisSpacing: widget.crossAxisSpacing,
+        );
+    }
+
     switch (widget.scrollDirection) {
       case Axis.horizontal:
         return Row(children: children);
@@ -357,10 +368,13 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
   /// Wraps one of the widget's children in a DragTarget and Draggable.
   /// Handles up the logic for dragging and reordering items in the list.
   StaggeredGridTile _wrap(
-    Widget toWrap,
+      StaggeredGridTile toWrap,
     int index,
     BoxConstraints constraints,
   ) {
+    if (toWrap.disableDrag) {
+      return toWrap;
+    }
     final GlobalObjectKey keyIndexGlobalKey = GlobalObjectKey(toWrap);
     // We pass the toWrapWithGlobalKey into the Draggable so that when a list
     // item gets dragged, the accessibility framework can preserve the selected
@@ -711,13 +725,13 @@ class _ReorderableListContentState extends State<_ReorderableListContent>
           reverse: widget.reverse,
           child: _buildContainerForScrollDirection(
             children: <Widget>[
-              if (widget.reverse)
-                _wrap(finalDropArea, widget.children.length, constraints),
+              // if (widget.reverse)
+              //   _wrap(finalDropArea, widget.children.length, constraints),
               if (widget.header != null) widget.header!,
               for (int i = 0; i < widget.children.length; i += 1)
                 _wrap(widget.children[i], i, constraints),
-              if (!widget.reverse)
-                _wrap(finalDropArea, widget.children.length, constraints),
+              // if (!widget.reverse)
+              //   _wrap(finalDropArea, widget.children.length, constraints),
             ],
           ),
         );

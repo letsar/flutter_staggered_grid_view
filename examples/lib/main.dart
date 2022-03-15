@@ -1,4 +1,5 @@
 import 'package:examples/common.dart';
+import 'package:examples/examples/reorderable_list.dart';
 import 'package:examples/pages/aligned.dart';
 import 'package:examples/pages/masonry.dart';
 import 'package:examples/pages/quilted.dart';
@@ -41,36 +42,41 @@ class HomePage extends StatelessWidget {
           mainAxisSpacing: 16,
           crossAxisSpacing: 16,
         ),
-        children: const [
-          MenuEntry(
+        children: [
+          const MenuEntry(
             title: 'Staggered',
             imageName: 'staggered',
             destination: StaggeredPage(),
           ),
-          MenuEntry(
+          const MenuEntry(
             title: 'Masonry',
             imageName: 'masonry',
             destination: MasonryPage(),
           ),
-          MenuEntry(
+          const MenuEntry(
             title: 'Quilted',
             imageName: 'quilted',
             destination: QuiltedPage(),
           ),
-          MenuEntry(
+          const MenuEntry(
             title: 'Woven',
             imageName: 'woven',
             destination: WovenPage(),
           ),
-          MenuEntry(
+          const MenuEntry(
             title: 'Staired',
             imageName: 'staired',
             destination: StairedPage(),
           ),
-          MenuEntry(
+          const MenuEntry(
             title: 'Aligned',
             imageName: 'aligned',
             destination: AlignedPage(),
+          ),
+          MenuEntry(
+            title: 'Reorderable',
+            imageName: 'quilted',
+            destination: ReorderablePage(),
           ),
         ],
       ),
