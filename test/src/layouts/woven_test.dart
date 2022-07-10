@@ -7,8 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../common.dart';
 
 void main() {
-  final binding = TestWidgetsFlutterBinding.ensureInitialized()
-      as TestWidgetsFlutterBinding;
+  final binding = TestWidgetsFlutterBinding.ensureInitialized();
   testWidgets('Woven Grid control test', (WidgetTester tester) async {
     await binding.setSurfaceSize(const Size(800, 800));
     await tester.pumpWidget(

@@ -6,8 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../common.dart';
 
 void main() {
-  final binding = TestWidgetsFlutterBinding.ensureInitialized()
-      as TestWidgetsFlutterBinding;
+  final binding = TestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Empty AlignedGridView', (WidgetTester tester) async {
     await tester.pumpWidget(
