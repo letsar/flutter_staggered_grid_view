@@ -1,3 +1,7 @@
+## 0.6.2
+### Fixed
+* Issue with Quilted layout algorithm. (https://github.com/letsar/flutter_staggered_grid_view/issues/232)
+
 ## 0.6.1
 ### Fixed
 * Issue when childCount is 0 with Quilted layout.

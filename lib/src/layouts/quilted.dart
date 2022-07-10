@@ -233,7 +233,7 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
   @override
   int getMinChildIndexForScrollOffset(double scrollOffset) {
     final mainAxisIndex = (scrollOffset ~/ mainAxisStride);
-    final a = (mainAxisIndex ~/ pattern.tileCount) * pattern.tileCount;
+    final a = (mainAxisIndex ~/ pattern.mainAxisCellCount) * pattern.tileCount;
     final result = a + pattern.getMinTileIndexForMainAxisIndex(mainAxisIndex);
     return result;
   }
