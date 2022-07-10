@@ -3,9 +3,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-@immutable
-
 /// Represents the geometries of each tile of a pattern.
+@immutable
 class SliverPatternGridGeometries {
   /// Creates a [SliverPatternGridGeometries].
   const SliverPatternGridGeometries({
