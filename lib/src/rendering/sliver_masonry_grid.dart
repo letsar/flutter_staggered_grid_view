@@ -539,7 +539,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
           // We are missing a child. Insert it (and lay it out) if possible.
           child = insertAndLayoutChild(
             childConstraints,
-            after: trailingChildWithLayout,
+            after: trailingChildWithLayout!,
             parentUsesSize: true,
           );
           if (child == null) {
