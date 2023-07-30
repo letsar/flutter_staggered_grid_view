@@ -188,7 +188,7 @@ class _Gap extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final axis = axisDirectionToAxis(Scrollable.of(context)!.axisDirection);
+    final axis = axisDirectionToAxis(Scrollable.of(context).axisDirection);
     return axis == Axis.vertical
         ? SizedBox(height: mainAxisExtent)
         : SizedBox(width: mainAxisExtent);
