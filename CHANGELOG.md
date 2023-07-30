@@ -1,3 +1,9 @@
+## 0.7.0
+### Changed
+* Bump minimal Flutter version to 3.7.0
+### Fixed
+* Warning with Scrollable.of
+
 ## 0.6.2
 ### Fixed
 * Issue with Quilted layout algorithm. (https://github.com/letsar/flutter_staggered_grid_view/issues/232)
