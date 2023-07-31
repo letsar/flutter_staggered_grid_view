@@ -1,5 +1,5 @@
 name: examples
-description: A new Flutter project.
+description: Example for collection of Flutter grids layouts (staggered, masonry, quilted, woven, etc.).
 publish_to: 'none' 
 version: 1.0.0+1
 
@@ -9,7 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.2
   flutter_lints: any
   flutter_staggered_grid_view:
     path: ../
