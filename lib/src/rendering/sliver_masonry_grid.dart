@@ -569,7 +569,12 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     while (scrollOffsets
         .every((offset) => offset - mainAxisSpacing < scrollOffset)) {
       leadingGarbage += 1;
-      if (!advance()) {
+      final tag = !advance();
+      if (lastChild == trailingChildWithLayout) {
+        // trigger the last, but this call the last few children not collectGarbage
+        return;
+      }
+      if (tag) {
         assert(leadingGarbage == childCount);
         assert(child == null);
         // we want to make sure we keep the last child around so we know the end scroll offset
