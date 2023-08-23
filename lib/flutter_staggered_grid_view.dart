@@ -11,3 +11,4 @@ export 'src/widgets/sliver_aligned_grid.dart';
 export 'src/widgets/sliver_masonry_grid.dart';
 export 'src/widgets/staggered_grid.dart';
 export 'src/widgets/staggered_grid_tile.dart';
+export 'src/widgets/staggered_grid_view.dart';

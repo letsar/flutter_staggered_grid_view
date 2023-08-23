@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:examples/common.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -9,41 +8,54 @@ class StaggeredPage extends StatelessWidget {
   }) : super(key: key);
 
   static const tiles = [
-    GridTile(2, 2),
-    GridTile(2, 1),
+    GridTile(1, 1),
+    GridTile(1, 4),
     GridTile(1, 2),
     GridTile(1, 1),
-    GridTile(2, 2),
+    GridTile(1, 4),
+    GridTile(1, 1),
+    GridTile(1, 1),
+    GridTile(1, 1),
+    GridTile(1, 1),
+    GridTile(1, 4),
+    GridTile(1, 1),
+    GridTile(1, 1),
+    GridTile(1, 4),
+    GridTile(1, 2),
     GridTile(1, 2),
     GridTile(1, 1),
-    GridTile(3, 1),
     GridTile(1, 1),
-    GridTile(4, 1),
+    GridTile(1, 2),
+    GridTile(1, 1),
+    GridTile(1, 1),
+    GridTile(1, 1),
+    GridTile(1, 4),
+    GridTile(1, 2),
+    GridTile(1, 1),
   ];
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       title: 'Staggered',
-      child: SingleChildScrollView(
-        child: StaggeredGrid.count(
-          crossAxisCount: 4,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          children: [
-            ...tiles.mapIndexed((index, tile) {
-              return StaggeredGridTile.count(
-                crossAxisCellCount: tile.crossAxisCount,
-                mainAxisCellCount: tile.mainAxisCount,
-                child: ImageTile(
-                  index: index,
-                  width: tile.crossAxisCount * 100,
-                  height: tile.mainAxisCount * 100,
-                ),
-              );
-            }),
-          ],
-        ),
+      child: StaggeredGridView.countBuilder(
+        mainAxisSpacing: 9,
+        crossAxisSpacing: 9,
+        cacheExtent: 5,
+        addAutomaticKeepAlives: false,
+        itemBuilder: (context, index) {
+          return ContainTile(
+            index: index,
+            width: tiles[index].crossAxisCount * 100,
+            height: tiles[index].mainAxisCount * 100,
+          );
+        },
+        crossAxisCount: 2,
+        staggeredTileBuilder: (int index) {
+          return StaggeredTile.count(tiles[index].crossAxisCount,
+              tiles[index].mainAxisCount.toDouble());
+        },
+        itemCount: tiles.length,
       ),
     );
   }
