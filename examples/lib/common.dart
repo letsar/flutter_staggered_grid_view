@@ -137,3 +137,25 @@ class _InteractiveTileState extends State<InteractiveTile> {
     );
   }
 }
+class ContainTile extends StatelessWidget {
+  const ContainTile({
+    Key? key,
+    required this.index,
+    required this.width,
+    required this.height,
+  }) : super(key: key);
+
+  final int index;
+  final int width;
+  final int height;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.blueGrey,
+      width: width.toDouble(),
+      height: height.toDouble(),
+      child: Center(child: Text('$index', style: const TextStyle(fontSize: 50)))
+    );
+  }
+}
