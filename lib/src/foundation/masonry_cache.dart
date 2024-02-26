@@ -84,6 +84,7 @@ class MasonryCache {
 
   void clear() {
     _capacity = 0;
+    _length = 0;
   }
 
   static int _nextPowerOfTwo(int n) {
