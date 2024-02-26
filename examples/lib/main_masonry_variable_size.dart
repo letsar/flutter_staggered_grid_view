@@ -1,5 +1,4 @@
 import 'package:examples/common.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -30,21 +29,6 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: MasonryGridView.extent(
-        cacheExtent: 0,
-        dragStartBehavior: DragStartBehavior.down,
-        maxCrossAxisExtent: 200,
-        itemBuilder: (context, index) {
-          return Tile(
-            key: ValueKey(index),
-            index: index,
-            extent: ((index % 4) + 1) * 100,
-          );
-        },
-        itemCount: 12,
-      ),
-    );
     return Scaffold(
       body: CustomScrollView(
         slivers: [
