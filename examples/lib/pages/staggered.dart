@@ -5,8 +5,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class StaggeredPage extends StatelessWidget {
   const StaggeredPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const tiles = [
     GridTile(2, 2),

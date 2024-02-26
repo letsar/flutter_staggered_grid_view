@@ -4,11 +4,11 @@ const _defaultColor = Color(0xFF34568B);
 
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
-    Key? key,
+    super.key,
     required this.title,
     this.topPadding = 0,
     required this.child,
-  }) : super(key: key);
+  });
 
   final String title;
   final Widget child;
@@ -30,12 +30,12 @@ class AppScaffold extends StatelessWidget {
 
 class Tile extends StatelessWidget {
   const Tile({
-    Key? key,
+    super.key,
     required this.index,
     this.extent,
     this.backgroundColor,
     this.bottomSpace,
-  }) : super(key: key);
+  });
 
   final int index;
   final double? extent;
@@ -76,11 +76,11 @@ class Tile extends StatelessWidget {
 
 class ImageTile extends StatelessWidget {
   const ImageTile({
-    Key? key,
+    super.key,
     required this.index,
     required this.width,
     required this.height,
-  }) : super(key: key);
+  });
 
   final int index;
   final int width;
@@ -99,18 +99,18 @@ class ImageTile extends StatelessWidget {
 
 class InteractiveTile extends StatefulWidget {
   const InteractiveTile({
-    Key? key,
+    super.key,
     required this.index,
     this.extent,
     this.bottomSpace,
-  }) : super(key: key);
+  });
 
   final int index;
   final double? extent;
   final double? bottomSpace;
 
   @override
-  _InteractiveTileState createState() => _InteractiveTileState();
+  State<InteractiveTile> createState() => _InteractiveTileState();
 }
 
 class _InteractiveTileState extends State<InteractiveTile> {
@@ -134,6 +134,63 @@ class _InteractiveTileState extends State<InteractiveTile> {
         backgroundColor: color,
         bottomSpace: widget.bottomSpace,
       ),
+    );
+  }
+}
+
+class AnimatedTile extends StatefulWidget {
+  const AnimatedTile({
+    super.key,
+    required this.index,
+    this.minExtent,
+    this.maxExtent,
+    this.backgroundColor,
+  });
+
+  final int index;
+  final double? minExtent;
+  final double? maxExtent;
+  final Color? backgroundColor;
+
+  @override
+  State<AnimatedTile> createState() => _AnimatedTileState();
+}
+
+class _AnimatedTileState extends State<AnimatedTile>
+    with SingleTickerProviderStateMixin {
+  late final controller = AnimationController(
+    duration: const Duration(seconds: 1),
+    vsync: this,
+  );
+
+  late final extent = Tween<double>(
+    begin: widget.minExtent,
+    end: widget.maxExtent,
+  ).animate(controller);
+
+  @override
+  void initState() {
+    super.initState();
+    controller.repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: extent,
+      builder: (context, child) {
+        return Tile(
+          index: widget.index,
+          extent: extent.value,
+          backgroundColor: widget.backgroundColor,
+        );
+      },
     );
   }
 }

@@ -4,8 +4,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class StairedPage extends StatelessWidget {
   const StairedPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const pattern = [
     StairedGridTile(0.5, 1),

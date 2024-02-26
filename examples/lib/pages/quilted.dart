@@ -4,8 +4,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class QuiltedPage extends StatelessWidget {
   const QuiltedPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const pattern = [
     QuiltedGridTile(2, 2),

@@ -1,3 +1,9 @@
+## 0.8.0
+### Changed
+* Bump minimal Flutter version to 3.16.0
+### Fixed
+* Scrolling issue when scrolling after a SliverMasonryGrid  (https://github.com/letsar/flutter_staggered_grid_view/issues/338)
+
 ## 0.7.0
 ### Changed
 * Bump minimal Flutter version to 3.7.0

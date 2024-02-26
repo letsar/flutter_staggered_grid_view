@@ -7,8 +7,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class AlignedPage extends StatefulWidget {
   const AlignedPage({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<AlignedPage> createState() => _AlignedPageState();
