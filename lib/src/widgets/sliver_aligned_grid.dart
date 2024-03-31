@@ -163,6 +163,8 @@ class SliverAlignedGrid extends StatelessWidget {
               );
             },
             childCount: listItemCount,
+            addAutomaticKeepAlives: addAutomaticKeepAlives,
+            addRepaintBoundaries: addRepaintBoundaries,
           ),
         );
       },
