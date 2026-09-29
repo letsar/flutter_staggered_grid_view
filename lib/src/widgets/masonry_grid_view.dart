@@ -259,7 +259,7 @@ class MasonryGridView extends BoxScrollView {
     required int crossAxisCount,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
-    required IndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder itemBuilder,
     int? itemCount,
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
