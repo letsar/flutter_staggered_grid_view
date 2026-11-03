@@ -64,8 +64,9 @@ class RenderUniformTrack extends RenderBox
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! UniformTrackParentData)
+    if (child.parentData is! UniformTrackParentData) {
       child.parentData = UniformTrackParentData();
+    }
   }
 
   UniformTrackParentData _getParentData(RenderBox child) {
