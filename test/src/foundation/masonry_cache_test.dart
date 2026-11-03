@@ -23,7 +23,7 @@ void main() {
         [for (var i = 0; i < 5; i++) cache.startOf(i)],
         [0, 0, 0, 60, 90],
       );
-      expect(cache.endOf(4), 130);
+      expect(cache.startOf(4) + cache.extentOf(4), 130);
       expect(cache.extent, 130);
     });
 
@@ -61,13 +61,15 @@ void main() {
         cache.add(100);
       }
 
-      // The first child is visible until 500.
-      expect(cache.firstIndexEndingAfter(450), 0);
-      expect(cache.firstIndexEndingAfter(500), greaterThan(0));
-      expect(cache.endOf(cache.firstIndexEndingAfter(500)), greaterThan(500));
+      // The first child ends at 500.
+      expect(cache.firstIndexEndingAtOrAfter(450), 0);
+      expect(cache.firstIndexEndingAtOrAfter(500), 0);
+      final index = cache.firstIndexEndingAtOrAfter(501);
+      expect(index, greaterThan(0));
+      expect(cache.startOf(index) + cache.extentOf(index), greaterThan(500));
       expect(cache.startOf(cache.firstIndexStartingAtOrAfter(300)), 300);
       expect(cache.startOf(cache.firstIndexStartingAtOrAfter(300) - 1), 200);
-      expect(cache.firstIndexEndingAfter(10000), cache.length);
+      expect(cache.firstIndexEndingAtOrAfter(10000), cache.length);
       expect(cache.firstIndexStartingAtOrAfter(10000), cache.length);
     });
 
@@ -86,6 +88,15 @@ void main() {
         expect(cache.startOf(i), reference.startOf(i));
         expect(cache.laneOf(i), reference.laneOf(i));
       }
+    });
+
+    test('children with a zero extent at an offset end at this offset', () {
+      final cache = createCache();
+      cache
+        ..add(0)
+        ..add(0)
+        ..add(0);
+      expect(cache.firstIndexEndingAtOrAfter(0), 0);
     });
 
     test('grows beyond its initial capacity', () {

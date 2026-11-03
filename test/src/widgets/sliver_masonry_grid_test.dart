@@ -228,6 +228,67 @@ void main() {
     expect(find.text('19'), findsOneWidget);
   });
 
+  // Children without size until their content is loaded, like images.
+  for (final spacing in <double>[0, 8]) {
+    testWidgets(
+        'children with a zero extent are built and can grow '
+        '(mainAxisSpacing: $spacing)', (WidgetTester tester) async {
+      var height = 0.0;
+      Widget build() => Directionality(
+            textDirection: TextDirection.ltr,
+            child: MasonryGridView.count(
+              crossAxisCount: 3,
+              mainAxisSpacing: spacing,
+              itemCount: 100,
+              itemBuilder: (context, index) => Tile(
+                key: ValueKey(index),
+                index: index,
+                height: height,
+              ),
+            ),
+          );
+
+      await tester.pumpWidget(build());
+      // Children with a zero extent are considered offstage by the finders.
+      for (var i = 0; i < 3; i++) {
+        expect(find.byKey(ValueKey(i), skipOffstage: false), findsOneWidget);
+      }
+
+      height = 100;
+      await tester.pumpWidget(build());
+      for (var i = 0; i < 12; i++) {
+        expect(tester.getSize(find.byKey(ValueKey(i))).height, 100);
+      }
+    });
+  }
+
+  testWidgets('a correction cannot scroll before the start of the grid',
+      (WidgetTester tester) async {
+    final controller = ScrollController();
+    Widget build(int crossAxisCount) => Directionality(
+          textDirection: TextDirection.ltr,
+          child: CustomScrollView(
+            controller: controller,
+            slivers: [
+              SliverMasonryGrid.count(
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: 300,
+                childCount: 20,
+                itemBuilder: (context, index) =>
+                    Tile(index: index, height: 100),
+              ),
+            ],
+          ),
+        );
+
+    await tester.pumpWidget(build(1));
+    controller.jumpTo(390);
+    await tester.pump();
+
+    await tester.pumpWidget(build(4));
+    expect(controller.offset, greaterThanOrEqualTo(0));
+  });
+
   testWidgets('an empty grid has no extent', (WidgetTester tester) async {
     final controller = ScrollController();
     await tester.pumpWidget(grid(controller: controller, itemCount: 0));

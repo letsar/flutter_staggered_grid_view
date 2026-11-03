@@ -4,13 +4,15 @@
 ### Changed
 * Bump minimal Flutter version to 3.16.0
 * `RenderSliverMasonryGrid` keeps the placement of every child laid out once, instead of guessing the placement of the previous children when scrolling back.
+* Reaching a child far in a masonry grid lays out all the children before it once (like `ListView`), unless `mainAxisExtentBuilder` is provided.
+* When the `crossAxisCount` of a masonry grid changes, the first visible child stays in place instead of the grid going back to its start.
 ### Removed
 * `SliverMasonryGridParentData.lastMainAxisExtent`.
 ### Fixed
-* Scrolling issue when scrolling after a SliverMasonryGrid  (https://github.com/letsar/flutter_staggered_grid_view/issues/338)
-* Jumps and children changing columns when scrolling back in a masonry grid (https://github.com/letsar/flutter_staggered_grid_view/issues/244)
+* Scrolling issues with multiple `SliverMasonryGrid` in a `CustomScrollView` (https://github.com/letsar/flutter_staggered_grid_view/issues/338, https://github.com/letsar/flutter_staggered_grid_view/issues/335, https://github.com/letsar/flutter_staggered_grid_view/issues/299, https://github.com/letsar/flutter_staggered_grid_view/issues/286, https://github.com/letsar/flutter_staggered_grid_view/issues/265)
+* Jumps and children changing columns when scrolling back in a masonry grid (https://github.com/letsar/flutter_staggered_grid_view/issues/244, https://github.com/letsar/flutter_staggered_grid_view/issues/330, https://github.com/letsar/flutter_staggered_grid_view/issues/356)
 * `estimatedMaxScrollOffset >= endScrollOffset - leadingScrollOffset` assertion (https://github.com/letsar/flutter_staggered_grid_view/issues/313)
-* Changing the `crossAxisCount` of a masonry grid keeps the first visible child in place (https://github.com/letsar/flutter_staggered_grid_view/issues/105)
+* Changing the `crossAxisCount` of a masonry grid (https://github.com/letsar/flutter_staggered_grid_view/issues/105)
 
 ## 0.7.0
 ### Changed

@@ -3,6 +3,8 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:flutter_staggered_grid_view/src/foundation/extensions.dart';
+
 /// Stores the placement of every child of a masonry grid, from index 0 up to
 /// [length] - 1.
 ///
@@ -17,8 +19,6 @@ import 'dart:typed_data';
 /// starts of the children are sorted. The running maximum of the ends is also
 /// sorted. This allows to find the visible children with binary searches.
 class MasonryCache {
-  MasonryCache();
-
   Float64List _starts = Float64List(0);
   Float64List _ends = Float64List(0);
   Float64List _maxEnds = Float64List(0);
@@ -31,13 +31,11 @@ class MasonryCache {
   int get length => _length;
 
   int _crossAxisCount = 0;
-  int get crossAxisCount => _crossAxisCount;
 
   double _childCrossAxisExtent = 0;
   double get childCrossAxisExtent => _childCrossAxisExtent;
 
   double _mainAxisSpacing = 0;
-  double get mainAxisSpacing => _mainAxisSpacing;
 
   /// Whether the cached placements can be used for the given configuration.
   bool isValidFor({
@@ -56,6 +54,8 @@ class MasonryCache {
     required double childCrossAxisExtent,
     required double mainAxisSpacing,
   }) {
+    // Lanes are stored on 16 bits.
+    assert(crossAxisCount > 0 && crossAxisCount <= 0xFFFF);
     _crossAxisCount = crossAxisCount;
     _childCrossAxisExtent = childCrossAxisExtent;
     _mainAxisSpacing = mainAxisSpacing;
@@ -65,9 +65,7 @@ class MasonryCache {
 
   double startOf(int index) => _starts[_checkIndex(index)];
 
-  double endOf(int index) => _ends[_checkIndex(index)];
-
-  double extentOf(int index) => _ends[index] - _starts[_checkIndex(index)];
+  double extentOf(int index) => _ends[_checkIndex(index)] - _starts[index];
 
   int laneOf(int index) => _lanes[_checkIndex(index)];
 
@@ -86,12 +84,7 @@ class MasonryCache {
     assert(_crossAxisCount > 0);
     _ensureCapacity(_length + 1);
 
-    int lane = 0;
-    for (int i = 1; i < _crossAxisCount; i++) {
-      if (_laneEnds[i] < _laneEnds[lane]) {
-        lane = i;
-      }
-    }
+    final lane = _laneEnds.findSmallestIndexWithMinimumValue();
 
     final start = _laneEnds[lane];
     final end = start + extent;
@@ -125,10 +118,13 @@ class MasonryCache {
     }
   }
 
-  /// The smallest index of a child which ends after [offset], or [length] if
-  /// there is none.
-  int firstIndexEndingAfter(double offset) {
-    return _lowerBound(_maxEnds, (value) => value > offset);
+  /// The smallest index of a child which ends at or after [offset], or
+  /// [length] if there is none.
+  ///
+  /// A child with a zero extent at [offset] is included, so that it is built
+  /// and can grow.
+  int firstIndexEndingAtOrAfter(double offset) {
+    return _lowerBound(_maxEnds, (value) => value >= offset);
   }
 
   /// The smallest index of a child which starts at or after [offset], or
