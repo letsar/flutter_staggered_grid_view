@@ -1,5 +1,7 @@
 // ignore_for_file: comment_references
 
+import 'dart:math' as math;
+
 import 'package:flutter/rendering.dart';
 
 /// Controls the layout of tiles in a some slivers.
@@ -118,9 +120,11 @@ class SliverSimpleGridDelegateWithMaxCrossAxisExtent
     SliverConstraints constraints,
     double crossAxisSpacing,
   ) {
-    return (constraints.crossAxisExtent /
-            (maxCrossAxisExtent + crossAxisSpacing))
-        .ceil();
+    return math.max(
+      1,
+      (constraints.crossAxisExtent / (maxCrossAxisExtent + crossAxisSpacing))
+          .ceil(),
+    );
   }
 
   @override
