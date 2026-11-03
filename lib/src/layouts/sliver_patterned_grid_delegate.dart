@@ -117,7 +117,19 @@ class _SliverPatternGridLayout extends SliverGridLayout {
     this.reverseCrossAxis = false,
   })  : tileCount = tiles.length,
         patternMainAxisExtent =
-            bounds.last.trailingScrollOffset + mainAxisSpacing;
+            bounds.last.trailingScrollOffset + mainAxisSpacing,
+        maxTrailingScrollOffsets = _maxTrailingScrollOffsets(tiles);
+
+  /// For each tile, the maximum trailing scroll offset of the tiles of the
+  /// pattern up to it.
+  static List<double> _maxTrailingScrollOffsets(
+    List<SliverGridGeometry> tiles,
+  ) {
+    double max = 0;
+    return [
+      for (final tile in tiles) max = math.max(max, tile.trailingScrollOffset),
+    ];
+  }
 
   final double mainAxisSpacing;
   final double crossAxisExtent;
@@ -126,6 +138,7 @@ class _SliverPatternGridLayout extends SliverGridLayout {
   final List<SliverGridGeometry> bounds;
   final int tileCount;
   final double patternMainAxisExtent;
+  final List<double> maxTrailingScrollOffsets;
 
   @override
   double computeMaxScrollOffset(int childCount) {
@@ -140,15 +153,10 @@ class _SliverPatternGridLayout extends SliverGridLayout {
       return lastFilledPatternTrailingScrollOffset - mainAxisSpacing;
     }
 
-    // We have to get the max scroll offset for the track where the tile with
-    // index, childCount - 1, is.
-    // TODO(romain): Can be optimized.
+    // The last pattern is filled up to the tile with the index childCount - 1.
     final maxIndex = (childCount - 1) % tileCount;
-    final maxRemainingScrollOffset = tiles
-        .take(maxIndex + 1)
-        .map((x) => x.trailingScrollOffset)
-        .reduce(math.max);
-    return lastFilledPatternTrailingScrollOffset + maxRemainingScrollOffset;
+    return lastFilledPatternTrailingScrollOffset +
+        maxTrailingScrollOffsets[maxIndex];
   }
 
   @override
