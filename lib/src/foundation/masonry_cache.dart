@@ -20,7 +20,9 @@ import 'package:flutter_staggered_grid_view/src/foundation/extensions.dart';
 /// sorted. This allows to find the visible children with binary searches.
 class MasonryCache {
   Float64List _starts = Float64List(0);
-  Float64List _ends = Float64List(0);
+  // The extents are stored as is: computing them from the ends would lose
+  // precision for large offsets.
+  Float64List _extents = Float64List(0);
   Float64List _maxEnds = Float64List(0);
   Uint16List _lanes = Uint16List(0);
 
@@ -32,32 +34,25 @@ class MasonryCache {
 
   int _crossAxisCount = 0;
 
-  double _childCrossAxisExtent = 0;
-  double get childCrossAxisExtent => _childCrossAxisExtent;
-
   double _mainAxisSpacing = 0;
 
   /// Whether the cached placements can be used for the given configuration.
   bool isValidFor({
     required int crossAxisCount,
-    required double childCrossAxisExtent,
     required double mainAxisSpacing,
   }) {
     return _crossAxisCount == crossAxisCount &&
-        _childCrossAxisExtent == childCrossAxisExtent &&
         _mainAxisSpacing == mainAxisSpacing;
   }
 
   /// Removes all the placements and uses the given configuration.
   void reset({
     required int crossAxisCount,
-    required double childCrossAxisExtent,
     required double mainAxisSpacing,
   }) {
     // Lanes are stored on 16 bits.
     assert(crossAxisCount > 0 && crossAxisCount <= 0xFFFF);
     _crossAxisCount = crossAxisCount;
-    _childCrossAxisExtent = childCrossAxisExtent;
     _mainAxisSpacing = mainAxisSpacing;
     _laneEnds = Float64List(crossAxisCount);
     _length = 0;
@@ -65,7 +60,7 @@ class MasonryCache {
 
   double startOf(int index) => _starts[_checkIndex(index)];
 
-  double extentOf(int index) => _ends[_checkIndex(index)] - _starts[index];
+  double extentOf(int index) => _extents[_checkIndex(index)];
 
   int laneOf(int index) => _lanes[_checkIndex(index)];
 
@@ -74,7 +69,14 @@ class MasonryCache {
 
   /// Whether every child that is not cached yet would start at or after
   /// [offset].
-  bool covers(double offset) => _laneEnds.every((end) => end >= offset);
+  bool covers(double offset) {
+    for (int i = 0; i < _crossAxisCount; i++) {
+      if (_laneEnds[i] < offset) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   /// Places a child of the given [extent] after the last cached child.
   ///
@@ -90,7 +92,7 @@ class MasonryCache {
     final end = start + extent;
     final index = _length;
     _starts[index] = start;
-    _ends[index] = end;
+    _extents[index] = extent;
     _maxEnds[index] = index == 0 ? end : math.max(_maxEnds[index - 1], end);
     _lanes[index] = lane;
     _laneEnds[lane] = end + _mainAxisSpacing;
@@ -113,7 +115,7 @@ class MasonryCache {
       if (!found[lane]) {
         found[lane] = true;
         remainingLanes--;
-        _laneEnds[lane] = _ends[i] + _mainAxisSpacing;
+        _laneEnds[lane] = _starts[i] + _extents[i] + _mainAxisSpacing;
       }
     }
   }
@@ -162,7 +164,7 @@ class MasonryCache {
 
     final newCapacity = math.max(_starts.length * 2, 64);
     _starts = _grow(_starts, newCapacity);
-    _ends = _grow(_ends, newCapacity);
+    _extents = _grow(_extents, newCapacity);
     _maxEnds = _grow(_maxEnds, newCapacity);
     _lanes = Uint16List(newCapacity)..setRange(0, _length, _lanes);
   }

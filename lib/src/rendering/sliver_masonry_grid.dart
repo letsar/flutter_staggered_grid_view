@@ -37,27 +37,33 @@ class SliverMasonryGridParentData extends SliverMultiBoxAdaptorParentData {
 ///
 /// The placement of a child depends on the extents of all the children before
 /// it. The placement of every child laid out at least once is therefore kept,
-/// so that scrolling back never moves a child. As a consequence, reaching a
-/// child far from the start requires to lay out all the children before it
-/// once, like [RenderSliverList] does.
+/// so that scrolling back does not move the children. As a consequence,
+/// reaching a child far from the start requires to lay out all the children
+/// before it once, like [RenderSliverList] does.
+///
+/// When the extent of children which are not visible changes (because the
+/// width of the grid changed, or because children were inserted or removed
+/// before the visible ones), their placement is only checked again when they
+/// are laid out. The first visible child then stays in place, but the others
+/// can move.
 class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
   /// Creates a sliver that places its children in a Masonry layout.
   ///
-  /// The [mainAxisSpacing] and [crossAxisSpacing] arguments must be greater
-  /// than zero.
+  /// The [mainAxisSpacing] and [crossAxisSpacing] arguments must not be
+  /// negative.
   RenderSliverMasonryGrid({
     required RenderSliverBoxChildManager childManager,
     required SliverSimpleGridDelegate gridDelegate,
     required double mainAxisSpacing,
     required double crossAxisSpacing,
-    int? estimatedChildCount,
+    int? itemCount,
     MasonryMainAxisExtentBuilder? mainAxisExtentBuilder,
   })  : assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         _gridDelegate = gridDelegate,
         _mainAxisSpacing = mainAxisSpacing,
         _crossAxisSpacing = crossAxisSpacing,
-        _estimatedChildCount = estimatedChildCount,
+        _itemCount = itemCount,
         _mainAxisExtentBuilder = mainAxisExtentBuilder,
         super(childManager: childManager);
 
@@ -105,17 +111,17 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     markNeedsLayout();
   }
 
-  /// The number of children, if known.
+  /// The exact number of children, or null if it is not known.
   ///
-  /// It is set by [SliverMasonryGrid] from its delegate, and is used to forget
+  /// It is set by `SliverMasonryGrid` from its delegate, and is used to forget
   /// the placement of the children which have been removed.
-  int? get estimatedChildCount => _estimatedChildCount;
-  int? _estimatedChildCount;
-  set estimatedChildCount(int? value) {
-    if (_estimatedChildCount == value) {
+  int? get itemCount => _itemCount;
+  int? _itemCount;
+  set itemCount(int? value) {
+    if (_itemCount == value) {
       return;
     }
-    _estimatedChildCount = value;
+    _itemCount = value;
     if (value != null) {
       _cache.truncate(value);
     }
@@ -132,9 +138,12 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
   /// Should return null if the index is greater than the index of the last
   /// child.
   ///
-  /// The extents of the children which have already been placed are kept, so
-  /// the builder must always return the same extent for a given child. If the
-  /// data changes, use a different key for the grid.
+  /// The number of children given by the delegate prevails: the builder is not
+  /// called for indexes after it.
+  ///
+  /// The extents of the children which have already been placed are kept, and
+  /// are only checked again when the children are laid out. A function created
+  /// in each build makes the grid lay out again, which is cheap.
   /// {@endtemplate}
   MasonryMainAxisExtentBuilder? get mainAxisExtentBuilder =>
       _mainAxisExtentBuilder;
@@ -148,6 +157,13 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
   }
 
   final MasonryCache _cache = MasonryCache();
+
+  /// Whether the extents of the children are checked against the cache during
+  /// the current layout.
+  bool _checkExtents = true;
+
+  /// The cross axis extent of the children during the last layout.
+  double _childCrossAxisExtent = 0;
 
   @override
   void setupParentData(RenderObject child) {
@@ -184,12 +200,12 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
 
     // The stride is the cross extent of a cell + crossAxisSpacing.
     _stride = (constraints.crossAxisExtent + crossAxisSpacing) / crossAxisCount;
-    final childCrossAxisExtent = _stride - crossAxisSpacing;
+    final childCrossAxisExtent = math.max(0.0, _stride - crossAxisSpacing);
     final childConstraints = constraints.asBoxConstraints(
       crossAxisExtent: childCrossAxisExtent,
     );
     // The number of children, if known.
-    int? childCount = estimatedChildCount;
+    int? knownItemCount = itemCount;
 
     final double scrollOffset =
         constraints.scrollOffset + constraints.cacheOrigin;
@@ -214,16 +230,24 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       }
     }
 
-    if (!_cache.isValidFor(
-      crossAxisCount: crossAxisCount,
-      childCrossAxisExtent: childCrossAxisExtent,
-      mainAxisSpacing: mainAxisSpacing,
-    )) {
+    // When only the cross axis extent changes, the children which are laid out
+    // again are checked against their previous placement, and the cache is
+    // truncated at the first one which changed. This keeps the state of the
+    // children. When the extents are given by mainAxisExtentBuilder, placing
+    // every child again is cheap and exact.
+    final crossAxisExtentChanged =
+        _childCrossAxisExtent != childCrossAxisExtent;
+    _childCrossAxisExtent = childCrossAxisExtent;
+    final cacheReset = !_cache.isValidFor(
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: mainAxisSpacing,
+        ) ||
+        (crossAxisExtentChanged && _mainAxisExtentBuilder != null);
+    if (cacheReset) {
       // Every child can be placed differently.
       saveAnchor();
       _cache.reset(
         crossAxisCount: crossAxisCount,
-        childCrossAxisExtent: childCrossAxisExtent,
         mainAxisSpacing: mainAxisSpacing,
       );
     }
@@ -231,13 +255,40 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     bool reachedEnd;
     int firstIndex;
     int lastIndex;
+    // Each iteration places again the children after an invalid one, which
+    // then becomes valid. Many iterations means a child which changes its
+    // extent at each layout: we stop checking the extents to avoid an infinite
+    // loop.
+    int iterations = 0;
     while (true) {
+      assert(
+        iterations < 1000,
+        'The masonry grid could not place its children: a child changes its '
+        'extent at each layout.',
+      );
+      _checkExtents = iterations++ < 1000;
+
+      // The children which are alive are checked first, so that none of them
+      // is released because of an outdated placement.
+      final invalidIndex = _firstInvalidChild(childConstraints, knownItemCount);
+      if (invalidIndex != null) {
+        if (anchorIndex == null) {
+          saveAnchor();
+        }
+        _cache.truncate(invalidIndex);
+      }
+
       reachedEnd = _extendCache(
         childConstraints,
         scrollOffset: scrollOffset,
         targetEndScrollOffset: targetEndScrollOffset,
         minLength: anchorIndex == null ? 0 : anchorIndex! + 1,
-        childCount: childCount,
+        release: cacheReset
+            ? _Release.beforeMinLength
+            : anchorIndex != null
+                ? _Release.none
+                : _Release.beforeScrollOffset,
+        itemCount: knownItemCount,
       );
 
       // If the anchor moved, the visible children will change after the
@@ -264,7 +315,7 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         childConstraints,
         firstIndex: firstIndex,
         lastIndex: lastIndex,
-        childCount: childCount,
+        itemCount: knownItemCount,
       );
       if (invalidChild == null) {
         break;
@@ -273,8 +324,8 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
       // The child does not have the extent it had when it was placed (or it
       // does not exist anymore). The children after it must be placed again.
       if (invalidChild.missing) {
-        childCount =
-            math.min(childCount ?? invalidChild.index, invalidChild.index);
+        knownItemCount =
+            math.min(knownItemCount ?? invalidChild.index, invalidChild.index);
       }
       if (anchorIndex == null) {
         saveAnchor();
@@ -342,23 +393,29 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
   /// between [scrollOffset] and [targetEndScrollOffset] is cached, and at least
   /// [minLength] children are cached.
   ///
+  /// The children which are not needed anymore are released according to
+  /// [release].
+  ///
   /// Returns true if there are no more children to place.
   bool _extendCache(
     BoxConstraints childConstraints, {
     required double scrollOffset,
     required double targetEndScrollOffset,
     required int minLength,
-    required int? childCount,
+    required _Release release,
+    required int? itemCount,
   }) {
     // When the extents and the number of children are known, placing all the
     // children is cheap and gives the exact scroll extent.
-    if (_mainAxisExtentBuilder != null && childCount != null) {
+    if (_mainAxisExtentBuilder != null && itemCount != null) {
       targetEndScrollOffset = double.infinity;
     }
 
+    // The child after the last placed one, if it is alive.
+    RenderBox? next;
     while (_cache.length < minLength || !_cache.covers(targetEndScrollOffset)) {
       if (_mainAxisExtentBuilder != null) {
-        final extent = _childExtent(_cache.length, childCount);
+        final extent = _childExtent(_cache.length, itemCount);
         if (extent == null) {
           return true;
         }
@@ -366,22 +423,30 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
         continue;
       }
 
-      final child = _obtainChild(_cache.length, childConstraints);
+      final child = _obtainChild(
+        _cache.length,
+        childConstraints,
+        next,
+        scrollOffset: scrollOffset,
+      );
       if (child == null) {
         return true;
       }
       _cache.add(paintExtentOf(child));
+      next = childAfter(child);
 
-      // Children placed before the first visible one will not be needed, we
-      // can release them now. We keep the last child in order to insert the
-      // next one after it. While we are placing the children up to the anchor,
-      // the scroll offset will be corrected, so none of them is needed.
-      final firstIndex = _cache.length < minLength
-          ? _cache.length
-          : _cache.firstIndexEndingAtOrAfter(scrollOffset);
+      if (release == _Release.none) {
+        continue;
+      }
+      // We keep the child we just placed in order to obtain the next one after
+      // it.
+      final firstIndex =
+          release == _Release.beforeMinLength && _cache.length < minLength
+              ? _cache.length
+              : _cache.firstIndexEndingAtOrAfter(scrollOffset);
       int leadingGarbage = 0;
       RenderBox? garbage = firstChild;
-      while (garbage != lastChild && indexOf(garbage!) < firstIndex) {
+      while (garbage != child && indexOf(garbage!) < firstIndex) {
         leadingGarbage++;
         garbage = childAfter(garbage);
       }
@@ -392,59 +457,113 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     return false;
   }
 
-  /// The main axis extent of the child at [index] given by
-  /// [mainAxisExtentBuilder], or null if it is not known.
-  double? _childExtent(int index, int? childCount) {
-    if (childCount != null && index >= childCount) {
+  /// Lays out the children which are alive and placed in the cache, and returns
+  /// the index of the first one which does not have the extent it had when it
+  /// was placed, or null if they are all valid.
+  int? _firstInvalidChild(BoxConstraints childConstraints, int? itemCount) {
+    if (!_checkExtents) {
       return null;
     }
-    return _mainAxisExtentBuilder?.call(index, _cache.childCrossAxisExtent);
+    for (RenderBox? child = firstChild;
+        child != null && indexOf(child) < _cache.length;
+        child = childAfter(child)) {
+      final index = indexOf(child);
+      child.layout(
+        _childConstraints(index, childConstraints, itemCount),
+        parentUsesSize: true,
+      );
+      if ((paintExtentOf(child) - _cache.extentOf(index)).abs() >
+          precisionErrorTolerance) {
+        return index;
+      }
+    }
+    return null;
+  }
+
+  /// The main axis extent of the child at [index] given by
+  /// [mainAxisExtentBuilder], or null if it is not known.
+  double? _childExtent(int index, int? itemCount) {
+    if (itemCount != null && index >= itemCount) {
+      return null;
+    }
+    final extent = _mainAxisExtentBuilder?.call(index, _childCrossAxisExtent);
+    assert(
+      extent == null || (extent.isFinite && extent >= 0),
+      'mainAxisExtentBuilder returned $extent for the child at index $index, '
+      'but extents must be finite and not negative.',
+    );
+    assert(
+      extent != null || _mainAxisExtentBuilder == null || itemCount == null,
+      'mainAxisExtentBuilder returned null for the child at index $index, but '
+      'there are $itemCount children.',
+    );
+    return extent;
   }
 
   /// The constraints of the child at [index].
   BoxConstraints _childConstraints(
     int index,
     BoxConstraints childConstraints,
-    int? childCount,
+    int? itemCount,
   ) {
-    final extent = _childExtent(index, childCount);
+    final extent = _childExtent(index, itemCount);
     if (extent == null) {
       return childConstraints;
     }
     return constraints.asBoxConstraints(
       minExtent: extent,
       maxExtent: extent,
-      crossAxisExtent: _cache.childCrossAxisExtent,
+      crossAxisExtent: _childCrossAxisExtent,
     );
   }
 
   /// Returns the laid out child at [index], creating it after the last child
-  /// if needed.
+  /// if needed. [next] is the child expected at [index], if known.
+  ///
+  /// The children are created in order, so if the children between the last
+  /// one and [index] are visible after [scrollOffset], they are created too.
+  /// Otherwise, they are not needed and the current children are released.
   ///
   /// Returns null if there is no child at [index].
-  RenderBox? _obtainChild(int index, BoxConstraints childConstraints) {
-    if (firstChild != null) {
-      final firstIndex = indexOf(firstChild!);
-      final lastIndex = indexOf(lastChild!);
-      if (index == lastIndex + 1) {
-        return insertAndLayoutChild(
+  RenderBox? _obtainChild(
+    int index,
+    BoxConstraints childConstraints,
+    RenderBox? next, {
+    required double scrollOffset,
+  }) {
+    if (next != null && indexOf(next) == index) {
+      next.layout(childConstraints, parentUsesSize: true);
+      return next;
+    }
+    // Children moved with keys can leave holes between the indexes of the
+    // children, so we look for the last child before or at index.
+    RenderBox? child = lastChild;
+    while (child != null && indexOf(child) > index) {
+      child = childBefore(child);
+    }
+    if (child != null && indexOf(child) == index) {
+      child.layout(childConstraints, parentUsesSize: true);
+      return child;
+    }
+    if (child != null &&
+        (indexOf(child) == index - 1 ||
+            indexOf(child) + 1 >=
+                _cache.firstIndexEndingAtOrAfter(scrollOffset))) {
+      while (indexOf(child!) < index) {
+        child = insertAndLayoutChild(
           childConstraints,
-          after: lastChild,
+          after: child,
           parentUsesSize: true,
         );
-      }
-      if (index >= firstIndex && index <= lastIndex) {
-        RenderBox child = lastChild!;
-        while (indexOf(child) != index) {
-          child = childBefore(child)!;
+        if (child == null) {
+          return null;
         }
-        child.layout(childConstraints, parentUsesSize: true);
-        return child;
       }
-      // The child at index is not adjacent to the current children.
-      collectGarbage(lastIndex - firstIndex + 1, 0);
+      return child;
     }
 
+    // The child at index is not adjacent to the current children.
+    collectGarbage(childCount, 0);
     if (!addInitialChild(index: index)) {
       return null;
     }
@@ -462,73 +581,135 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
     BoxConstraints childConstraints, {
     required int firstIndex,
     required int lastIndex,
-    required int? childCount,
+    required int? itemCount,
   }) {
-    if (firstChild != null) {
-      final firstChildIndex = indexOf(firstChild!);
-      final lastChildIndex = indexOf(lastChild!);
-      if (firstIndex > lastIndex ||
-          lastChildIndex < firstIndex ||
-          firstChildIndex > lastIndex) {
-        collectGarbage(lastChildIndex - firstChildIndex + 1, 0);
-      } else {
-        collectGarbage(
-          math.max(0, firstIndex - firstChildIndex),
-          math.max(0, lastChildIndex - lastIndex),
-        );
-      }
-    }
-
     if (firstIndex > lastIndex) {
+      if (firstChild != null) {
+        collectGarbage(childCount, 0);
+      }
       return null;
     }
 
-    if (firstChild == null) {
-      if (!addInitialChild(index: firstIndex)) {
-        return (index: firstIndex, missing: true);
+    // Children moved with keys can leave holes between the indexes of the
+    // children. We look for the first child in the range, and the last one
+    // before it.
+    RenderBox? first = firstChild;
+    while (first != null && indexOf(first) < firstIndex) {
+      first = childAfter(first);
+    }
+    if (first == null || indexOf(first) > firstIndex) {
+      final previous = first == null ? lastChild : childBefore(first);
+      if (previous != null && indexOf(previous) == firstIndex - 1) {
+        first = insertAndLayoutChild(
+          _childConstraints(firstIndex, childConstraints, itemCount),
+          after: previous,
+          parentUsesSize: true,
+        );
+        if (first == null) {
+          return (index: firstIndex, missing: true);
+        }
+      } else {
+        // The child at firstIndex can only be inserted before the first child,
+        // so the children before it are released.
+        if (previous != null) {
+          int leadingGarbage = 0;
+          for (RenderBox? child = firstChild;
+              child != first;
+              child = childAfter(child!)) {
+            leadingGarbage++;
+          }
+          collectGarbage(leadingGarbage, 0);
+        }
+        if (firstChild == null) {
+          if (!addInitialChild(index: firstIndex)) {
+            return (index: firstIndex, missing: true);
+          }
+        }
+        while (indexOf(firstChild!) > firstIndex) {
+          final index = indexOf(firstChild!) - 1;
+          if (insertAndLayoutLeadingChild(
+                _childConstraints(index, childConstraints, itemCount),
+                parentUsesSize: true,
+              ) ==
+              null) {
+            return (index: index, missing: true);
+          }
+        }
+        first = firstChild;
       }
     }
 
-    while (indexOf(firstChild!) > firstIndex) {
-      final index = indexOf(firstChild!) - 1;
-      if (insertAndLayoutLeadingChild(
-            _childConstraints(index, childConstraints, childCount),
-            parentUsesSize: true,
-          ) ==
-          null) {
-        return (index: index, missing: true);
-      }
-    }
-
-    while (indexOf(lastChild!) < lastIndex) {
-      final index = indexOf(lastChild!) + 1;
-      if (insertAndLayoutChild(
-            _childConstraints(index, childConstraints, childCount),
-            after: lastChild,
-            parentUsesSize: true,
-          ) ==
-          null) {
-        return (index: index, missing: true);
-      }
-    }
-
-    RenderBox? child = firstChild;
-    while (child != null) {
-      final index = indexOf(child);
+    // Lays out the children from firstIndex to lastIndex, creating the missing
+    // ones.
+    RenderBox child = first!;
+    int index = firstIndex;
+    while (true) {
       child.layout(
-        _childConstraints(index, childConstraints, childCount),
+        _childConstraints(index, childConstraints, itemCount),
         parentUsesSize: true,
       );
-      if ((paintExtentOf(child) - _cache.extentOf(index)).abs() >
-          precisionErrorTolerance) {
+      if (_checkExtents &&
+          (paintExtentOf(child) - _cache.extentOf(index)).abs() >
+              precisionErrorTolerance) {
         return (index: index, missing: false);
       }
       _getParentData(child)
         ..layoutOffset = _cache.startOf(index)
         ..crossAxisIndex = _cache.laneOf(index);
-      child = childAfter(child);
+
+      if (index == lastIndex) {
+        break;
+      }
+      index++;
+      final next = childAfter(child);
+      if (next != null && indexOf(next) == index) {
+        child = next;
+      } else {
+        final inserted = insertAndLayoutChild(
+          _childConstraints(index, childConstraints, itemCount),
+          after: child,
+          parentUsesSize: true,
+        );
+        if (inserted == null) {
+          return (index: index, missing: true);
+        }
+        child = inserted;
+      }
     }
 
+    // The children outside the range are released only now: an invalid child
+    // leads to a scroll correction which can bring them back.
+    int leadingGarbage = 0;
+    for (RenderBox? garbage = firstChild;
+        garbage != first;
+        garbage = childAfter(garbage!)) {
+      leadingGarbage++;
+    }
+    int trailingGarbage = 0;
+    for (RenderBox? garbage = lastChild;
+        garbage != child;
+        garbage = childBefore(garbage!)) {
+      trailingGarbage++;
+    }
+    if (leadingGarbage > 0 || trailingGarbage > 0) {
+      collectGarbage(leadingGarbage, trailingGarbage);
+    }
     return null;
   }
+}
+
+/// Which children placed by [RenderSliverMasonryGrid] in its cache can be
+/// released right away.
+enum _Release {
+  /// The children before the first visible one.
+  beforeScrollOffset,
+
+  /// The children before the anchor, when every child is placed again: the
+  /// scroll offset will be corrected, so none of them is needed. Then the
+  /// children before the first visible one.
+  beforeMinLength,
+
+  /// None, because the scroll offset may be corrected: we don't know yet which
+  /// children will be visible.
+  none,
 }

@@ -7,6 +7,8 @@ analyzer:
     missing_return: error
     todo: warning
     include_file_not_found: ignore
+  exclude:
+    - build/**
 
 linter:
   rules:
@@ -33,7 +35,6 @@ linter:
     - empty_statements
     - hash_and_equals
     - implementation_imports
-    - invariant_booleans
     - library_names
     - library_prefixes
     - no_adjacent_strings_in_list
@@ -50,7 +51,6 @@ linter:
     - prefer_conditional_assignment
     - prefer_const_constructors
     - prefer_contains
-    - prefer_equal_for_default_values
     - prefer_final_fields
     - prefer_initializing_formals
     - prefer_interpolation_to_compose_strings

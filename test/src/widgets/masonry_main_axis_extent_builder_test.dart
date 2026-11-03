@@ -143,6 +143,93 @@ void main() {
     expect(find.text('50'), findsNothing);
   });
 
+  testWidgets(
+    'fractional extents can be placed far away',
+    (WidgetTester tester) async {
+      final controller = ScrollController();
+      await tester.pumpWidget(
+        grid(
+          controller: controller,
+          itemCount: 100000,
+          mainAxisExtentBuilder: (index, crossAxisExtent) =>
+              crossAxisExtent / (1.1 + (index % 7) / 10),
+        ),
+      );
+
+      controller.jumpTo(controller.position.maxScrollExtent / 2);
+      await tester.pump();
+      expect(find.byType(Tile), findsWidgets);
+    },
+    timeout: const Timeout(Duration(seconds: 30)),
+  );
+
+  testWidgets('returning null before the child count is an error',
+      (WidgetTester tester) async {
+    final controller = ScrollController();
+    final errors = <FlutterErrorDetails>[];
+    final onError = FlutterError.onError;
+    FlutterError.onError = errors.add;
+    await tester.pumpWidget(
+      grid(
+        controller: controller,
+        itemCount: 10,
+        mainAxisExtentBuilder: (index, _) => index < 4 ? extentOf(index) : null,
+      ),
+    );
+    FlutterError.onError = onError;
+
+    expect(
+      errors.first.exception.toString(),
+      contains('mainAxisExtentBuilder returned null'),
+    );
+  });
+
+  for (final invalid in <double>[double.infinity, double.nan, -1]) {
+    testWidgets('returning $invalid is an error', (WidgetTester tester) async {
+      final controller = ScrollController();
+      final errors = <FlutterErrorDetails>[];
+      final onError = FlutterError.onError;
+      FlutterError.onError = errors.add;
+      await tester.pumpWidget(
+        grid(
+          controller: controller,
+          mainAxisExtentBuilder: (index, _) => index == 3 ? invalid : 100,
+        ),
+      );
+      FlutterError.onError = onError;
+
+      expect(
+        errors.first.exception.toString(),
+        contains('mainAxisExtentBuilder returned $invalid'),
+      );
+    });
+  }
+
+  testWidgets('the child count of other delegates is not trusted',
+      (WidgetTester tester) async {
+    final controller = ScrollController();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: MasonryGridView.custom(
+          controller: controller,
+          gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+          ),
+          mainAxisExtentBuilder: (index, _) =>
+              index < 30 ? extentOf(index) : null,
+          childrenDelegate: const _OverestimatedDelegate(30),
+        ),
+      ),
+    );
+
+    controller.jumpTo(100000);
+    await tester.pump();
+    controller.jumpTo(controller.position.maxScrollExtent);
+    await tester.pump();
+    expect(find.text('29'), findsOneWidget);
+  });
+
   testWidgets('extents larger than the child count are ignored',
       (WidgetTester tester) async {
     final controller = ScrollController();
@@ -203,4 +290,26 @@ void main() {
     expect(tester.getTopLeft(find.byKey(ValueKey(anchor))).dy, top);
     expect(built.length, lessThan(60));
   });
+}
+
+/// A delegate which overestimates its number of children.
+class _OverestimatedDelegate extends SliverChildDelegate {
+  const _OverestimatedDelegate(this.count);
+
+  final int count;
+
+  @override
+  Widget? build(BuildContext context, int index) {
+    if (index >= count) {
+      return null;
+    }
+    return Tile(index: index, height: extentOf(index));
+  }
+
+  @override
+  int? get estimatedChildCount => count * 2;
+
+  @override
+  bool shouldRebuild(_OverestimatedDelegate oldDelegate) =>
+      count != oldDelegate.count;
 }

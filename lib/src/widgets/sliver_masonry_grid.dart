@@ -15,8 +15,8 @@ import 'package:flutter_staggered_grid_view/src/rendering/sliver_simple_grid_del
 class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
   /// Creates a sliver that places its children in a Masonry arrangement.
   ///
-  /// The [mainAxisSpacing] and [crossAxisSpacing] arguments must be greater
-  /// than zero.
+  /// The [mainAxisSpacing] and [crossAxisSpacing] arguments must not be
+  /// negative.
   const SliverMasonryGrid({
     Key? key,
     required SliverChildDelegate delegate,
@@ -34,8 +34,8 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
   /// Uses a [SliverSimpleGridDelegateWithFixedCrossAxisCount] as the
   /// [gridDelegate] and a [SliverChildBuilderDelegate] as the [delegate].
   ///
-  /// The [crossAxisCount], [mainAxisSpacing] and [crossAxisSpacing] arguments
-  /// must be greater than zero.
+  /// The [crossAxisCount] argument must be greater than zero, and the
+  /// [mainAxisSpacing] and [crossAxisSpacing] arguments must not be negative.
   SliverMasonryGrid.count({
     Key? key,
     required int crossAxisCount,
@@ -64,8 +64,8 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
   /// Uses a [SliverSimpleGridDelegateWithMaxCrossAxisExtent] as the
   /// [gridDelegate] and a [SliverChildBuilderDelegate] as the [delegate].
   ///
-  /// The [maxCrossAxisExtent], [mainAxisSpacing] and [crossAxisSpacing]
-  /// arguments must be greater than zero.
+  /// The [maxCrossAxisExtent] argument must be greater than zero, and the
+  /// [mainAxisSpacing] and [crossAxisSpacing] arguments must not be negative.
   SliverMasonryGrid.extent({
     Key? key,
     required double maxCrossAxisExtent,
@@ -100,6 +100,27 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
   /// {@macro fsgv.masonry.mainAxisExtentBuilder}
   final MasonryMainAxisExtentBuilder? mainAxisExtentBuilder;
 
+  /// The exact number of children, if the delegate knows it.
+  ///
+  /// [SliverChildDelegate.estimatedChildCount] is only an estimate for other
+  /// delegates.
+  int? get _itemCount {
+    final delegate = this.delegate;
+    if (delegate is SliverChildBuilderDelegate) {
+      return delegate.childCount;
+    }
+    if (delegate is SliverChildListDelegate) {
+      return delegate.children.length;
+    }
+    return null;
+  }
+
+  // Like SliverList, children moved with keys are replaced, so that inserting a
+  // child does not leave a hole between the indexes of the children.
+  @override
+  SliverMultiBoxAdaptorElement createElement() =>
+      SliverMultiBoxAdaptorElement(this, replaceMovedChildren: true);
+
   @override
   RenderSliverMasonryGrid createRenderObject(BuildContext context) {
     final SliverMultiBoxAdaptorElement element =
@@ -109,7 +130,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
       gridDelegate: gridDelegate,
       mainAxisSpacing: mainAxisSpacing,
       crossAxisSpacing: crossAxisSpacing,
-      estimatedChildCount: delegate.estimatedChildCount,
+      itemCount: _itemCount,
       mainAxisExtentBuilder: mainAxisExtentBuilder,
     );
   }
@@ -123,7 +144,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
       ..gridDelegate = gridDelegate
       ..mainAxisSpacing = mainAxisSpacing
       ..crossAxisSpacing = crossAxisSpacing
-      ..estimatedChildCount = delegate.estimatedChildCount
+      ..itemCount = _itemCount
       ..mainAxisExtentBuilder = mainAxisExtentBuilder;
   }
 }

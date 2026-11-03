@@ -5,7 +5,6 @@ MasonryCache createCache({int crossAxisCount = 3, double spacing = 0}) {
   return MasonryCache()
     ..reset(
       crossAxisCount: crossAxisCount,
-      childCrossAxisExtent: 100,
       mainAxisSpacing: spacing,
     );
 }
@@ -99,6 +98,14 @@ void main() {
       expect(cache.firstIndexEndingAtOrAfter(0), 0);
     });
 
+    test('keeps the exact extents of children placed far away', () {
+      final cache = createCache(crossAxisCount: 1);
+      cache
+        ..add(3e6)
+        ..add(100 / 3);
+      expect(cache.extentOf(1), 100 / 3);
+    });
+
     test('grows beyond its initial capacity', () {
       final cache = createCache();
       for (var i = 0; i < 1000; i++) {
@@ -113,7 +120,6 @@ void main() {
       expect(
         cache.isValidFor(
           crossAxisCount: 3,
-          childCrossAxisExtent: 100,
           mainAxisSpacing: 0,
         ),
         isTrue,
@@ -121,7 +127,6 @@ void main() {
       expect(
         cache.isValidFor(
           crossAxisCount: 2,
-          childCrossAxisExtent: 100,
           mainAxisSpacing: 0,
         ),
         isFalse,
