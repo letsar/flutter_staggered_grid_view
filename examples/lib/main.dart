@@ -114,7 +114,7 @@ class MenuEntry extends StatelessWidget {
                 heightFactor: 0.25,
                 alignment: Alignment.bottomCenter,
                 child: ColoredBox(
-                  color: Colors.black.withOpacity(0.75),
+                  color: Colors.black.withValues(alpha: 0.75),
                   child: Center(
                     child: Text(
                       title,

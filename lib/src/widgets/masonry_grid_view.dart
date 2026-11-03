@@ -120,6 +120,8 @@ class MasonryGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          // scrollCacheExtent does not exist before Flutter 3.41.
+          // ignore: deprecated_member_use
           cacheExtent: cacheExtent,
           semanticChildCount: semanticChildCount ?? children.length,
           dragStartBehavior: dragStartBehavior,
@@ -185,6 +187,8 @@ class MasonryGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          // scrollCacheExtent does not exist before Flutter 3.41.
+          // ignore: deprecated_member_use
           cacheExtent: cacheExtent,
           semanticChildCount: semanticChildCount ?? itemCount,
           dragStartBehavior: dragStartBehavior,
@@ -230,6 +234,8 @@ class MasonryGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          // scrollCacheExtent does not exist before Flutter 3.41.
+          // ignore: deprecated_member_use
           cacheExtent: cacheExtent,
           semanticChildCount: semanticChildCount,
           dragStartBehavior: dragStartBehavior,
@@ -297,6 +303,8 @@ class MasonryGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          // scrollCacheExtent does not exist before Flutter 3.41.
+          // ignore: deprecated_member_use
           cacheExtent: cacheExtent,
           semanticChildCount: semanticChildCount ?? itemCount,
           dragStartBehavior: dragStartBehavior,
@@ -364,6 +372,8 @@ class MasonryGridView extends BoxScrollView {
           physics: physics,
           shrinkWrap: shrinkWrap,
           padding: padding,
+          // scrollCacheExtent does not exist before Flutter 3.41.
+          // ignore: deprecated_member_use
           cacheExtent: cacheExtent,
           semanticChildCount: semanticChildCount ?? itemCount,
           dragStartBehavior: dragStartBehavior,
