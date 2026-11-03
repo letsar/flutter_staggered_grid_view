@@ -143,4 +143,31 @@ void main() {
 
     await binding.setSurfaceSize(null);
   });
+
+  // https://github.com/letsar/flutter_staggered_grid_view/issues/301
+  testWidgets('itemBuilder can return null to end the grid',
+      (WidgetTester tester) async {
+    final controller = ScrollController();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: MasonryGridView.count(
+          controller: controller,
+          crossAxisCount: 2,
+          itemBuilder: (context, index) => index < 30
+              ? Tile(index: index, height: ((index % 4) + 1) * 100)
+              : null,
+        ),
+      ),
+    );
+
+    // The number of children is unknown until the end is reached.
+    controller.jumpTo(100000);
+    await tester.pump();
+    expect(controller.position.maxScrollExtent.isFinite, isTrue);
+    controller.jumpTo(controller.position.maxScrollExtent);
+    await tester.pump();
+    expect(find.text('29'), findsOneWidget);
+    expect(find.text('30'), findsNothing);
+  });
 }

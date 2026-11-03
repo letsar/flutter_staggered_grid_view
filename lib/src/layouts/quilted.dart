@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_staggered_grid_view/src/foundation/extensions.dart';
 
 /// A tile for [SliverQuiltedGridDelegate].
 @immutable
@@ -39,6 +38,10 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         assert(pattern.isNotEmpty),
+        assert(
+          pattern.every((tile) => tile.crossAxisCount <= crossAxisCount),
+          'A tile of the pattern is larger than the crossAxisCount.',
+        ),
         _pattern = pattern.toPattern(crossAxisCount, repeatPattern);
 
   /// {@macro fsgv.global.crossAxisCount}
@@ -60,8 +63,11 @@ class SliverQuiltedGridDelegate extends SliverGridDelegate {
   @override
   _SliverQuiltedGridLayout getLayout(SliverConstraints constraints) {
     final crossAxisExtent = constraints.crossAxisExtent;
-    final cellExtent = (crossAxisExtent + crossAxisSpacing) / crossAxisCount -
-        crossAxisSpacing;
+    // The spacings can be larger than the available space.
+    final cellExtent = math.max(
+      0.0,
+      (crossAxisExtent + crossAxisSpacing) / crossAxisCount - crossAxisSpacing,
+    );
     return _SliverQuiltedGridLayout(
       cellExtent: cellExtent,
       crossAxisExtent: crossAxisExtent,
@@ -139,7 +145,7 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
     required this.crossAxisSpacing,
     required this.pattern,
     required this.reverseCrossAxis,
-  })  : assert(cellExtent > 0),
+  })  : assert(cellExtent >= 0),
         assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         mainAxisStride = cellExtent + mainAxisSpacing,
@@ -232,6 +238,9 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
 
   @override
   int getMinChildIndexForScrollOffset(double scrollOffset) {
+    if (mainAxisStride <= 0) {
+      return 0;
+    }
     final mainAxisIndex = (scrollOffset ~/ mainAxisStride);
     final a = (mainAxisIndex ~/ pattern.mainAxisCellCount) * pattern.tileCount;
     final result = a + pattern.getMinTileIndexForMainAxisIndex(mainAxisIndex);
@@ -240,6 +249,9 @@ class _SliverQuiltedGridLayout extends SliverGridLayout {
 
   @override
   int getMaxChildIndexForScrollOffset(double scrollOffset) {
+    if (mainAxisStride <= 0) {
+      return pattern.tileCount - 1;
+    }
     final mainAxisIndex = (scrollOffset ~/ mainAxisStride);
     final a = (mainAxisIndex ~/ pattern.mainAxisCellCount) * pattern.tileCount;
     final result = a + pattern.getMaxTileIndexForMainAxisIndex(mainAxisIndex);
@@ -379,16 +391,29 @@ extension on List<QuiltedGridTile> {
       for (int i = 0; i < tiles.length; i++) {
         final tile = tiles[i];
         final fullIndex = start + i;
-        final crossAxisIndex = offsets.findSmallestIndexWithMinimumValue();
-        final mainAxisIndex = offsets[crossAxisIndex];
+        final tileCrossAxisCount = tile.crossAxisCount;
+        final tileMainAxisCount = tile.mainAxisCount;
+
+        // The tile is placed as close as possible to the start of the main
+        // axis, and then of the cross axis, where it fits entirely.
+        int crossAxisIndex = 0;
+        int mainAxisIndex = -1;
+        for (int c = 0; c + tileCrossAxisCount <= crossAxisCount; c++) {
+          int candidate = 0;
+          for (int j = 0; j < tileCrossAxisCount; j++) {
+            candidate = math.max(candidate, offsets[c + j]);
+          }
+          if (mainAxisIndex == -1 || candidate < mainAxisIndex) {
+            crossAxisIndex = c;
+            mainAxisIndex = candidate;
+          }
+        }
         mainAxisIndexes[fullIndex] = mainAxisIndex;
         crossAxisIndexes[fullIndex] = crossAxisIndex;
 
         // We update the offsets.
-        final tileCrossAxisCount = tile.crossAxisCount;
-        final tileMainAxisCount = tile.mainAxisCount;
         for (int j = 0; j < tileCrossAxisCount; j++) {
-          offsets[crossAxisIndex + j] += tileMainAxisCount;
+          offsets[crossAxisIndex + j] = mainAxisIndex + tileMainAxisCount;
 
           if (indexes != null) {
             for (int k = 0; k < tileMainAxisCount; k++) {
@@ -419,7 +444,9 @@ extension on List<QuiltedGridTile> {
     }
 
     position(this, indexes, 0);
-    final indexList = List<int>.filled(indexes.length, -1);
+    // Some cells can be empty if a tile does not fit in the remaining space.
+    final indexList =
+        List<int>.filled(offsets.reduce(math.max) * crossAxisCount, -1);
     for (final index in indexes.keys) {
       indexList[index] = indexes[index]!;
     }

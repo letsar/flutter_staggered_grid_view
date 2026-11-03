@@ -136,7 +136,8 @@ class MasonryGridView extends BoxScrollView {
   /// that are actually visible.
   ///
   /// `itemBuilder` will be called only with indices greater than or equal to
-  /// zero and less than `itemCount`.
+  /// zero and less than `itemCount`. It can return null to indicate that there
+  /// are no more children, like in [ListView.builder].
   ///
   /// The `addAutomaticKeepAlives` argument corresponds to the
   /// [SliverChildBuilderDelegate.addAutomaticKeepAlives] property. The
@@ -153,7 +154,7 @@ class MasonryGridView extends BoxScrollView {
     bool shrinkWrap = false,
     EdgeInsetsGeometry? padding,
     required this.gridDelegate,
-    required IndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder itemBuilder,
     int? itemCount,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
@@ -195,9 +196,10 @@ class MasonryGridView extends BoxScrollView {
   /// Creates a scrollable, 2D array of widgets with both a custom
   /// [SliverSimpleGridDelegate] and a custom [SliverChildDelegate].
   ///
-  /// To use an [IndexedWidgetBuilder] callback to build children, either use
-  /// a [SliverChildBuilderDelegate] or use [MasonryGridView.builder],
-  ///  [MasonryGridView.count] or [MasonryGridView.extent] constructors.
+  /// To use a [NullableIndexedWidgetBuilder] callback to build children,
+  /// either use a [SliverChildBuilderDelegate] or use
+  /// [MasonryGridView.builder], [MasonryGridView.count] or
+  /// [MasonryGridView.extent] constructors.
   const MasonryGridView.custom({
     Key? key,
     Axis scrollDirection = Axis.vertical,
@@ -264,7 +266,7 @@ class MasonryGridView extends BoxScrollView {
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.mainAxisExtentBuilder,
-    required IndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder itemBuilder,
     int? itemCount,
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
@@ -331,7 +333,7 @@ class MasonryGridView extends BoxScrollView {
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.mainAxisExtentBuilder,
-    required IndexedWidgetBuilder itemBuilder,
+    required NullableIndexedWidgetBuilder itemBuilder,
     int? itemCount,
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,

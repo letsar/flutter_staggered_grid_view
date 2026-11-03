@@ -108,7 +108,10 @@ class StaggeredGridDelegateWithMaxCrossAxisExtent
 
   @override
   int getCrossAxisCount(double crossAxisExtent, double crossAxisSpacing) {
-    return (crossAxisExtent / (maxCrossAxisExtent + crossAxisSpacing)).ceil();
+    return math.max(
+      1,
+      (crossAxisExtent / (maxCrossAxisExtent + crossAxisSpacing)).ceil(),
+    );
   }
 
   @override
@@ -286,7 +289,9 @@ class RenderStaggeredGrid extends RenderBox
         childParentData,
         crossAxisCount,
       );
-      final crossAxisExtent = stride * crossAxisCellCount - crossAxisSpacing;
+      // The spacings can be larger than the available space.
+      final crossAxisExtent =
+          math.max(0.0, stride * crossAxisCellCount - crossAxisSpacing);
       final shouldFitContent = childParentData.mainAxisExtent == null &&
           childParentData.mainAxisCellCount == null;
       double mainAxisExtent = 0;
@@ -301,12 +306,8 @@ class RenderStaggeredGrid extends RenderBox
       } else {
         final mainAxisCellCount = childParentData.mainAxisCellCount ?? 1;
         final mainAxisFixedExtent = childParentData.mainAxisExtent;
-        mainAxisExtent =
-            mainAxisFixedExtent ?? stride * mainAxisCellCount - mainAxisSpacing;
-
-        // We set the real mainAxisExtent in case we need it if the axis direction
-        // is reversed.
-        childParentData._realMainAxisExtent = mainAxisExtent;
+        mainAxisExtent = mainAxisFixedExtent ??
+            math.max(0.0, stride * mainAxisCellCount - mainAxisSpacing);
 
         final childSize = mainAxis == Axis.vertical
             ? Size(crossAxisExtent, mainAxisExtent)
@@ -314,6 +315,10 @@ class RenderStaggeredGrid extends RenderBox
         final childConstraints = BoxConstraints.tight(childSize);
         layoutChild(child, childConstraints);
       }
+
+      // We set the real mainAxisExtent in case we need it if the axis direction
+      // is reversed.
+      childParentData._realMainAxisExtent = mainAxisExtent;
 
       final origin = _findBestCandidate(offsets, crossAxisCellCount);
       final mainAxisOffset = origin.mainAxisOffset;
@@ -333,7 +338,8 @@ class RenderStaggeredGrid extends RenderBox
       child = childAfter(child);
     }
 
-    final mainAxisExtent = offsets.reduce(math.max) - mainAxisSpacing;
+    final mainAxisExtent =
+        math.max(0.0, offsets.reduce(math.max) - mainAxisSpacing);
     if (axisDirectionIsReversed(axisDirection)) {
       // If the axis direction is reversed, we need to reverse the main axis
       // offsets.
@@ -364,7 +370,7 @@ class RenderStaggeredGrid extends RenderBox
           crossAxisCount,
         );
         final crossAxisCellExtent =
-            stride * crossAxisCellCount - crossAxisSpacing;
+            math.max(0.0, stride * crossAxisCellCount - crossAxisSpacing);
         final offset = childParentData.offset;
         final crossAxisOffset =
             crossAxisExtent - offset.dx - crossAxisCellExtent;

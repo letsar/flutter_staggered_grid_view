@@ -78,9 +78,12 @@ class SliverWovenGridDelegate extends SliverPatternGridDelegate<WovenGridTile> {
     final usableCrossAxisExtent = isHorizontal
         ? constraints.crossAxisExtent - crossAxisCount * tileBottomSpace
         : constraints.crossAxisExtent;
-    final crossAxisExtent =
-        (usableCrossAxisExtent + crossAxisSpacing) / crossAxisCount -
-            crossAxisSpacing;
+    // The spacings can be larger than the available space.
+    final crossAxisExtent = math.max(
+      0.0,
+      (usableCrossAxisExtent + crossAxisSpacing) / crossAxisCount -
+          crossAxisSpacing,
+    );
     final crossAxisStride = crossAxisExtent + crossAxisSpacing;
     final patternCount = pattern.length;
     // The minimum aspect ratio give us the main axis extent of a track.
