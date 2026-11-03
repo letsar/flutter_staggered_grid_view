@@ -1,55 +1,125 @@
 import 'package:flutter_staggered_grid_view/src/foundation/masonry_cache.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+MasonryCache createCache({int crossAxisCount = 3, double spacing = 0}) {
+  return MasonryCache()
+    ..reset(
+      crossAxisCount: crossAxisCount,
+      childCrossAxisExtent: 100,
+      mainAxisSpacing: spacing,
+    );
+}
+
 void main() {
   group('MasonryCache', () {
-    test('length should be 0 after construction', () {
-      final cache = MasonryCache();
-      expect(cache.capacity, 0);
+    test('places each child in the lane with the smallest end', () {
+      final cache = createCache(spacing: 10);
+      for (final extent in <double>[100, 50, 80, 20, 40]) {
+        cache.add(extent);
+      }
+
+      expect([for (var i = 0; i < 5; i++) cache.laneOf(i)], [0, 1, 2, 1, 1]);
+      expect(
+        [for (var i = 0; i < 5; i++) cache.startOf(i)],
+        [0, 0, 0, 60, 90],
+      );
+      expect(cache.endOf(4), 130);
+      expect(cache.extent, 130);
     });
 
-    test('length should be 32 by default after adding the first element', () {
-      final cache = MasonryCache();
-      cache.add((start: 0, end: 0, crossAxisIndex: 0));
-      expect(cache.capacity, 32);
+    test('chooses the lane with the smallest index on ties', () {
+      final cache = createCache();
+      for (var i = 0; i < 6; i++) {
+        cache.add(100);
+      }
+
+      expect(
+        [for (var i = 0; i < 6; i++) cache.laneOf(i)],
+        [0, 1, 2, 0, 1, 2],
+      );
     });
 
-    test('length should be 64 after inserting the 33th element', () {
-      final cache = MasonryCache();
-      cache.length = 33;
-      cache[32] = (start: 0, end: 0, crossAxisIndex: 0);
-      expect(cache.capacity, 64);
+    test('covers an offset when every lane ends after it', () {
+      final cache = createCache(spacing: 10);
+      cache
+        ..add(100)
+        ..add(200);
+      expect(cache.covers(0), isTrue);
+      expect(cache.covers(1), isFalse);
+
+      cache.add(50);
+      expect(cache.covers(60), isTrue);
+      expect(cache.covers(61), isFalse);
     });
 
-    test('skipped entry should be 0', () {
-      final cache = MasonryCache();
-      cache.length = 33;
-      cache[32] = (start: 0, end: 0, crossAxisIndex: 0);
-      final entry = cache[0];
-      expect(entry.start, 0);
-      expect(entry.end, 0);
-      expect(entry.crossAxisIndex, 0);
+    test('finds the visible children with binary searches', () {
+      final cache = createCache();
+      // Lanes: 0 => [0, 500], 1 => [0, 100], [100, 200], [200, 300]...
+      cache.add(500);
+      for (var i = 0; i < 10; i++) {
+        cache.add(100);
+        cache.add(100);
+      }
+
+      // The first child is visible until 500.
+      expect(cache.firstIndexEndingAfter(450), 0);
+      expect(cache.firstIndexEndingAfter(500), greaterThan(0));
+      expect(cache.endOf(cache.firstIndexEndingAfter(500)), greaterThan(500));
+      expect(cache.startOf(cache.firstIndexStartingAtOrAfter(300)), 300);
+      expect(cache.startOf(cache.firstIndexStartingAtOrAfter(300) - 1), 200);
+      expect(cache.firstIndexEndingAfter(10000), cache.length);
+      expect(cache.firstIndexStartingAtOrAfter(10000), cache.length);
     });
 
-    test('should correcly read element after writing it', () {
-      final cache = MasonryCache();
-      cache.add((start: 100, end: 200, crossAxisIndex: 1));
-      final entry = cache[0];
-      expect(entry.start, 100);
-      expect(entry.end, 200);
-      expect(entry.crossAxisIndex, 1);
+    test('truncate restores the lanes so that children are placed again', () {
+      final reference = createCache(spacing: 4);
+      final extents = [for (var i = 0; i < 50; i++) (i * 37 % 11 + 1) * 10.0];
+      extents.forEach(reference.add);
+
+      final cache = createCache(spacing: 4);
+      extents.forEach(cache.add);
+      cache.truncate(17);
+      expect(cache.length, 17);
+      extents.skip(17).forEach(cache.add);
+
+      for (var i = 0; i < extents.length; i++) {
+        expect(cache.startOf(i), reference.startOf(i));
+        expect(cache.laneOf(i), reference.laneOf(i));
+      }
     });
 
-    test('data should be correctly copied after the cache expanded', () {
-      final cache = MasonryCache();
-      cache.length = 4;
-      cache[3] = (start: 100, end: 200, crossAxisIndex: 1);
-      cache.length = 33;
-      cache[32] = (start: 0, end: 0, crossAxisIndex: 0);
-      final entry = cache[3];
-      expect(entry.start, 100);
-      expect(entry.end, 200);
-      expect(entry.crossAxisIndex, 1);
+    test('grows beyond its initial capacity', () {
+      final cache = createCache();
+      for (var i = 0; i < 1000; i++) {
+        cache.add(10);
+      }
+      expect(cache.length, 1000);
+      expect(cache.startOf(999), 3330);
+    });
+
+    test('isValidFor detects configuration changes', () {
+      final cache = createCache();
+      expect(
+        cache.isValidFor(
+          crossAxisCount: 3,
+          childCrossAxisExtent: 100,
+          mainAxisSpacing: 0,
+        ),
+        isTrue,
+      );
+      expect(
+        cache.isValidFor(
+          crossAxisCount: 2,
+          childCrossAxisExtent: 100,
+          mainAxisSpacing: 0,
+        ),
+        isFalse,
+      );
+    });
+
+    test('throws when reading an index which is not cached', () {
+      final cache = createCache()..add(10);
+      expect(() => cache.startOf(1), throwsRangeError);
     });
   });
 }

@@ -1,8 +1,16 @@
 ## 0.8.0
+### Added
+* `mainAxisExtentBuilder` on `MasonryGridView` and `SliverMasonryGrid` to place the children without building them when their extents are known.
 ### Changed
 * Bump minimal Flutter version to 3.16.0
+* `RenderSliverMasonryGrid` keeps the placement of every child laid out once, instead of guessing the placement of the previous children when scrolling back.
+### Removed
+* `SliverMasonryGridParentData.lastMainAxisExtent`.
 ### Fixed
 * Scrolling issue when scrolling after a SliverMasonryGrid  (https://github.com/letsar/flutter_staggered_grid_view/issues/338)
+* Jumps and children changing columns when scrolling back in a masonry grid (https://github.com/letsar/flutter_staggered_grid_view/issues/244)
+* `estimatedMaxScrollOffset >= endScrollOffset - leadingScrollOffset` assertion (https://github.com/letsar/flutter_staggered_grid_view/issues/313)
+* Changing the `crossAxisCount` of a masonry grid keeps the first visible child in place (https://github.com/letsar/flutter_staggered_grid_view/issues/105)
 
 ## 0.7.0
 ### Changed

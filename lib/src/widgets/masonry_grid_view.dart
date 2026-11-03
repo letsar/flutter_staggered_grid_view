@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/src/rendering/sliver_masonry_grid.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_simple_grid_delegate.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/sliver_masonry_grid.dart';
 
@@ -92,6 +93,7 @@ class MasonryGridView extends BoxScrollView {
     required this.gridDelegate,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
+    this.mainAxisExtentBuilder,
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
     bool addSemanticIndexes = true,
@@ -155,6 +157,7 @@ class MasonryGridView extends BoxScrollView {
     int? itemCount,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
+    this.mainAxisExtentBuilder,
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
     bool addSemanticIndexes = true,
@@ -208,6 +211,7 @@ class MasonryGridView extends BoxScrollView {
     required this.childrenDelegate,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
+    this.mainAxisExtentBuilder,
     double? cacheExtent,
     int? semanticChildCount,
     DragStartBehavior dragStartBehavior = DragStartBehavior.start,
@@ -259,6 +263,7 @@ class MasonryGridView extends BoxScrollView {
     required int crossAxisCount,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
+    this.mainAxisExtentBuilder,
     required IndexedWidgetBuilder itemBuilder,
     int? itemCount,
     bool addAutomaticKeepAlives = true,
@@ -325,6 +330,7 @@ class MasonryGridView extends BoxScrollView {
     required double maxCrossAxisExtent,
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
+    this.mainAxisExtentBuilder,
     required IndexedWidgetBuilder itemBuilder,
     int? itemCount,
     bool addAutomaticKeepAlives = true,
@@ -378,6 +384,9 @@ class MasonryGridView extends BoxScrollView {
   /// {@macro fsgv.global.crossAxisSpacing}
   final double crossAxisSpacing;
 
+  /// {@macro fsgv.masonry.mainAxisExtentBuilder}
+  final MasonryMainAxisExtentBuilder? mainAxisExtentBuilder;
+
   /// A delegate that provides the children for the [MasonryGridView].
   ///
   /// The [MasonryGridView.custom] constructor lets you specify this delegate
@@ -392,6 +401,7 @@ class MasonryGridView extends BoxScrollView {
       gridDelegate: gridDelegate,
       mainAxisSpacing: mainAxisSpacing,
       crossAxisSpacing: crossAxisSpacing,
+      mainAxisExtentBuilder: mainAxisExtentBuilder,
     );
   }
 }
