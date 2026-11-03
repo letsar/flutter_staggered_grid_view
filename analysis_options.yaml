@@ -12,6 +12,7 @@ analyzer:
 
 linter:
   rules:
+    - curly_braces_in_flow_control_structures
     - annotate_overrides
     - avoid_empty_else
     - avoid_function_literals_in_foreach_calls

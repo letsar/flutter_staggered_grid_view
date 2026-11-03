@@ -167,8 +167,9 @@ class RenderSliverMasonryGrid extends RenderSliverMultiBoxAdaptor {
 
   @override
   void setupParentData(RenderObject child) {
-    if (child.parentData is! SliverMasonryGridParentData)
+    if (child.parentData is! SliverMasonryGridParentData) {
       child.parentData = SliverMasonryGridParentData();
+    }
   }
 
   SliverMasonryGridParentData _getParentData(RenderObject child) {

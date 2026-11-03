@@ -216,8 +216,9 @@ class RenderStaggeredGrid extends RenderBox
 
   @override
   void setupParentData(RenderObject child) {
-    if (child.parentData is! StaggeredGridParentData)
+    if (child.parentData is! StaggeredGridParentData) {
       child.parentData = StaggeredGridParentData();
+    }
   }
 
   StaggeredGridParentData _getParentData(RenderBox child) {
