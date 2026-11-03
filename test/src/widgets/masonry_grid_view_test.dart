@@ -115,26 +115,32 @@ void main() {
     expect(find.text('1'), findsNothing);
     expect(find.text('4'), findsNothing);
 
+    // Item 2 is the first visible item, it starts at 0 and is 300px tall.
+    expect(tester.getTopLeft(find.byKey(const ValueKey(2))).dy, -200);
+
     // Change orientation to portrait.
     await binding.setSurfaceSize(const Size(600, 800));
     await tester.pump();
 
-    for (var i = 0; i < 10; i++) {
+    // The first visible item did not move, and the others are placed in 3
+    // columns.
+    expect(tester.getTopLeft(find.byKey(const ValueKey(2))).dy, -200);
+    for (var i = 2; i < 12; i++) {
       final double h = ((i % 4) + 1) * 100;
       expect(tester.getSize(find.byKey(ValueKey(i))), equals(Size(200.0, h)));
     }
 
-    for (int i = 0; i < 10; ++i) {
+    for (int i = 3; i < 11; ++i) {
       await tester.tap(find.byKey((ValueKey(i))));
       expect(log, equals(<String>['$i']));
       log.clear();
     }
 
-    expect(find.text('11'), findsNothing);
-
     await tester.drag(find.text('5'), const Offset(0.0, -200.0));
     await tester.pump();
 
     expect(find.text('0'), findsNothing);
+
+    await binding.setSurfaceSize(null);
   });
 }

@@ -119,6 +119,22 @@ MasonryGridView.count(
 );
 ```
 
+#### **Known extents**
+The position of a child depends on the size of all the children before it, so by default the grid has to build every child once to place it. If you already know the size of the children (for example the aspect ratio of images returned by an API), provide a `mainAxisExtentBuilder`. The children are then placed without being built: jumping far in the grid or changing the number of columns only builds the visible children, and the scroll extent is exact from the start.
+
+```dart
+MasonryGridView.count(
+  crossAxisCount: 3,
+  itemCount: photos.length,
+  // crossAxisExtent is the width of a column.
+  mainAxisExtentBuilder: (index, crossAxisExtent) =>
+      crossAxisExtent / photos[index].aspectRatio,
+  itemBuilder: (context, index) => Image.network(photos[index].url),
+);
+```
+
+Each child is forced to have the returned extent. Return `null` if the index is greater than the index of the last child. When `itemCount` is provided, it prevails: the builder is not called for indexes after it.
+
 ### **Quilted**
 ![Quilted Grid Layout][quilted_preview]
 
