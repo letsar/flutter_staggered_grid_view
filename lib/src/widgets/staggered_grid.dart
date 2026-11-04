@@ -14,6 +14,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
     this.mainAxisSpacing = 0,
     this.crossAxisSpacing = 0,
     this.axisDirection,
+    this.placement = StaggeredGridPlacement.dense,
     List<Widget> children = const <Widget>[],
   })  : assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
@@ -29,6 +30,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
     AxisDirection? axisDirection,
+    StaggeredGridPlacement placement = StaggeredGridPlacement.dense,
     List<Widget> children = const <Widget>[],
   }) : this.custom(
           key: key,
@@ -38,6 +40,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
           axisDirection: axisDirection,
+          placement: placement,
           children: children,
         );
 
@@ -51,6 +54,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
     AxisDirection? axisDirection,
+    StaggeredGridPlacement placement = StaggeredGridPlacement.dense,
     List<Widget> children = const <Widget>[],
   }) : this.custom(
           key: key,
@@ -60,6 +64,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
           axisDirection: axisDirection,
+          placement: placement,
           children: children,
         );
 
@@ -75,6 +80,9 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
   /// {@macro fsgv.global.axisDirection}
   final AxisDirection? axisDirection;
 
+  /// {@macro fsgv.staggered.placement}
+  final StaggeredGridPlacement placement;
+
   @override
   RenderStaggeredGrid createRenderObject(BuildContext context) {
     return RenderStaggeredGrid(
@@ -85,6 +93,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
           Scrollable.maybeOf(context)?.axisDirection ??
           AxisDirection.down,
       textDirection: Directionality.of(context),
+      placement: placement,
     );
   }
 
@@ -100,6 +109,7 @@ class StaggeredGrid extends MultiChildRenderObjectWidget {
       ..axisDirection = axisDirection ??
           Scrollable.maybeOf(context)?.axisDirection ??
           AxisDirection.down
-      ..textDirection = Directionality.of(context);
+      ..textDirection = Directionality.of(context)
+      ..placement = placement;
   }
 }
