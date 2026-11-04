@@ -1,4 +1,4 @@
-## Unreleased
+## 0.8.0-dev.3
 ### Added
 * `alternateDirections` on `SliverStairedGridDelegate` to place all the tracks in the same direction (a 'Z' sequence) instead of going back and forth (https://github.com/letsar/flutter_staggered_grid_view/issues/261, thanks to whynot-dev for https://github.com/letsar/flutter_staggered_grid_view/pull/357).
 * `placement` on `StaggeredGrid` to place the tiles in their order with `StaggeredGridPlacement.sparse`, instead of filling the holes left before previous tiles (https://github.com/letsar/flutter_staggered_grid_view/issues/284).
