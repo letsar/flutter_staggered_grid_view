@@ -1,10 +1,10 @@
-import 'package:examples/common.dart';
-import 'package:examples/examples/aligned.dart';
-import 'package:examples/examples/masonry.dart';
-import 'package:examples/examples/quilted.dart';
-import 'package:examples/examples/staggered.dart';
-import 'package:examples/examples/staired.dart';
-import 'package:examples/examples/woven.dart';
+import 'package:flutter_staggered_grid_view_example/common.dart';
+import 'package:flutter_staggered_grid_view_example/examples/aligned.dart';
+import 'package:flutter_staggered_grid_view_example/examples/masonry.dart';
+import 'package:flutter_staggered_grid_view_example/examples/quilted.dart';
+import 'package:flutter_staggered_grid_view_example/examples/staggered.dart';
+import 'package:flutter_staggered_grid_view_example/examples/staired.dart';
+import 'package:flutter_staggered_grid_view_example/examples/woven.dart';
 import 'package:flutter/material.dart';
 
 void main() {

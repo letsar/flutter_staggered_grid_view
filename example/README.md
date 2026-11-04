@@ -1,16 +1,12 @@
-# example
+# flutter_staggered_grid_view example
 
-A new Flutter project.
+This app shows each layout of the [flutter_staggered_grid_view](https://pub.dev/packages/flutter_staggered_grid_view) package: staggered, masonry, quilted, woven, staired and aligned.
 
-## Getting Started
+`lib/main.dart` displays a menu with a page per layout (see `lib/pages`), and `lib/common.dart` contains the `Tile` widget used in the examples of the README.
 
-This project is a starting point for a Flutter application.
+To run it:
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```sh
+cd example
+flutter run
+```
