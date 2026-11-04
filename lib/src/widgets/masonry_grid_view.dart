@@ -94,6 +94,7 @@ class MasonryGridView extends BoxScrollView {
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.mainAxisExtentBuilder,
+    this.isFullSpan,
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
     bool addSemanticIndexes = true,
@@ -161,6 +162,7 @@ class MasonryGridView extends BoxScrollView {
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.mainAxisExtentBuilder,
+    this.isFullSpan,
     bool addAutomaticKeepAlives = true,
     bool addRepaintBoundaries = true,
     bool addSemanticIndexes = true,
@@ -218,6 +220,7 @@ class MasonryGridView extends BoxScrollView {
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.mainAxisExtentBuilder,
+    this.isFullSpan,
     double? cacheExtent,
     int? semanticChildCount,
     DragStartBehavior dragStartBehavior = DragStartBehavior.start,
@@ -272,6 +275,7 @@ class MasonryGridView extends BoxScrollView {
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.mainAxisExtentBuilder,
+    this.isFullSpan,
     required NullableIndexedWidgetBuilder itemBuilder,
     int? itemCount,
     bool addAutomaticKeepAlives = true,
@@ -341,6 +345,7 @@ class MasonryGridView extends BoxScrollView {
     this.mainAxisSpacing = 0.0,
     this.crossAxisSpacing = 0.0,
     this.mainAxisExtentBuilder,
+    this.isFullSpan,
     required NullableIndexedWidgetBuilder itemBuilder,
     int? itemCount,
     bool addAutomaticKeepAlives = true,
@@ -399,6 +404,9 @@ class MasonryGridView extends BoxScrollView {
   /// {@macro fsgv.masonry.mainAxisExtentBuilder}
   final MasonryMainAxisExtentBuilder? mainAxisExtentBuilder;
 
+  /// {@macro fsgv.masonry.isFullSpan}
+  final MasonryFullSpanPredicate? isFullSpan;
+
   /// A delegate that provides the children for the [MasonryGridView].
   ///
   /// The [MasonryGridView.custom] constructor lets you specify this delegate
@@ -414,6 +422,7 @@ class MasonryGridView extends BoxScrollView {
       mainAxisSpacing: mainAxisSpacing,
       crossAxisSpacing: crossAxisSpacing,
       mainAxisExtentBuilder: mainAxisExtentBuilder,
+      isFullSpan: isFullSpan,
     );
   }
 }

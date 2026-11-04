@@ -24,6 +24,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
     this.mainAxisSpacing = 0,
     this.crossAxisSpacing = 0,
     this.mainAxisExtentBuilder,
+    this.isFullSpan,
   })  : assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         super(key: key, delegate: delegate);
@@ -44,6 +45,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
     MasonryMainAxisExtentBuilder? mainAxisExtentBuilder,
+    MasonryFullSpanPredicate? isFullSpan,
   }) : this(
           key: key,
           delegate: SliverChildBuilderDelegate(
@@ -56,6 +58,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
           mainAxisExtentBuilder: mainAxisExtentBuilder,
+          isFullSpan: isFullSpan,
         );
 
   /// Creates a sliver that places multiple box children in a Masonry
@@ -74,6 +77,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
     double mainAxisSpacing = 0,
     double crossAxisSpacing = 0,
     MasonryMainAxisExtentBuilder? mainAxisExtentBuilder,
+    MasonryFullSpanPredicate? isFullSpan,
   }) : this(
           key: key,
           delegate: SliverChildBuilderDelegate(
@@ -86,6 +90,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
           mainAxisSpacing: mainAxisSpacing,
           crossAxisSpacing: crossAxisSpacing,
           mainAxisExtentBuilder: mainAxisExtentBuilder,
+          isFullSpan: isFullSpan,
         );
 
   /// {@macro fsgv.global.gridDelegate}
@@ -99,6 +104,9 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
 
   /// {@macro fsgv.masonry.mainAxisExtentBuilder}
   final MasonryMainAxisExtentBuilder? mainAxisExtentBuilder;
+
+  /// {@macro fsgv.masonry.isFullSpan}
+  final MasonryFullSpanPredicate? isFullSpan;
 
   /// The exact number of children, if the delegate knows it.
   ///
@@ -132,6 +140,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
       crossAxisSpacing: crossAxisSpacing,
       itemCount: _itemCount,
       mainAxisExtentBuilder: mainAxisExtentBuilder,
+      isFullSpan: isFullSpan,
     );
   }
 
@@ -145,6 +154,7 @@ class SliverMasonryGrid extends SliverMultiBoxAdaptorWidget {
       ..mainAxisSpacing = mainAxisSpacing
       ..crossAxisSpacing = crossAxisSpacing
       ..itemCount = _itemCount
-      ..mainAxisExtentBuilder = mainAxisExtentBuilder;
+      ..mainAxisExtentBuilder = mainAxisExtentBuilder
+      ..isFullSpan = isFullSpan;
   }
 }
