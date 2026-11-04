@@ -1,5 +1,6 @@
 ## Unreleased
 ### Added
+* `alternateDirections` on `SliverStairedGridDelegate` to place all the tracks in the same direction (a 'Z' sequence) instead of going back and forth (https://github.com/letsar/flutter_staggered_grid_view/issues/261, thanks to whynot-dev for https://github.com/letsar/flutter_staggered_grid_view/pull/357).
 * `placement` on `StaggeredGrid` to place the tiles in their order with `StaggeredGridPlacement.sparse`, instead of filling the holes left before previous tiles (https://github.com/letsar/flutter_staggered_grid_view/issues/284).
 * `isFullSpan` on `MasonryGridView` and `SliverMasonryGrid` to make some children span the whole cross axis, like a banner or a section header (https://github.com/letsar/flutter_staggered_grid_view/issues/337). It is not called after the number of children given by the delegate; when this number is unknown, it can be called with the index following the last child.
 ### Changed
