@@ -1,5 +1,5 @@
-name: examples
-description: A new Flutter project.
+name: flutter_staggered_grid_view_example
+description: Examples of the layouts of the flutter_staggered_grid_view package.
 publish_to: 'none' 
 version: 1.0.0+1
 

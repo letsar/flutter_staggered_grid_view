@@ -27,6 +27,8 @@ For help getting started with Flutter, view the online [documentation][flutter_d
 This package contains various grid layouts. In the following section, you'll discover each one of them.
 The explanation of the layout will always considered a top-to-bottom and left-to-right directions to simplify the description. However it is possible to change these directions in the code. 
 
+In the examples below, `Tile` is not part of the package: it's a simple widget of the [example app](example/lib/common.dart), which you can replace with your own widgets. The example app shows each layout in action.
+
 ### **Staggered**
 ![Staggered Grid Layout][staggered_preview]
 
@@ -150,6 +152,29 @@ MasonryGridView.count(
 ```
 
 Each child is forced to have the returned extent. Return `null` if the index is greater than the index of the last child. When `itemCount` is provided, it prevails: the builder is not called for indexes after it.
+
+#### **Sliver**
+To combine a masonry grid with other slivers (an app bar, a header, another grid...) in a `CustomScrollView`, use `SliverMasonryGrid`:
+
+```dart
+CustomScrollView(
+  slivers: [
+    const SliverAppBar(title: Text('Masonry')),
+    SliverMasonryGrid.count(
+      crossAxisCount: 4,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      childCount: 100,
+      itemBuilder: (context, index) {
+        return Tile(
+          index: index,
+          extent: (index % 5 + 1) * 100,
+        );
+      },
+    ),
+  ],
+);
+```
 
 ### **Quilted**
 ![Quilted Grid Layout][quilted_preview]
@@ -316,6 +341,29 @@ AlignedGridView.count(
       extent: (index % 7 + 1) * 30,
     );
   },
+);
+```
+
+#### **Sliver**
+To combine an aligned grid with other slivers in a `CustomScrollView`, use `SliverAlignedGrid`:
+
+```dart
+CustomScrollView(
+  slivers: [
+    const SliverAppBar(title: Text('Aligned')),
+    SliverAlignedGrid.count(
+      crossAxisCount: 4,
+      mainAxisSpacing: 4,
+      crossAxisSpacing: 4,
+      itemCount: 100,
+      itemBuilder: (context, index) {
+        return Tile(
+          index: index,
+          extent: (index % 7 + 1) * 30,
+        );
+      },
+    ),
+  ],
 );
 ```
 

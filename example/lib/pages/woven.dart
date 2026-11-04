@@ -1,29 +1,30 @@
-import 'package:examples/common.dart';
+import 'package:flutter_staggered_grid_view_example/common.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class QuiltedPage extends StatelessWidget {
-  const QuiltedPage({
+class WovenPage extends StatelessWidget {
+  const WovenPage({
     super.key,
   });
 
   static const pattern = [
-    QuiltedGridTile(2, 2),
-    QuiltedGridTile(1, 1),
-    QuiltedGridTile(1, 1),
-    QuiltedGridTile(1, 2),
+    WovenGridTile(1),
+    WovenGridTile(
+      5 / 7,
+      crossAxisRatio: 0.9,
+      alignment: AlignmentDirectional.centerEnd,
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      title: 'Quilted',
+      title: 'Woven',
       child: GridView.custom(
-        gridDelegate: SliverQuiltedGridDelegate(
-          crossAxisCount: 4,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
-          repeatPattern: QuiltedGridRepeatPattern.inverted,
+        gridDelegate: SliverWovenGridDelegate.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
           pattern: pattern,
         ),
         childrenDelegate: SliverChildBuilderDelegate(
@@ -31,8 +32,8 @@ class QuiltedPage extends StatelessWidget {
             final tile = pattern[index % pattern.length];
             return ImageTile(
               index: index,
-              width: tile.crossAxisCount * 100,
-              height: tile.mainAxisCount * 100,
+              width: (200 * tile.aspectRatio).ceil(),
+              height: 200,
             );
           },
         ),

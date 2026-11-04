@@ -1,4 +1,11 @@
 docs/
-examples/
+example/android/
+example/ios/
+example/macos/
+example/web/
+example/build/
+example/pubspec.lock
+example/lib/main_issue_338.dart
+example/lib/main_masonry_variable_size.dart
 build/
 *.iml
