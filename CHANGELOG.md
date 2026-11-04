@@ -1,3 +1,11 @@
+## Unreleased
+### Added
+* `isFullSpan` on `MasonryGridView` and `SliverMasonryGrid` to make some children span the whole cross axis, like a banner or a section header (https://github.com/letsar/flutter_staggered_grid_view/issues/337). It is not called after the number of children given by the delegate; when this number is unknown, it can be called with the index following the last child.
+### Changed
+* `SliverMasonryGridParentData.crossAxisIndex` is null for the children spanning the whole cross axis.
+### Fixed
+* Children of a masonry grid losing their state when a child moved with a key leaves a hole just before the visible children.
+
 ## 0.8.0-dev.2
 ### Added
 * `StaggeredGridDelegate` and its implementations are exported, so that `StaggeredGrid.custom` can be used (https://github.com/letsar/flutter_staggered_grid_view/issues/344)

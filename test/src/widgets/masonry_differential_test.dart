@@ -31,9 +31,18 @@ final Map<int, int> createdStates = {};
 final Map<int, _FuzzTileState> liveStates = {};
 
 class Item {
-  Item(this.id, this.ratio, this.fixedExtent, {required this.keepAlive});
+  Item(
+    this.id,
+    this.ratio,
+    this.fixedExtent, {
+    required this.keepAlive,
+    required this.fullSpan,
+  });
 
   final int id;
+
+  /// Whether the item spans the whole cross axis.
+  bool fullSpan;
 
   /// The extent is `ratio * crossAxisExtent`, unless [fixedExtent] is not null.
   double ratio;
@@ -155,6 +164,7 @@ class Grid {
       0.3 + random.nextDouble() * 1.7,
       fixedExtent,
       keepAlive: configuration.keepAlive && random.nextInt(4) == 0,
+      fullSpan: random.nextInt(8) == 0,
     );
   }
 
@@ -191,6 +201,8 @@ class Grid {
                   ),
                   mainAxisSpacing: mainAxisSpacing,
                   crossAxisSpacing: crossAxisSpacing,
+                  isFullSpan: (index) =>
+                      index < items.length && items[index].fullSpan,
                   mainAxisExtentBuilder: configuration.withExtentBuilder
                       ? (index, crossAxisExtent) => index < items.length
                           ? items[index].extent(crossAxisExtent)
@@ -227,7 +239,15 @@ class Grid {
   Map<int, Rect> reference() {
     final laneEnds = List<double>.filled(crossAxisCount, 0);
     final result = <int, Rect>{};
+    final gridCrossAxisExtent = width - 2 * configuration.padding;
     for (final item in items) {
+      if (item.fullSpan) {
+        final start = laneEnds.reduce(math.max);
+        final extent = item.extent(gridCrossAxisExtent);
+        result[item.id] = Rect.fromLTWH(0, start, gridCrossAxisExtent, extent);
+        laneEnds.fillRange(0, crossAxisCount, start + extent + mainAxisSpacing);
+        continue;
+      }
       var lane = 0;
       for (var i = 1; i < crossAxisCount; i++) {
         if (laneEnds[i] < laneEnds[lane]) {
@@ -358,9 +378,11 @@ void main() {
         final offsetBefore = controller.offset;
         var keepsStates = true;
         var checkExtent = false;
+        // Whether the operation changes the children.
+        var changesData = false;
         clamped = false;
 
-        switch (random.nextInt(12)) {
+        switch (random.nextInt(13)) {
           case 0:
           case 1:
             final offset = random.nextDouble() * maxScrollExtent();
@@ -393,6 +415,7 @@ void main() {
           case 6:
             final index = random.nextInt(grid.items.length + 1);
             log.add('insert at $index');
+            changesData = true;
             grid.items.insert(index, grid.newItem());
             await tester.pumpWidget(grid.build());
             outdated = true;
@@ -402,6 +425,7 @@ void main() {
             }
             final index = random.nextInt(grid.items.length);
             log.add('remove at $index');
+            changesData = true;
             grid.items.removeAt(index);
             await tester.pumpWidget(grid.build());
             outdated = true;
@@ -412,6 +436,7 @@ void main() {
             final item = grid.items.removeAt(random.nextInt(grid.items.length));
             final index = random.nextInt(grid.items.length + 1);
             log.add('move ${item.id} to $index');
+            changesData = true;
             grid.items.insert(index, item);
             await tester.pumpWidget(grid.build());
             outdated = true;
@@ -425,6 +450,7 @@ void main() {
             item.ratio = 0.3 + random.nextDouble() * 1.7;
             final state = liveStates[item.id];
             log.add('resize ${item.id} (alive: ${state != null})');
+            changesData = true;
             state?.rebuild();
             await tester.pump();
             outdated = true;
@@ -438,6 +464,16 @@ void main() {
             log.add('crossAxisSpacing ${grid.crossAxisSpacing}');
             await tester.pumpWidget(grid.build());
             outdated = outdated || !configuration.withExtentBuilder;
+          case 12:
+            if (grid.items.isEmpty) {
+              break;
+            }
+            final item = grid.items[random.nextInt(grid.items.length)];
+            item.fullSpan = !item.fullSpan;
+            log.add('fullSpan ${item.id}: ${item.fullSpan}');
+            changesData = true;
+            await tester.pumpWidget(grid.build());
+            outdated = true;
         }
 
         expect(tester.takeException(), isNull, reason: context());
@@ -446,6 +482,14 @@ void main() {
         // nothing to show until the scroll position is corrected, and the
         // children are released (like in a SliverList).
         if (offsetBefore > maxScrollExtent() + tolerance || clamped) {
+          keepsStates = false;
+        }
+        // It's the same when the data changes before the viewport: the scroll
+        // offset correction which keeps the first visible child in place can
+        // go after the end, and the viewport corrects it again.
+        if (changesData &&
+            controller.offset != offsetBefore &&
+            (controller.offset - maxScrollExtent()).abs() < tolerance) {
           keepsStates = false;
         }
 

@@ -687,4 +687,50 @@ void main() {
     await tester.pumpWidget(grid(controller: controller, itemCount: 0));
     expect(controller.position.maxScrollExtent, 0);
   });
+
+  testWidgets('jumping forward only builds the children which are needed',
+      (WidgetTester tester) async {
+    final controller = ScrollController();
+    final built = <int>{};
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: CustomScrollView(
+          controller: controller,
+          slivers: [
+            SliverMasonryGrid.count(
+              crossAxisCount: 3,
+              childCount: 1000,
+              itemBuilder: (context, index) {
+                built.add(index);
+                return Tile(
+                  key: ValueKey(index),
+                  index: index,
+                  height: extentOf(index),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    // The placements of the children are cached up to 20000.
+    for (double offset = 0; offset < 20000; offset += 500) {
+      controller.jumpTo(offset);
+      await tester.pump();
+    }
+    controller.jumpTo(0);
+    await tester.pump();
+
+    for (var i = 0; i < 10; i++) {
+      built.clear();
+      controller.jumpTo(controller.offset + 1500);
+      await tester.pump();
+      final alive = {
+        for (final element in find.byType(Tile, skipOffstage: false).evaluate())
+          (element.widget as Tile).index,
+      };
+      expect(built.difference(alive), isEmpty);
+    }
+  });
 }

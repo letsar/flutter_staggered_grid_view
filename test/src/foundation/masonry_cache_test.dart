@@ -106,6 +106,51 @@ void main() {
       expect(cache.extentOf(1), 100 / 3);
     });
 
+    test('places a full span child after all the lanes', () {
+      final cache = createCache(spacing: 10);
+      cache
+        ..add(100)
+        ..add(50)
+        ..add(30, fullSpan: true)
+        ..add(20)
+        ..add(40);
+
+      // The full span child starts after the longest lane, and all the lanes
+      // are aligned after it.
+      expect(cache.startOf(2), 110);
+      expect(cache.laneOf(2), isNull);
+      expect(cache.startOf(3), 150);
+      expect(cache.laneOf(3), 0);
+      expect(cache.startOf(4), 150);
+      expect(cache.laneOf(4), 1);
+      expect(cache.firstIndexStartingAtOrAfter(111), 3);
+      expect(cache.firstIndexEndingAtOrAfter(141), 3);
+    });
+
+    test('truncate restores the lanes after a full span child', () {
+      final reference = createCache(spacing: 4);
+      final extents = [for (var i = 0; i < 60; i++) (i * 37 % 11 + 1) * 10.0];
+      bool fullSpan(int i) => i % 13 == 5;
+      for (var i = 0; i < extents.length; i++) {
+        reference.add(extents[i], fullSpan: fullSpan(i));
+      }
+
+      for (final length in [6, 7, 19, 33]) {
+        final cache = createCache(spacing: 4);
+        for (var i = 0; i < extents.length; i++) {
+          cache.add(extents[i], fullSpan: fullSpan(i));
+        }
+        cache.truncate(length);
+        for (var i = length; i < extents.length; i++) {
+          cache.add(extents[i], fullSpan: fullSpan(i));
+        }
+        for (var i = 0; i < extents.length; i++) {
+          expect(cache.startOf(i), reference.startOf(i));
+          expect(cache.laneOf(i), reference.laneOf(i));
+        }
+      }
+    });
+
     test('grows beyond its initial capacity', () {
       final cache = createCache();
       for (var i = 0; i < 1000; i++) {

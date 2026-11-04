@@ -153,6 +153,28 @@ MasonryGridView.count(
 
 Each child is forced to have the returned extent. Return `null` if the index is greater than the index of the last child. When `itemCount` is provided, it prevails: the builder is not called for indexes after it.
 
+#### **Full span children**
+A child can span the whole cross axis, for example a banner or a section header, with `isFullSpan`. It starts below all the columns, and the columns are aligned after it.
+
+```dart
+MasonryGridView.count(
+  crossAxisCount: 2,
+  mainAxisSpacing: 4,
+  crossAxisSpacing: 4,
+  itemCount: 100,
+  // A banner every 10 children.
+  isFullSpan: (index) => index % 10 == 9,
+  itemBuilder: (context, index) {
+    return Tile(
+      index: index,
+      extent: index % 10 == 9 ? 80 : (index % 5 + 1) * 100,
+    );
+  },
+);
+```
+
+Since a full span child starts after the longest column, some space can be left empty at the end of the shorter ones.
+
 #### **Sliver**
 To combine a masonry grid with other slivers (an app bar, a header, another grid...) in a `CustomScrollView`, use `SliverMasonryGrid`:
 
