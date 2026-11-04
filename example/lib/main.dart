@@ -1,7 +1,6 @@
 import 'package:flutter_staggered_grid_view_example/common.dart';
 import 'package:flutter_staggered_grid_view_example/pages/aligned.dart';
 import 'package:flutter_staggered_grid_view_example/pages/masonry.dart';
-import 'package:flutter_staggered_grid_view_example/pages/masonry_full_span.dart';
 import 'package:flutter_staggered_grid_view_example/pages/quilted.dart';
 import 'package:flutter_staggered_grid_view_example/pages/staggered.dart';
 import 'package:flutter_staggered_grid_view_example/pages/staired.dart';
@@ -52,11 +51,6 @@ class HomePage extends StatelessWidget {
             title: 'Masonry',
             imageName: 'masonry',
             destination: MasonryPage(),
-          ),
-          MenuEntry(
-            title: 'Masonry full span',
-            imageName: 'masonry',
-            destination: MasonryFullSpanPage(),
           ),
           MenuEntry(
             title: 'Quilted',
