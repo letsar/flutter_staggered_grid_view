@@ -48,7 +48,8 @@ I didn't find, for the moment, a performant algorithm which would work in a `Sli
   - the extent of its content, with `StaggeredGridTile.fit`.
 
 #### **Placement algorithm**
-- Top-most and then left-most
+- Top-most and then left-most (`StaggeredGridPlacement.dense`, the default): a tile can fill a hole left before a previous tile, so the tiles may not appear in their order.
+- With `placement: StaggeredGridPlacement.sparse`, each tile is placed after the previous one, in the reading order: the tiles appear in their order, and the holes are left empty.
 
 #### **Example**
 Below you'll find the code to create this grid layout:

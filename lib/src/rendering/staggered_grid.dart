@@ -122,6 +122,22 @@ class StaggeredGridDelegateWithMaxCrossAxisExtent
   }
 }
 
+/// How the tiles of a [RenderStaggeredGrid] are placed.
+enum StaggeredGridPlacement {
+  /// Each tile is placed as close as possible to the start of the main axis,
+  /// and then of the cross axis.
+  ///
+  /// A tile can fill a hole left before a previous tile, so the tiles may not
+  /// appear in their order.
+  dense,
+
+  /// Each tile is placed after the previous one, in the reading order (along
+  /// the cross axis, and then the main axis).
+  ///
+  /// The tiles appear in their order, and the holes are left empty.
+  sparse,
+}
+
 /// A sliver that places multiple box children with different sizes in a two
 /// dimensional arrangement.
 class RenderStaggeredGrid extends RenderBox
@@ -136,10 +152,12 @@ class RenderStaggeredGrid extends RenderBox
     required double crossAxisSpacing,
     required AxisDirection axisDirection,
     required TextDirection textDirection,
+    StaggeredGridPlacement placement = StaggeredGridPlacement.dense,
   })  : assert(mainAxisSpacing >= 0),
         assert(crossAxisSpacing >= 0),
         _axisDirection = axisDirection,
         _textDirection = textDirection,
+        _placement = placement,
         _delegate = delegate,
         _mainAxisSpacing = mainAxisSpacing,
         _crossAxisSpacing = crossAxisSpacing {
@@ -201,6 +219,23 @@ class RenderStaggeredGrid extends RenderBox
   /// The axis (horizontal or vertical) corresponding to the current
   /// [axisDirection].
   Axis get mainAxis => axisDirectionToAxis(_axisDirection);
+
+  /// {@template fsgv.staggered.placement}
+  /// How the tiles are placed.
+  ///
+  /// With [StaggeredGridPlacement.dense] (the default), a tile can fill a hole
+  /// left before a previous tile. With [StaggeredGridPlacement.sparse], the
+  /// tiles are placed in their order.
+  /// {@endtemplate}
+  StaggeredGridPlacement get placement => _placement;
+  StaggeredGridPlacement _placement;
+  set placement(StaggeredGridPlacement value) {
+    if (_placement == value) {
+      return;
+    }
+    _placement = value;
+    markNeedsLayout();
+  }
 
   /// The direction in which the columns are ordered if the [mainAxis] is
   /// [Axis.vertical].
@@ -283,6 +318,9 @@ class RenderStaggeredGrid extends RenderBox
     }
 
     final offsets = List.filled(crossAxisCount, 0.0);
+    // The origin and the cross axis cell count of the last placed tile.
+    _TileOrigin? previousOrigin;
+    int previousCrossAxisCellCount = 0;
     RenderBox? child = firstChild;
     while (child != null) {
       final childParentData = _getParentData(child);
@@ -321,7 +359,18 @@ class RenderStaggeredGrid extends RenderBox
       // is reversed.
       childParentData._realMainAxisExtent = mainAxisExtent;
 
-      final origin = _findBestCandidate(offsets, crossAxisCellCount);
+      final origin = switch (placement) {
+        StaggeredGridPlacement.dense =>
+          _findBestCandidate(offsets, crossAxisCellCount),
+        StaggeredGridPlacement.sparse => _findNextCandidate(
+            offsets,
+            crossAxisCellCount,
+            previousOrigin,
+            previousCrossAxisCellCount,
+          ),
+      };
+      previousOrigin = origin;
+      previousCrossAxisCellCount = crossAxisCellCount;
       final mainAxisOffset = origin.mainAxisOffset;
       final crossAxisOffset = origin.crossAxisIndex * stride;
       final offset = mainAxis == Axis.vertical
@@ -453,6 +502,42 @@ _TileOrigin _findBestCandidate(List<double> offsets, int crossAxisCount) {
     }
   }
   return bestCandidate;
+}
+
+/// Finds the first position after the [previous] tile, in the reading order,
+/// where a tile spanning [span] cells in the cross axis fits.
+_TileOrigin _findNextCandidate(
+  List<double> offsets,
+  int span,
+  _TileOrigin? previous,
+  int previousSpan,
+) {
+  _TileOrigin? best;
+  for (int i = 0; i + span <= offsets.length; i++) {
+    // The tile can't be placed before the tiles of the cells it spans.
+    double mainAxisOffset = 0;
+    for (int j = i; j < i + span; j++) {
+      mainAxisOffset = math.max(mainAxisOffset, offsets[j]);
+    }
+    if (previous != null) {
+      final previousMainAxisOffset = previous.mainAxisOffset;
+      if (i >= previous.crossAxisIndex + previousSpan) {
+        // After the previous tile, on the same track or below.
+        mainAxisOffset = math.max(mainAxisOffset, previousMainAxisOffset);
+      } else if (mainAxisOffset <
+          previousMainAxisOffset + precisionErrorTolerance) {
+        // Before the previous tile, on the same track.
+        continue;
+      }
+    }
+    if (best == null ||
+        mainAxisOffset < best.mainAxisOffset - precisionErrorTolerance) {
+      best = _TileOrigin(i, mainAxisOffset);
+    }
+  }
+
+  // Only possible with tiles without extent: the tile starts a new track.
+  return best ?? _TileOrigin(0, offsets.reduce(math.max));
 }
 
 typedef _ChildLayouter = void Function(
