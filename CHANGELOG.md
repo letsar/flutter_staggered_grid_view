@@ -1,9 +1,12 @@
-## Unreleased
+## 0.8.0-dev.2
 ### Added
 * `StaggeredGridDelegate` and its implementations are exported, so that `StaggeredGrid.custom` can be used (https://github.com/letsar/flutter_staggered_grid_view/issues/344)
 ### Changed
 * The `itemBuilder` of `MasonryGridView` and `SliverMasonryGrid` can return null to indicate that there are no more children, like `ListView.builder` (https://github.com/letsar/flutter_staggered_grid_view/issues/301, thanks to angcyo for https://github.com/letsar/flutter_staggered_grid_view/pull/365)
 * A quilted tile which does not fit in the remaining space of a row is placed in the next row where it fits, leaving the remaining cells empty.
+* The example app is in the `example` folder, so that it's shown on pub.dev (https://github.com/letsar/flutter_staggered_grid_view/issues/333).
+* The README documents `SliverMasonryGrid` and `SliverAlignedGrid` (https://github.com/letsar/flutter_staggered_grid_view/issues/328), the `Tile` widget used in its examples (https://github.com/letsar/flutter_staggered_grid_view/issues/331), and how to size the tiles of a `StaggeredGrid` with another aspect ratio (https://github.com/letsar/flutter_staggered_grid_view/issues/308).
+* `flutter analyze` reports no issues.
 ### Fixed
 * Crash of `StaggeredGrid` when the spacings are larger than the available space (https://github.com/letsar/flutter_staggered_grid_view/issues/362)
 * Crash of `StaggeredGrid` with a reversed axis direction and tiles fitting their content.
