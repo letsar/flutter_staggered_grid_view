@@ -143,10 +143,11 @@ class SliverAlignedGrid extends StatelessWidget {
           constraints,
           crossAxisSpacing,
         );
-        if (list != null &&
+        final previousList = list;
+        if (previousList != null &&
             listCrossAxisCount == crossAxisCount &&
             listCrossAxisDirection == constraints.crossAxisDirection) {
-          return list!;
+          return previousList;
         }
         listCrossAxisCount = crossAxisCount;
         listCrossAxisDirection = constraints.crossAxisDirection;
