@@ -40,6 +40,10 @@ I didn't find, for the moment, a performant algorithm which would work in a `Sli
 
 #### **Tile properties**
 - Must occupy 1 to *n* columns
+- Its main axis extent can be:
+  - a number of cells, which can be fractional, with `StaggeredGridTile.count`;
+  - a fixed extent, with `StaggeredGridTile.extent`;
+  - the extent of its content, with `StaggeredGridTile.fit`.
 
 #### **Placement algorithm**
 - Top-most and then left-most
@@ -82,6 +86,18 @@ StaggeredGrid.count(
     ),
   ],
 );
+```
+
+The cells are square. For tiles with another aspect ratio, use `StaggeredGridTile.fit` with an `AspectRatio`:
+
+```dart
+StaggeredGridTile.fit(
+  crossAxisCellCount: 1,
+  child: AspectRatio(
+    aspectRatio: 9 / 16,
+    child: Tile(index: 5),
+  ),
+),
 ```
 
 ### **Masonry**

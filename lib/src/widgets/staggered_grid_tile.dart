@@ -17,6 +17,10 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
 
   /// Creates a [StaggeredGrid]'s tile that takes a fixed number of cells along
   /// the main axis.
+  ///
+  /// The cells are square, but [mainAxisCellCount] can be fractional.
+  /// The main axis extent of the tile is
+  /// `mainAxisCellCount * (cellExtent + mainAxisSpacing) - mainAxisSpacing`.
   const StaggeredGridTile.count({
     Key? key,
     required int crossAxisCellCount,
@@ -46,7 +50,10 @@ class StaggeredGridTile extends ParentDataWidget<StaggeredGridParentData> {
         );
 
   /// Creates a [StaggeredGrid]'s tile that fits its main axis extent to its
-  /// [child]'s content
+  /// [child]'s content.
+  ///
+  /// For example, wrap the [child] in an [AspectRatio] to get a tile with a
+  /// specific aspect ratio.
   const StaggeredGridTile.fit({
     Key? key,
     required int crossAxisCellCount,

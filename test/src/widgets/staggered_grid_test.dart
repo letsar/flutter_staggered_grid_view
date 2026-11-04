@@ -170,4 +170,37 @@ void main() {
     _expectTopLeft(3, const Offset(s2 + 4, s1 + 4));
     _expectTopLeft(4, const Offset(0, s3 + 4));
   });
+
+  // https://github.com/letsar/flutter_staggered_grid_view/issues/308
+  testWidgets('tiles fitting an AspectRatio have this aspect ratio',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: SizedBox(
+            width: 400,
+            child: StaggeredGrid.count(
+              crossAxisCount: 3,
+              mainAxisSpacing: 8,
+              crossAxisSpacing: 8,
+              children: const [
+                StaggeredGridTile.fit(
+                  crossAxisCellCount: 1,
+                  child: AspectRatio(
+                    aspectRatio: 9 / 16,
+                    child: Tile(index: 0),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final size = tester.getSize(find.byType(Tile));
+    expect(size.width / size.height, closeTo(9 / 16, 1e-9));
+  });
 }
