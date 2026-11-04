@@ -10,6 +10,7 @@
 * `Infinity or NaN toInt` in patterned grids (staired, woven, quilted) without available space (https://github.com/letsar/flutter_staggered_grid_view/issues/361)
 * `RangeError` with quilted patterns where a tile does not fit in the remaining space of a row (https://github.com/letsar/flutter_staggered_grid_view/issues/221)
 * Crash of the grids using a `maxCrossAxisExtent` without available space.
+* `AlignedGridView` and `SliverAlignedGrid` no longer rebuild all their visible children every time they are scrolled (https://github.com/letsar/flutter_staggered_grid_view/issues/320)
 
 ## 0.8.0-dev.1
 ### Added

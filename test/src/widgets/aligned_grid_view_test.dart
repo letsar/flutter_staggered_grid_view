@@ -186,4 +186,51 @@ void main() {
     expect(find.text('6'), findsNothing);
     expect(find.text('7'), findsNothing);
   });
+
+  // https://github.com/letsar/flutter_staggered_grid_view/issues/320
+  testWidgets('scrolling does not rebuild the visible children',
+      (WidgetTester tester) async {
+    final controller = ScrollController();
+    final built = <int>[];
+    var crossAxisCount = 3;
+    var label = 'a';
+    Widget build() {
+      return Directionality(
+        textDirection: TextDirection.ltr,
+        child: AlignedGridView.count(
+          controller: controller,
+          crossAxisCount: crossAxisCount,
+          itemCount: 1000,
+          itemBuilder: (context, index) {
+            built.add(index);
+            return SizedBox(
+              height: 50.0 + index % 3 * 20,
+              child: Text('$label$index'),
+            );
+          },
+        ),
+      );
+    }
+
+    await tester.pumpWidget(build());
+    built.clear();
+    for (var i = 0; i < 20; i++) {
+      controller.jumpTo(controller.offset + 5);
+      await tester.pump();
+    }
+    // Only the children entering the cache extent are built.
+    expect(built.length, lessThan(10));
+
+    // A new layout of the tracks or new children are still taken into account.
+    controller.jumpTo(0);
+    crossAxisCount = 2;
+    await tester.pumpWidget(build());
+    expect(
+      tester.getSize(find.text('a0')).width,
+      tester.getSize(find.byType(AlignedGridView)).width / 2,
+    );
+    label = 'b';
+    await tester.pumpWidget(build());
+    expect(find.text('b0'), findsOneWidget);
+  });
 }
