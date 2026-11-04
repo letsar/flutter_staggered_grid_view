@@ -129,16 +129,33 @@ class SliverAlignedGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localItemCount = itemCount;
+
+    // The builder of SliverLayoutBuilder is called every time the scroll
+    // offset changes. We return the same list while the layout of the tracks
+    // does not change, otherwise every visible child would be rebuilt.
+    Widget? list;
+    int? listCrossAxisCount;
+    AxisDirection? listCrossAxisDirection;
+
     return SliverLayoutBuilder(
       builder: (context, constraints) {
         final crossAxisCount = gridDelegate.getCrossAxisCount(
           constraints,
           crossAxisSpacing,
         );
+        final previousList = list;
+        if (previousList != null &&
+            listCrossAxisCount == crossAxisCount &&
+            listCrossAxisDirection == constraints.crossAxisDirection) {
+          return previousList;
+        }
+        listCrossAxisCount = crossAxisCount;
+        listCrossAxisDirection = constraints.crossAxisDirection;
+
         final listItemCount = localItemCount == null
             ? null
             : ((localItemCount + crossAxisCount - 1) ~/ crossAxisCount) * 2 - 1;
-        return SliverList(
+        return list = SliverList(
           delegate: SliverChildBuilderDelegate(
             (context, index) {
               if (index.isOdd) {
