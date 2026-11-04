@@ -300,14 +300,15 @@ This layout uses alternating container sizes and ratios to create a rhythmic eff
 #### **Grid properties**
 - A pattern defines the size of the tiles
 - Each tile is shifted from the previous one by a margin in both axis
-- The placement follows a 'z' sequence
+- The tracks of the pattern go back and forth, like stairs ('S' sequence), unless `alternateDirections` is false ('Z' sequence)
 
 #### **Tile properties**
 - The height is defined by an `aspectRatio` (width/height)
 - The width is defined by a `crossAxisRatio` (width/available horizontal space) between 0 (exclusive) and 1 (inclusive)
 
 #### **Placement algorithm**
-- In a 'z' sequence
+- In an 'S' sequence by default: from left to right, then from right to left, and so on
+- In a 'Z' sequence with `alternateDirections: false`: all the tracks from left to right
 
 #### **Example**
 Below you'll find the code to create this grid layout:

@@ -42,6 +42,7 @@ class SliverStairedGridDelegate
     double crossAxisSpacing = 0,
     this.tileBottomSpace = 0,
     this.startCrossAxisDirectionReversed = false,
+    this.alternateDirections = true,
   })  : assert(tileBottomSpace >= 0),
         super.count(
           pattern: pattern,
@@ -58,6 +59,17 @@ class SliverStairedGridDelegate
   /// Indicates whether we should start to place the tile in the reverse cross
   /// axis direction.
   final bool startCrossAxisDirectionReversed;
+
+  /// Whether the tiles of a track are placed in the opposite direction of the
+  /// tiles of the previous track.
+  ///
+  /// When true (the default), the tracks are placed like stairs going back and
+  /// forth: from left to right, then from right to left, and so on (in an
+  /// 'S' sequence for a vertical grid). When false, all the tracks are placed
+  /// in the same direction (in a 'Z' sequence).
+  ///
+  /// It only has an effect when the [pattern] contains several tracks.
+  final bool alternateDirections;
 
   @override
   SliverPatternGridGeometries getGeometries(
@@ -123,7 +135,9 @@ class SliverStairedGridDelegate
       }
 
       mainAxisOffset = targetMainAxisOffset + mainAxisSpacing;
-      reversed = !reversed;
+      if (alternateDirections) {
+        reversed = !reversed;
+      }
       crossAxisOffset =
           reversed ? maxCrossAxisExtent - crossAxisSpacing : crossAxisSpacing;
     }
@@ -136,6 +150,7 @@ class SliverStairedGridDelegate
     return super.shouldRelayout(oldDelegate) ||
         oldDelegate.tileBottomSpace != tileBottomSpace ||
         oldDelegate.startCrossAxisDirectionReversed !=
-            startCrossAxisDirectionReversed;
+            startCrossAxisDirectionReversed ||
+        oldDelegate.alternateDirections != alternateDirections;
   }
 }
