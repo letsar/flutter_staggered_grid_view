@@ -15,6 +15,7 @@ dependencies:
     path: ../
   collection: ^1.18.0
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

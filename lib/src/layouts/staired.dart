@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/src/foundation/constants.dart';
 import 'package:flutter_staggered_grid_view/src/layouts/sliver_patterned_grid_delegate.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A tile of a staired pattern.
 @immutable

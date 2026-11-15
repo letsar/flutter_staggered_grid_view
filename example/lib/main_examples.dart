@@ -5,7 +5,7 @@ import 'package:flutter_staggered_grid_view_example/examples/quilted.dart';
 import 'package:flutter_staggered_grid_view_example/examples/staggered.dart';
 import 'package:flutter_staggered_grid_view_example/examples/staired.dart';
 import 'package:flutter_staggered_grid_view_example/examples/woven.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   runApp(const MyApp());

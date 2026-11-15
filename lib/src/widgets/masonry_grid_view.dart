@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_masonry_grid.dart';
 import 'package:flutter_staggered_grid_view/src/rendering/sliver_simple_grid_delegate.dart';
 import 'package:flutter_staggered_grid_view/src/widgets/sliver_masonry_grid.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A scrollable, 2D array of widgets placed according to the masonry layout.
 ///
